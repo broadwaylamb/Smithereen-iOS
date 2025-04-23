@@ -24,11 +24,14 @@ struct PostHeaderView: View {
 	var name: String
 	var date: String
 
+    @ScaledMetric(relativeTo: .body)
+    private var imageSize = 44
+
 	var body: some View {
 		HStack(spacing: 8) {
 			profilePicture
 				.resizable()
-				.frame(width: 44, height: 44)
+				.frame(width: imageSize, height: imageSize)
 				.cornerRadius(5)
 			VStack(alignment: .leading, spacing: 7) {
 				Text(name)

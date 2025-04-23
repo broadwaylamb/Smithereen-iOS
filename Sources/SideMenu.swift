@@ -65,12 +65,15 @@ struct SideMenuRow: View {
 	var icon: Image
 	var text: String
 	var isSelected: Bool
-	
+
+    @ScaledMetric(relativeTo: .body)
+    private var iconSize = 37
+
 	var body: some View {
-		HStack {
+        HStack {
 			icon
-				.frame(width: 34, height: 34)
-				.cornerRadius(17)
+				.frame(width: iconSize, height: iconSize)
+				.cornerRadius(iconSize / 2)
 				.foregroundStyle(Color.SideMenu.icon)
 			Text(verbatim: text)
 			Spacer()
