@@ -7,16 +7,20 @@ struct RootView: View {
 	@State private var menuShown: Bool = false
 	@State private var selectedItem: SideMenuItem = .news
 
+    @State private var previousOffset: CGFloat = 0
+
 	private let menuWidth: CGFloat = 256
 	private let dragThreshold: CGFloat = 128
 
 	private func hideMenu() {
 		offset = 0
+        previousOffset = offset
 		menuShown = false
 	}
 
 	private func showMenu() {
 		offset = menuWidth
+        previousOffset = offset
 		menuShown = true
 	}
 
@@ -65,8 +69,15 @@ struct RootView: View {
 			.gesture(
 				DragGesture()
 					.onChanged { value in
+                        let newOffset = previousOffset + value.translation.width
 						if value.translation.width > 0 {
-							offset = min(value.translation.width, menuWidth)
+                            if newOffset < menuWidth {
+                                offset = newOffset
+                            } else {
+                                // Resist dragging too far right
+                                let springOffset = newOffset - menuWidth
+                                offset = menuWidth + springOffset * 0.3
+                            }
 						} else if menuShown {
 							offset = max(value.translation.width + menuWidth, 0)
 						}
@@ -79,6 +90,7 @@ struct RootView: View {
 							hideMenu()
 						} else {
 							offset = menuShown ? menuWidth : 0
+                            previousOffset = offset
 						}
 					}
 			)
