@@ -10,12 +10,12 @@ struct PostView: View {
 	var likesCount: Int
 
     var body: some View {
-		VStack(alignment: .leading) {
-			PostHeaderView(profilePicture: profilePicture, name: name, date: date)
-			Text(verbatim: text)
-			PostFooterView(replyCount: replyCount, shareCount: shareCount, likesCount: likesCount)
-		}
-		.padding(4)
+        VStack(alignment: .leading) {
+            PostHeaderView(profilePicture: profilePicture, name: name, date: date)
+            Text(verbatim: text)
+            PostFooterView(replyCount: replyCount, shareCount: shareCount, likesCount: likesCount)
+        }
+        .padding(EdgeInsets(top: 7, leading: 4, bottom: 11, trailing: 4))
     }
 }
 
@@ -43,8 +43,7 @@ struct PostHeaderView: View {
 			}
 			Spacer()
 			Button(action: { /* TODO */ }) {
-				Image(systemName: "ellipsis")
-					.tint(.secondary)
+                Image(systemName: "ellipsis").foregroundStyle(Color(#colorLiteral(red: 0.8549019098, green: 0.8549019694, blue: 0.8549019694, alpha: 1)))
 			}
 		}
 	}
@@ -61,16 +60,19 @@ struct PostFooterView: View {
 	var shareCount: Int
 	var likesCount: Int
 
+    @Environment(\.layoutDirection)
+    private var layoutDirection: LayoutDirection
+
 	private func formatCount(_ count: Int) -> String? {
 		count == 0 ? nil : numberFormatter.string(from: count as NSNumber)
 	}
 
 	var body: some View {
 		HStack {
-			PostFooterButton(image: Image(systemName: "bubble.fill"), text: formatCount(replyCount))
+            PostFooterButton(image: Icons.comment(layoutDirection), text: formatCount(replyCount))
 			Spacer()
-			PostFooterButton(image: Image(systemName: "megaphone.fill"), text: formatCount(shareCount))
-			PostFooterButton(image: Image(systemName: "heart.fill"), text: formatCount(likesCount))
+            PostFooterButton(image: Icons.share(), text: formatCount(shareCount))
+            PostFooterButton(image: Icons.like(), text: formatCount(likesCount))
 		}
 	}
 }
@@ -98,7 +100,7 @@ struct PostFooterButton: View {
 	PostView(
 		profilePicture: Image(.userProfilePicture),
 		name: "Boromir",
-		date: DateFormatter.localizedString(from: Date(), dateStyle: .medium, timeStyle: .none),
+		date: "five minutes ago",
 		text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
 		replyCount: 1,
 		shareCount: 0,

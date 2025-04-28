@@ -29,8 +29,20 @@ private struct OnChangePolyfillViewModifier<Value: Equatable>: ViewModifier {
 	}
 }
 
+private struct LeadingInsetListSeparatorViewModifier: ViewModifier {
+    var leadingInset: CGFloat
+    func body(content: Content) -> some View {
+        ZStack(alignment: .topLeading) {
+            // Separator is aligned at the first text block
+            Text(verbatim: "asd")
+                .offset(x: leadingInset)
+            content
+        }
+    }
+}
+
 extension View {
-	public func onChangePolyfill<V: Equatable>(
+	func onChangePolyfill<V: Equatable>(
 		of value: V,
 		initial: Bool = false,
 		_ action: @escaping () -> Void
@@ -42,7 +54,7 @@ extension View {
 		}
 	}
 
-	public func navigationBarBackground(_ color: Color) -> some View {
+	func navigationBarBackground(_ color: Color) -> some View {
 		if #available(iOS 16.0, *) {
 			return toolbarBackground(color, for: .navigationBar)
 				.toolbarBackground(.visible, for: .navigationBar)
@@ -77,4 +89,15 @@ extension View {
 			return self
 		}
 	}
+
+    func listSeparatorLeadingInset(_ leadingInset: CGFloat) -> some View {
+        // Starting from iOS 16 list row separators in SwiftUI are aligned by default
+        // to the leading text in the row, if text is present.
+        // It's different from the iOS 15 behavior, where the insets of the separator
+        // don't adjust to the content of the row.
+        if #available(iOS 16.0, *) {
+            return alignmentGuide(.listRowSeparatorLeading) { _ in leadingInset }
+        }
+        return self
+    }
 }
