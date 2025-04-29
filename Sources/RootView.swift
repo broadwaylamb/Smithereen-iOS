@@ -2,8 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct RootView: View {
-	var viewportWidth: CGFloat
-	@State private var offset: CGFloat = 0
+    @State private var offset: CGFloat = 0
 	@State private var menuShown: Bool = false
 	@State private var selectedItem: SideMenuItem = .news
 
@@ -18,7 +17,7 @@ struct RootView: View {
 		menuShown = false
 	}
 
-	private func showMenu() {
+    private func showMenu() {
 		offset = menuWidth
         previousOffset = offset
 		menuShown = true
@@ -28,79 +27,81 @@ struct RootView: View {
 		menuShown ? hideMenu() : showMenu()
 	}
 
-	private var alwaysShowMenu: Bool {
-		viewportWidth >= 1024
-	}
-
 	private var mainView: some View {
 		switch selectedItem {
 		case .news:
 			AnyView(FeedView())
 		default:
-			AnyView(Text("TODO").background(Color.background))
+            AnyView(Text("Coming soon!").font(.largeTitle))
 		}
 	}
 
 	var body: some View {
-		ZStack {
-			SideMenu(
-				userFullName: "Boromir",
-				userProfilePicture: Image(.userProfilePicture),
-				selectedItem: $selectedItem
-			)
-			NavigationView {
-				mainView
-					.navigationBarTitleDisplayMode(.inline)
-					.navigationTitle(selectedItem.localizedDescription)
-					.navigationBarBackground(.accent)
-					.toolbar {
-						ToolbarItem(placement: .navigationBarLeading) {
-							Button(action: toggleMenu) {
-								Image(systemName: "list.bullet")
-							}
-						}
-					}
-			}
-			.navigationViewStyle(.stack)
-			.shadow(radius: 7)
-			.offset(x: alwaysShowMenu ? menuWidth : offset)
-			.frame(maxWidth: alwaysShowMenu ? viewportWidth - menuWidth : viewportWidth)
-			.animation(.interactiveSpring(extraBounce: 0), value: offset)
-			.gesture(
-				DragGesture()
-					.onChanged { value in
-                        let newOffset = previousOffset + value.translation.width
-						if value.translation.width > 0 {
-                            if newOffset < menuWidth {
-                                offset = newOffset
-                            } else {
-                                // Resist dragging too far right
-                                let springOffset = newOffset - menuWidth
-                                offset = menuWidth + springOffset * 0.3
+        GeometryReader { proxy in
+            let viewportWidth = proxy.size.width
+            let alwaysShowMenu = viewportWidth >= 1024
+            return ZStack(alignment: .topLeading) {
+                SideMenu(
+                    userFullName: "Boromir",
+                    userProfilePicture: Image(.userProfilePicture),
+                    selectedItem: $selectedItem
+                )
+                NavigationView {
+                    mainView
+                        .navigationBarTitleDisplayMode(.inline)
+                        .navigationTitle(selectedItem.localizedDescription)
+                        .navigationBarBackground(.accent)
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                Button(action: toggleMenu) {
+                                    Image(systemName: "list.bullet")
+                                }
                             }
-						} else if menuShown {
-							offset = max(value.translation.width + menuWidth, 0)
-						}
+                        }
+                }
+                .navigationViewStyle(.stack)
+                .shadow(radius: 7)
+                .offset(x: alwaysShowMenu ? menuWidth : offset)
+                .frame(maxWidth: alwaysShowMenu ? viewportWidth - menuWidth : viewportWidth)
+                .animation(.interactiveSpring(extraBounce: 0), value: offset)
+                .gesture(
+                    DragGesture()
+                        .onChanged { value in
+                            let newOffset = previousOffset + value.translation.width
+                            if alwaysShowMenu {
+                                // Do nothing
+                            } else if value.translation.width > 0 {
+                                if newOffset < menuWidth {
+                                    offset = newOffset
+                                } else {
+                                    // Resist dragging too far right
+                                    let springOffset = newOffset - menuWidth
+                                    offset = menuWidth + springOffset * 0.3
+                                }
+                            } else if menuShown {
+                                offset = max(value.translation.width + menuWidth, 0)
+                            }
 
-					}
-					.onEnded { value in
-						if value.translation.width > dragThreshold {
-							showMenu()
-						} else if -value.translation.width > dragThreshold && menuShown {
-							hideMenu()
-						} else {
-							offset = menuShown ? menuWidth : 0
-                            previousOffset = offset
-						}
-					}
-			)
-			.onChangePolyfill(of: selectedItem, hideMenu)
-		}
+                        }
+                        .onEnded { value in
+                            if alwaysShowMenu {
+                                // Do nothing
+                            } else if value.translation.width > dragThreshold {
+                                showMenu()
+                            } else if -value.translation.width > dragThreshold && menuShown {
+                                hideMenu()
+                            } else {
+                                offset = menuShown ? menuWidth : 0
+                                previousOffset = offset
+                            }
+                        }
+                )
+                .onChangePolyfill(of: selectedItem, hideMenu)
+            }
+        }
 	}
 }
 
 #Preview {
-	GeometryReader { proxy in
-		RootView(viewportWidth: proxy.size.width)
-	}
+	RootView()
 }

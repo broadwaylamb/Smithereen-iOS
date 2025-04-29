@@ -54,7 +54,7 @@ extension View {
 		}
 	}
 
-	func navigationBarBackground(_ color: Color) -> some View {
+    func navigationBarBackground(_ color: Color) -> some View {
 		if #available(iOS 16.0, *) {
 			return toolbarBackground(color, for: .navigationBar)
 				.toolbarBackground(.visible, for: .navigationBar)
