@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		872205E32DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 872205E22DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig */; };
 		872205E52DB9754200B65CBA /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 872205E42DB9753F00B65CBA /* README.md */; };
+		874291B02DC1674400571022 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 874291AF2DC1674400571022 /* Prefire */; };
+		874291B92DC29C7F00571022 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 874291B82DC29C7F00571022 /* SnapshotTesting */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +68,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				874291B02DC1674400571022 /* Prefire in Frameworks */,
+				874291B92DC29C7F00571022 /* SnapshotTesting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,6 +141,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				874291B62DC299FF00571022 /* PBXTargetDependency */,
 				01E20ACC2DB7926F00CC0EBE /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
@@ -144,6 +149,8 @@
 			);
 			name = SmithereenTests;
 			packageProductDependencies = (
+				874291AF2DC1674400571022 /* Prefire */,
+				874291B82DC29C7F00571022 /* SnapshotTesting */,
 			);
 			productName = SmithereenTests;
 			productReference = 01E20ACA2DB7926F00CC0EBE /* SmithereenTests.xctest */;
@@ -187,6 +194,7 @@
 					};
 					01E20AC92DB7926F00CC0EBE = {
 						CreatedOnToolsVersion = 16.3;
+						LastSwiftMigration = 1630;
 						TestTargetID = 01E20AB92DB7926D00CC0EBE;
 					};
 					01E20AD32DB7926F00CC0EBE = {
@@ -204,6 +212,10 @@
 			);
 			mainGroup = 01E20AB12DB7926D00CC0EBE;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				874291AE2DC1674400571022 /* XCRemoteSwiftPackageReference "Prefire" */,
+				874291B72DC29C7F00571022 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 01E20ABB2DB7926D00CC0EBE /* Products */;
 			projectDirPath = "";
@@ -277,6 +289,10 @@
 			target = 01E20AB92DB7926D00CC0EBE /* Smithereen */;
 			targetProxy = 01E20AD52DB7926F00CC0EBE /* PBXContainerItemProxy */;
 		};
+		874291B62DC299FF00571022 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 874291B52DC299FF00571022 /* PrefireTestsPlugin */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -316,6 +332,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = N4X84VA3BB;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -382,6 +399,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = N4X84VA3BB;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -478,6 +496,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -487,6 +506,7 @@
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Smithereen.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Smithereen";
 			};
@@ -496,6 +516,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -581,6 +602,43 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		874291AE2DC1674400571022 /* XCRemoteSwiftPackageReference "Prefire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/BarredEwe/Prefire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.2;
+			};
+		};
+		874291B72DC29C7F00571022 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.18.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		874291AF2DC1674400571022 /* Prefire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 874291AE2DC1674400571022 /* XCRemoteSwiftPackageReference "Prefire" */;
+			productName = Prefire;
+		};
+		874291B52DC299FF00571022 /* PrefireTestsPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 874291AE2DC1674400571022 /* XCRemoteSwiftPackageReference "Prefire" */;
+			productName = "plugin:PrefireTestsPlugin";
+		};
+		874291B82DC29C7F00571022 /* SnapshotTesting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 874291B72DC29C7F00571022 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
+			productName = SnapshotTesting;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 01E20AB22DB7926D00CC0EBE /* Project object */;
 }
