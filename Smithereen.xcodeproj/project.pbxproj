@@ -21,19 +21,11 @@
 			remoteGlobalIDString = 01E20AB92DB7926D00CC0EBE;
 			remoteInfo = Smithereen;
 		};
-		01E20AD52DB7926F00CC0EBE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 01E20AB22DB7926D00CC0EBE /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 01E20AB92DB7926D00CC0EBE;
-			remoteInfo = Smithereen;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		01E20ABA2DB7926D00CC0EBE /* Smithereen.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Smithereen.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		01E20ACA2DB7926F00CC0EBE /* SmithereenTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SmithereenTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		01E20AD42DB7926F00CC0EBE /* SmithereenUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SmithereenUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		872205E22DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DefaultDeveloperSettings.xcconfig; sourceTree = "<group>"; };
 		872205E42DB9753F00B65CBA /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
 /* End PBXFileReference section */
@@ -47,11 +39,6 @@
 		01E20ACD2DB7926F00CC0EBE /* Tests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Tests;
-			sourceTree = "<group>";
-		};
-		01E20AD72DB7926F00CC0EBE /* UITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = UITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -73,13 +60,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		01E20AD12DB7926F00CC0EBE /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -89,7 +69,6 @@
 				872205E42DB9753F00B65CBA /* README.md */,
 				01E20ABC2DB7926D00CC0EBE /* Sources */,
 				01E20ACD2DB7926F00CC0EBE /* Tests */,
-				01E20AD72DB7926F00CC0EBE /* UITests */,
 				01E20ABB2DB7926D00CC0EBE /* Products */,
 				872205E22DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig */,
 			);
@@ -100,7 +79,6 @@
 			children = (
 				01E20ABA2DB7926D00CC0EBE /* Smithereen.app */,
 				01E20ACA2DB7926F00CC0EBE /* SmithereenTests.xctest */,
-				01E20AD42DB7926F00CC0EBE /* SmithereenUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -156,29 +134,6 @@
 			productReference = 01E20ACA2DB7926F00CC0EBE /* SmithereenTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		01E20AD32DB7926F00CC0EBE /* SmithereenUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 01E20AE42DB7926F00CC0EBE /* Build configuration list for PBXNativeTarget "SmithereenUITests" */;
-			buildPhases = (
-				01E20AD02DB7926F00CC0EBE /* Sources */,
-				01E20AD12DB7926F00CC0EBE /* Frameworks */,
-				01E20AD22DB7926F00CC0EBE /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				01E20AD62DB7926F00CC0EBE /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				01E20AD72DB7926F00CC0EBE /* UITests */,
-			);
-			name = SmithereenUITests;
-			packageProductDependencies = (
-			);
-			productName = SmithereenUITests;
-			productReference = 01E20AD42DB7926F00CC0EBE /* SmithereenUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -195,10 +150,6 @@
 					01E20AC92DB7926F00CC0EBE = {
 						CreatedOnToolsVersion = 16.3;
 						LastSwiftMigration = 1630;
-						TestTargetID = 01E20AB92DB7926D00CC0EBE;
-					};
-					01E20AD32DB7926F00CC0EBE = {
-						CreatedOnToolsVersion = 16.3;
 						TestTargetID = 01E20AB92DB7926D00CC0EBE;
 					};
 				};
@@ -223,7 +174,6 @@
 			targets = (
 				01E20AB92DB7926D00CC0EBE /* Smithereen */,
 				01E20AC92DB7926F00CC0EBE /* SmithereenTests */,
-				01E20AD32DB7926F00CC0EBE /* SmithereenUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -239,13 +189,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		01E20AC82DB7926F00CC0EBE /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		01E20AD22DB7926F00CC0EBE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -269,13 +212,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		01E20AD02DB7926F00CC0EBE /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -283,11 +219,6 @@
 			isa = PBXTargetDependency;
 			target = 01E20AB92DB7926D00CC0EBE /* Smithereen */;
 			targetProxy = 01E20ACB2DB7926F00CC0EBE /* PBXContainerItemProxy */;
-		};
-		01E20AD62DB7926F00CC0EBE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 01E20AB92DB7926D00CC0EBE /* Smithereen */;
-			targetProxy = 01E20AD52DB7926F00CC0EBE /* PBXContainerItemProxy */;
 		};
 		874291B62DC299FF00571022 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -530,38 +461,6 @@
 			};
 			name = Release;
 		};
-		01E20AE52DB7926F00CC0EBE /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = Smithereen;
-			};
-			name = Debug;
-		};
-		01E20AE62DB7926F00CC0EBE /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = Smithereen;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -588,15 +487,6 @@
 			buildConfigurations = (
 				01E20AE22DB7926F00CC0EBE /* Debug */,
 				01E20AE32DB7926F00CC0EBE /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		01E20AE42DB7926F00CC0EBE /* Build configuration list for PBXNativeTarget "SmithereenUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				01E20AE52DB7926F00CC0EBE /* Debug */,
-				01E20AE62DB7926F00CC0EBE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
