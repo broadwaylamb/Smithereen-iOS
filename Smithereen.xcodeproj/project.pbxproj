@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		872205E32DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 872205E22DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig */; };
 		872205E52DB9754200B65CBA /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 872205E42DB9753F00B65CBA /* README.md */; };
-		874291B02DC1674400571022 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 874291AF2DC1674400571022 /* Prefire */; };
 		874291B92DC29C7F00571022 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 874291B82DC29C7F00571022 /* SnapshotTesting */; };
+		87B0C99B2DC41A4200D5DB87 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 87B0C99A2DC41A4200D5DB87 /* Prefire */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,6 +28,9 @@
 		01E20ACA2DB7926F00CC0EBE /* SmithereenTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SmithereenTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		872205E22DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DefaultDeveloperSettings.xcconfig; sourceTree = "<group>"; };
 		872205E42DB9753F00B65CBA /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
+		874291BF2DC2ACD400571022 /* .prefire.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .prefire.yml; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.yaml; };
+		8742920B2DC2AF5A00571022 /* SwiftTestingPreviewTests.stencil */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = SwiftTestingPreviewTests.stencil; sourceTree = "<group>"; };
+		874292112DC2B30A00571022 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -55,7 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				874291B02DC1674400571022 /* Prefire in Frameworks */,
+				87B0C99B2DC41A4200D5DB87 /* Prefire in Frameworks */,
 				874291B92DC29C7F00571022 /* SnapshotTesting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -66,11 +69,14 @@
 		01E20AB12DB7926D00CC0EBE = {
 			isa = PBXGroup;
 			children = (
+				874291BF2DC2ACD400571022 /* .prefire.yml */,
 				872205E42DB9753F00B65CBA /* README.md */,
 				01E20ABC2DB7926D00CC0EBE /* Sources */,
 				01E20ACD2DB7926F00CC0EBE /* Tests */,
+				874292102DC2B27900571022 /* SmithereenTests */,
 				01E20ABB2DB7926D00CC0EBE /* Products */,
 				872205E22DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig */,
+				874291BC2DC2AB6900571022 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -81,6 +87,22 @@
 				01E20ACA2DB7926F00CC0EBE /* SmithereenTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		874291BC2DC2AB6900571022 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		874292102DC2B27900571022 /* SmithereenTests */ = {
+			isa = PBXGroup;
+			children = (
+				8742920B2DC2AF5A00571022 /* SwiftTestingPreviewTests.stencil */,
+				874292112DC2B30A00571022 /* README.md */,
+			);
+			path = SmithereenTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -119,7 +141,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				874291B62DC299FF00571022 /* PBXTargetDependency */,
+				87B0C98A2DC40CE800D5DB87 /* PBXTargetDependency */,
 				01E20ACC2DB7926F00CC0EBE /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
@@ -127,8 +149,8 @@
 			);
 			name = SmithereenTests;
 			packageProductDependencies = (
-				874291AF2DC1674400571022 /* Prefire */,
 				874291B82DC29C7F00571022 /* SnapshotTesting */,
+				87B0C99A2DC41A4200D5DB87 /* Prefire */,
 			);
 			productName = SmithereenTests;
 			productReference = 01E20ACA2DB7926F00CC0EBE /* SmithereenTests.xctest */;
@@ -164,8 +186,8 @@
 			mainGroup = 01E20AB12DB7926D00CC0EBE;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				874291AE2DC1674400571022 /* XCRemoteSwiftPackageReference "Prefire" */,
 				874291B72DC29C7F00571022 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
+				87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 01E20ABB2DB7926D00CC0EBE /* Products */;
@@ -220,9 +242,9 @@
 			target = 01E20AB92DB7926D00CC0EBE /* Smithereen */;
 			targetProxy = 01E20ACB2DB7926F00CC0EBE /* PBXContainerItemProxy */;
 		};
-		874291B62DC299FF00571022 /* PBXTargetDependency */ = {
+		87B0C98A2DC40CE800D5DB87 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 874291B52DC299FF00571022 /* PrefireTestsPlugin */;
+			productRef = 87B0C9892DC40CE800D5DB87 /* PrefireTestsPlugin */;
 		};
 /* End PBXTargetDependency section */
 
@@ -494,14 +516,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		874291AE2DC1674400571022 /* XCRemoteSwiftPackageReference "Prefire" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/BarredEwe/Prefire.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.2;
-			};
-		};
 		874291B72DC29C7F00571022 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing";
@@ -510,23 +524,31 @@
 				minimumVersion = 1.18.3;
 			};
 		};
+		87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:broadwaylamb/Prefire.git";
+			requirement = {
+				branch = "swift-testing";
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		874291AF2DC1674400571022 /* Prefire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 874291AE2DC1674400571022 /* XCRemoteSwiftPackageReference "Prefire" */;
-			productName = Prefire;
-		};
-		874291B52DC299FF00571022 /* PrefireTestsPlugin */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 874291AE2DC1674400571022 /* XCRemoteSwiftPackageReference "Prefire" */;
-			productName = "plugin:PrefireTestsPlugin";
-		};
 		874291B82DC29C7F00571022 /* SnapshotTesting */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 874291B72DC29C7F00571022 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
 			productName = SnapshotTesting;
+		};
+		87B0C9892DC40CE800D5DB87 /* PrefireTestsPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */;
+			productName = "plugin:PrefireTestsPlugin";
+		};
+		87B0C99A2DC41A4200D5DB87 /* Prefire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */;
+			productName = Prefire;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

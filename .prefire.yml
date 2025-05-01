@@ -1,0 +1,2 @@
+test_configuration:
+  - template_file_path: SwiftTestingPreviewTests.stencil

@@ -5,7 +5,7 @@ struct FeedView: View {
 		List {
 			ForEach(0..<10, id: \.self) { _ in
 				PostView(
-                    profilePicture: Image(.userProfilePicture),
+                    profilePicture: Image(.boromirProfilePicture),
 					name: "Boromir",
 					date: "five minutes ago",
 					text: "One does not simply walk into Mordor.",
@@ -31,4 +31,5 @@ struct FeedView: View {
 
 #Preview {
     FeedView()
+        .prefireIgnored()
 }

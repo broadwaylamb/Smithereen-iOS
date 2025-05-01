@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftData
 
 struct RootView: View {
     @State private var offset: CGFloat = 0
@@ -43,7 +42,7 @@ struct RootView: View {
             return ZStack(alignment: .topLeading) {
                 SideMenu(
                     userFullName: "Boromir",
-                    userProfilePicture: Image(.userProfilePicture),
+                    userProfilePicture: Image(.boromirProfilePicture),
                     selectedItem: $selectedItem
                 )
                 NavigationView {
@@ -104,4 +103,5 @@ struct RootView: View {
 
 #Preview {
 	RootView()
+        .prefireIgnored()
 }

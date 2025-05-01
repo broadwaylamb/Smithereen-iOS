@@ -113,11 +113,19 @@ struct SideMenu: View {
 
 
 @available(iOS 17.0, *)
-#Preview {
+#Preview("Interactive side menu") {
 	@Previewable @State var selectedItem: SideMenuItem = .news
 	SideMenu(
 		userFullName: "Boromir",
-		userProfilePicture: Image(.userProfilePicture),
+		userProfilePicture: Image(.boromirProfilePicture),
 		selectedItem: $selectedItem,
 	)
+}
+
+#Preview("Non-interactive side menu") {
+    SideMenu(
+        userFullName: "Boromir",
+        userProfilePicture: Image(.boromirProfilePicture),
+        selectedItem: .constant(.news)
+    )
 }

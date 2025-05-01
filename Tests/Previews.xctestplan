@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "B01862F8-E220-480D-937D-61A6C8DE52A5",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "skippedTests" : {
+        "suites" : [
+          {
+            "name" : "SmithereenTests"
+          }
+        ]
+      },
+      "target" : {
+        "containerPath" : "container:Smithereen.xcodeproj",
+        "identifier" : "01E20AC92DB7926F00CC0EBE",
+        "name" : "SmithereenTests"
+      }
+    }
+  ],
+  "version" : 2
+}
