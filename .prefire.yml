@@ -1,2 +1,4 @@
 test_configuration:
+  - target: Smithereen
+  - test_target_path: ${PROJECT_DIR}/Tests
   - template_file_path: SwiftTestingPreviewTests.stencil

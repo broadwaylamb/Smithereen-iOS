@@ -29,9 +29,17 @@
 		872205E22DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DefaultDeveloperSettings.xcconfig; sourceTree = "<group>"; };
 		872205E42DB9753F00B65CBA /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
 		874291BF2DC2ACD400571022 /* .prefire.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .prefire.yml; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.yaml; };
-		8742920B2DC2AF5A00571022 /* SwiftTestingPreviewTests.stencil */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = SwiftTestingPreviewTests.stencil; sourceTree = "<group>"; };
-		874292112DC2B30A00571022 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		878311A32DC561160079CE05 /* Exceptions for "Tests" folder in "SmithereenTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SwiftTestingPreviewTests.stencil,
+			);
+			target = 01E20AC92DB7926F00CC0EBE /* SmithereenTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		01E20ABC2DB7926D00CC0EBE /* Sources */ = {
@@ -41,6 +49,12 @@
 		};
 		01E20ACD2DB7926F00CC0EBE /* Tests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				878311A32DC561160079CE05 /* Exceptions for "Tests" folder in "SmithereenTests" target */,
+			);
+			explicitFileTypes = {
+				SwiftTestingPreviewTests.stencil = sourcecode.swift;
+			};
 			path = Tests;
 			sourceTree = "<group>";
 		};
@@ -73,7 +87,6 @@
 				872205E42DB9753F00B65CBA /* README.md */,
 				01E20ABC2DB7926D00CC0EBE /* Sources */,
 				01E20ACD2DB7926F00CC0EBE /* Tests */,
-				874292102DC2B27900571022 /* SmithereenTests */,
 				01E20ABB2DB7926D00CC0EBE /* Products */,
 				872205E22DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig */,
 				874291BC2DC2AB6900571022 /* Frameworks */,
@@ -94,15 +107,6 @@
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		874292102DC2B27900571022 /* SmithereenTests */ = {
-			isa = PBXGroup;
-			children = (
-				8742920B2DC2AF5A00571022 /* SwiftTestingPreviewTests.stencil */,
-				874292112DC2B30A00571022 /* README.md */,
-			);
-			path = SmithereenTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
