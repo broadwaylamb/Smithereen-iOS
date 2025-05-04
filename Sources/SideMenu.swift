@@ -120,6 +120,7 @@ struct SideMenu: View {
 		userProfilePicture: Image(.boromirProfilePicture),
 		selectedItem: $selectedItem,
 	)
+    .prefireIgnored()
 }
 
 #Preview("Non-interactive side menu") {
