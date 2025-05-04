@@ -36,6 +36,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				SwiftTestingPreviewTests.stencil,
+				XCTestPreviewTests.stencil,
 			);
 			target = 01E20AC92DB7926F00CC0EBE /* SmithereenTests */;
 		};
@@ -54,6 +55,7 @@
 			);
 			explicitFileTypes = {
 				SwiftTestingPreviewTests.stencil = sourcecode.swift;
+				XCTestPreviewTests.stencil = sourcecode.swift;
 			};
 			path = Tests;
 			sourceTree = "<group>";

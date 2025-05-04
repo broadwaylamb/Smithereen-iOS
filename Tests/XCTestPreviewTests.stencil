@@ -1,8 +1,7 @@
-{# Adapted for SwiftTesting from https://github.com/BarredEwe/Prefire/blob/a83c9f6074f4d5a5ec194babb26d1e1e30288f6a/Templates/PreviewTests.stencil #}
 // swiftlint:disable all
 // swiftformat:disable all
 
-import Testing
+import XCTest
 import SwiftUI
 import Prefire
 {% for import in argument.imports %}
@@ -20,22 +19,22 @@ import AccessibilitySnapshot
 #endif
 
 @MainActor
-@Suite(.tags(.previews))
-struct PreviewTests {
+class PreviewTests: XCTestCase {
     var simulatorDevice: String?{% if argument.simulatorDevice %} = "{{ argument.simulatorDevice|default:nil }}"{% endif %}
     var requiredOSVersion: Int?{% if argument.simulatorOSVersion %} = {{ argument.simulatorOSVersion }}{% endif %}
     let snapshotDevices: [String]{% if argument.snapshotDevices %} = {{ argument.snapshotDevices|split:"|" }}{% else %} = []{% endif %}
     let deviceConfig: DeviceConfig = ViewImageConfig.iPhoneX.deviceConfig
     var fileForSnapshots: StaticString { .init(stringLiteral: "{{ argument.file }}") }
 
-    init() async throws {
+    @MainActor override func setUp() async throws {
+        try await super.setUp()
+
         checkEnvironments()
         UIView.setAnimationsEnabled(false)
     }
 
     {% if argument.previewsMacrosDict %}
     {% for macroModel in argument.previewsMacrosDict %}
-    @Test("{{ macroModel.displayName }}")
     func test_{{ macroModel.componentTestName }}_Preview() {
         {% if macroModel.properties %}
         struct PreviewWrapper{{ macroModel.componentTestName }}: SwiftUI.View {

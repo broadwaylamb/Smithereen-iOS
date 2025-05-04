@@ -1,4 +1,5 @@
 import Testing
+import XCTest
 import SnapshotTesting
 import SwiftUI
 import Prefire
@@ -6,10 +7,19 @@ import Prefire
 extension PreviewTests {
     func assertSnapshots<Content: View>(
         for prefireSnapshot: PrefireSnapshot<Content>,
-        sourceLocation: SourceLocation = #_sourceLocation,
+        fileID: StaticString = #fileID,
+        file filePath: StaticString = #filePath,
+        line: UInt = #line,
+        column: UInt = #column,
     ) {
         if snapshotDevices.isEmpty {
-            assertSnapshot(for: prefireSnapshot, sourceLocation: sourceLocation)
+            assertSnapshot(
+                for: prefireSnapshot,
+                fileID: fileID,
+                file: filePath,
+                line: line,
+                column: column,
+            )
             return
         }
 
@@ -28,13 +38,22 @@ extension PreviewTests {
             // Ignore specific device display scale
             snapshot.traits = UITraitCollection(displayScale: 2.0)
 
-            assertSnapshot(for: snapshot, sourceLocation: sourceLocation)
+            assertSnapshot(
+                for: snapshot,
+                fileID: fileID,
+                file: filePath,
+                line: line,
+                column: column,
+            )
         }
     }
 
     func assertSnapshot<Content: View>(
         for prefireSnapshot: PrefireSnapshot<Content>,
-        sourceLocation: SourceLocation = #_sourceLocation,
+        fileID: StaticString = #fileID,
+        file filePath: StaticString = #filePath,
+        line: UInt = #line,
+        column: UInt = #column,
     ) {
         let (previewView, preferences) = prefireSnapshot.loadViewWithPreferences()
 
@@ -53,7 +72,13 @@ extension PreviewTests {
             file: fileForSnapshots,
             testName: prefireSnapshot.name,
         ) {
-            Issue.record(Comment(rawValue: failure), sourceLocation: sourceLocation)
+            recordIssue(
+                failure,
+                fileID: fileID,
+                filePath: filePath,
+                line: line,
+                column: column
+            )
         }
 
         #if canImport(AccessibilitySnapshot)
@@ -67,7 +92,13 @@ extension PreviewTests {
             file: fileForSnapshots,
             testName: prefireSnapshot.name + ".accessibility",
         ) {
-            Issue.record(Comment(rawValue: failure), sourceLocation: sourceLocation)
+            recordIssue(
+                failure,
+                fileID: fileID,
+                filePath: filePath,
+                line: line,
+                column: column
+            )
         }
         #endif
     }
@@ -85,6 +116,28 @@ extension PreviewTests {
             guard osVersion.majorVersion == requiredOSVersion else {
                 fatalError("Switch to iOS \(requiredOSVersion) for these tests. (You are using \(osVersion))")
             }
+        }
+    }
+
+    private func recordIssue(
+      _ message: @autoclosure () -> String,
+      fileID: StaticString,
+      filePath: StaticString,
+      line: UInt,
+      column: UInt
+    ) {
+        if Test.current != nil {
+          Issue.record(
+            Comment(rawValue: message()),
+            sourceLocation: SourceLocation(
+              fileID: fileID.description,
+              filePath: filePath.description,
+              line: Int(line),
+              column: Int(column)
+            )
+          )
+        } else {
+          XCTFail(message(), file: filePath, line: line)
         }
     }
 }
