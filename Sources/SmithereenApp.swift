@@ -5,7 +5,7 @@ import SwiftData
 struct SmithereenApp: App {
     var body: some Scene {
         WindowGroup {
-            RootView()
+            AuthView()
         }
     }
 }

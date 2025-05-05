@@ -10,6 +10,7 @@
 		872205E32DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 872205E22DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig */; };
 		872205E52DB9754200B65CBA /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 872205E42DB9753F00B65CBA /* README.md */; };
 		874291B92DC29C7F00571022 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 874291B82DC29C7F00571022 /* SnapshotTesting */; };
+		876659422DC8E76E00D62CCA /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 876659412DC8E76E00D62CCA /* SwiftUIIntrospect */; };
 		87B0C99B2DC41A4200D5DB87 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 87B0C99A2DC41A4200D5DB87 /* Prefire */; };
 /* End PBXBuildFile section */
 
@@ -67,6 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				876659422DC8E76E00D62CCA /* SwiftUIIntrospect in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -131,6 +133,7 @@
 			);
 			name = Smithereen;
 			packageProductDependencies = (
+				876659412DC8E76E00D62CCA /* SwiftUIIntrospect */,
 			);
 			productName = Smithereen;
 			productReference = 01E20ABA2DB7926D00CC0EBE /* Smithereen.app */;
@@ -194,6 +197,7 @@
 			packageReferences = (
 				874291B72DC29C7F00571022 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
 				87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */,
+				876659402DC8E76E00D62CCA /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 01E20ABB2DB7926D00CC0EBE /* Products */;
@@ -530,6 +534,14 @@
 				minimumVersion = 1.18.3;
 			};
 		};
+		876659402DC8E76E00D62CCA /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/swiftui-introspect";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.0;
+			};
+		};
 		87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "git@github.com:broadwaylamb/Prefire.git";
@@ -545,6 +557,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 874291B72DC29C7F00571022 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
 			productName = SnapshotTesting;
+		};
+		876659412DC8E76E00D62CCA /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 876659402DC8E76E00D62CCA /* XCRemoteSwiftPackageReference "swiftui-introspect" */;
+			productName = SwiftUIIntrospect;
 		};
 		87B0C9892DC40CE800D5DB87 /* PrefireTestsPlugin */ = {
 			isa = XCSwiftPackageProductDependency;
