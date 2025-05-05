@@ -5,9 +5,7 @@ import SwiftData
 struct SmithereenApp: App {
     var body: some Scene {
         WindowGroup {
-			GeometryReader { proxy in
-				RootView()
-			}
+            RootView()
         }
     }
 }
