@@ -102,6 +102,6 @@ struct RootView: View {
 }
 
 #Preview {
-	RootView()
+    RootView()
         .prefireIgnored()
 }
