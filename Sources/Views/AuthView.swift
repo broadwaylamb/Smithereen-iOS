@@ -89,52 +89,57 @@ struct AuthView: View {
     }
 
     var body: some View {
-        VStack {
-            Text("Smithereen")
-                .font(.system(.largeTitle, design: .serif)) // TODO: Use a more appropriate font
-                .foregroundStyle(Color.white)
-                .padding(EdgeInsets(top: 100, leading: 0, bottom: 0, trailing: 0))
-            Form {
-                Section {
-                    InputFields(
-                        instanceAddress: $instanceAddress,
-                        email: $email,
-                        password: $password,
-                    )
-                }
-                Section {
-                    Button {
-                        logIn()
-                    } label: {
-                        Text("Log in")
-                            .frame(maxWidth: .infinity, alignment: .center)
-                    }
-                    .disabled(instanceURL == nil)
-                }
-                Section {
-                    Button {
-
-                    } label: {
-                        Text("Forgot password?")
-                            .frame(maxWidth: .infinity, alignment: .center)
-                    }
-                    .buttonStyle(.plain)
+        HStack(spacing: 0) {
+            Spacer(minLength: 0)
+            VStack {
+                Text("Smithereen")
+                    .font(.system(.largeTitle, design: .serif)) // TODO: Use a more appropriate font
                     .foregroundStyle(Color.white)
-                    .listRowBackground(Color.clear)
+                    .padding(EdgeInsets(top: 100, leading: 0, bottom: 0, trailing: 0))
+                Form {
+                    Section {
+                        InputFields(
+                            instanceAddress: $instanceAddress,
+                            email: $email,
+                            password: $password,
+                        )
+                    }
+                    Section {
+                        Button {
+                            logIn()
+                        } label: {
+                            Text("Log in")
+                                .frame(maxWidth: .infinity, alignment: .center)
+                        }
+                        .disabled(instanceURL == nil)
+                    }
+                    Section {
+                        Button {
+                            
+                        } label: {
+                            Text("Forgot password?")
+                                .frame(maxWidth: .infinity, alignment: .center)
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(Color.white)
+                        .listRowBackground(Color.clear)
+                    }
                 }
+                .environment(\.colorScheme, .light)
+                .onSubmit(logIn)
+                .listSectionSpacingPolyfill(8)
+                .scrollDisabledPolyfill(true)
+                .scrollContentBackgroundPolyfill(.hidden)
             }
-            .environment(\.colorScheme, .light)
-            .onSubmit(logIn)
-            .listSectionSpacingPolyfill(8)
-            .scrollDisabledPolyfill(true)
-            .scrollContentBackgroundPolyfill(.hidden)
+            .preferredColorScheme(.dark) // Make sure the status bar text color is white
+            .alert(isPresented: errorAlertShown, error: error) { 
+                Button("OK", action: {})
+            }
+            .frame(maxWidth: 440)
+            Spacer(minLength: 0)
         }
         .background(alignment: .center) {
             Color.accent.ignoresSafeArea()
-        }
-        .preferredColorScheme(.dark) // Make sure the status bar text color is white
-        .alert(isPresented: errorAlertShown, error: error) { 
-            Button("OK", action: {})
         }
     }
 }
