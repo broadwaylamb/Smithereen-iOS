@@ -62,6 +62,7 @@ extension PreviewTests {
             as: .wait(
                 for: preferences.delay,
                 on: .image(
+                    drawHierarchyInKeyWindow: true,
                     precision: preferences.precision,
                     perceptualPrecision: preferences.perceptualPrecision,
                     layout: prefireSnapshot.isScreen ? .device(config: prefireSnapshot.device.imageConfig) : .sizeThatFits,

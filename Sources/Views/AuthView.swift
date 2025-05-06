@@ -1,4 +1,5 @@
 import SwiftUI
+import Prefire
 
 private struct InputFields: View {
     @Binding var instanceAddress: String
@@ -146,4 +147,5 @@ struct AuthView: View {
 
 #Preview("Authentication") {
     AuthView(api: DummyAuthenticationService())
+        .defaultAppStorage(UserDefaults())
 }

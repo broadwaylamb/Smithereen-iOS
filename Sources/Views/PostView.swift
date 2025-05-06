@@ -1,4 +1,5 @@
 import SwiftUI
+import Prefire
 
 struct PostView: View {
 	var profilePicture: Image
@@ -16,6 +17,7 @@ struct PostView: View {
             PostFooterView(replyCount: replyCount, shareCount: shareCount, likesCount: likesCount)
         }
         .padding(EdgeInsets(top: 7, leading: 4, bottom: 11, trailing: 4))
+        .colorScheme(.light)
     }
 }
 
@@ -96,7 +98,8 @@ struct PostFooterButton: View {
 	}
 }
 
-#Preview("Text-only post") {
+@available(iOS 17.0, *)
+#Preview("Text-only post", traits: .sizeThatFitsLayout) {
     PostView(
         profilePicture: Image(.boromirProfilePicture),
         name: "Boromir",
@@ -106,4 +109,5 @@ struct PostFooterButton: View {
         shareCount: 0,
         likesCount: 10,
     )
+    .background { Color.white }
 }

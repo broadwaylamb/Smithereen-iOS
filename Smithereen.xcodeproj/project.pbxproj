@@ -12,6 +12,7 @@
 		874291B92DC29C7F00571022 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 874291B82DC29C7F00571022 /* SnapshotTesting */; };
 		876659422DC8E76E00D62CCA /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 876659412DC8E76E00D62CCA /* SwiftUIIntrospect */; };
 		876659742DC920E200D62CCA /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 876659732DC920E200D62CCA /* SwiftSoup */; };
+		8792C5C62DCA9F1200C58B79 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 8792C5C52DCA9F1200C58B79 /* Prefire */; };
 		87B0C99B2DC41A4200D5DB87 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 87B0C99A2DC41A4200D5DB87 /* Prefire */; };
 /* End PBXBuildFile section */
 
@@ -69,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8792C5C62DCA9F1200C58B79 /* Prefire in Frameworks */,
 				876659422DC8E76E00D62CCA /* SwiftUIIntrospect in Frameworks */,
 				876659742DC920E200D62CCA /* SwiftSoup in Frameworks */,
 			);
@@ -137,6 +139,7 @@
 			packageProductDependencies = (
 				876659412DC8E76E00D62CCA /* SwiftUIIntrospect */,
 				876659732DC920E200D62CCA /* SwiftSoup */,
+				8792C5C52DCA9F1200C58B79 /* Prefire */,
 			);
 			productName = Smithereen;
 			productReference = 01E20ABA2DB7926D00CC0EBE /* Smithereen.app */;
@@ -579,6 +582,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 876659722DC920E200D62CCA /* XCRemoteSwiftPackageReference "SwiftSoup" */;
 			productName = SwiftSoup;
+		};
+		8792C5C52DCA9F1200C58B79 /* Prefire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */;
+			productName = Prefire;
 		};
 		87B0C9892DC40CE800D5DB87 /* PrefireTestsPlugin */ = {
 			isa = XCSwiftPackageProductDependency;
