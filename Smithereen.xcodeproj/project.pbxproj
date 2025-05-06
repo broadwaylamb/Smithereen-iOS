@@ -559,7 +559,7 @@
 		};
 		87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:broadwaylamb/Prefire.git";
+			repositoryURL = "https://github.com/broadwaylamb/Prefire.git";
 			requirement = {
 				branch = "swift-testing";
 				kind = branch;

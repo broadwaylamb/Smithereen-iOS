@@ -1,10 +1,10 @@
 {
-  "originHash" : "cd14c6a4cb98096e715c8f507344bde47115095f34be92d49e7829892328e68b",
+  "originHash" : "857f5d0d31abb4f120bf9fdac767eb8f9bd16f2866c6f61622bfbfb534ebc55d",
   "pins" : [
     {
       "identity" : "prefire",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:broadwaylamb/Prefire.git",
+      "location" : "https://github.com/broadwaylamb/Prefire.git",
       "state" : {
         "branch" : "swift-testing",
         "revision" : "b7de606e428bfe47dbc98c4132d5399b3b9cd269"
