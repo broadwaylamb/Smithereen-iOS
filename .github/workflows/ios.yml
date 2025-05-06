@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Build
         run: |
-          xcodebuild build-for-testing -scheme Smithereen -project Smithereen.xcodeproj -destination "platform=iOS Simulator,name=iPhone 16 Pro" -arch x86_64
+          xcodebuild build-for-testing -scheme Smithereen -project Smithereen.xcodeproj -destination "platform=iOS Simulator,name=iPhone 16 Pro,arch=x86_64"
       - name: Test
         run: |
-          xcodebuild test-without-building -scheme Smithereen -project Smithereen.xcodeproj -destination "platform=iOS Simulator,name=iPhone 16 Pro" -arch x86_64
+          xcodebuild test-without-building -scheme Smithereen -project Smithereen.xcodeproj -destination "platform=iOS Simulator,name=iPhone 16 Pro,arch=x86_64"
