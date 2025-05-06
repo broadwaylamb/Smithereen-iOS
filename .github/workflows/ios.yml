@@ -17,6 +17,8 @@ jobs:
           xcode-version: latest-stable
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Skip package plugin fingerprint validation
+        run: defaults write com.apple.dt.Xcode IDESkipPackagePluginFingerprintValidatation -bool YES
       - name: Build
         run: |
           xcodebuild build-for-testing -scheme Smithereen -project Smithereen.xcodeproj -destination "platform=iOS Simulator,name=iPhone 16 Pro,arch=x86_64"
