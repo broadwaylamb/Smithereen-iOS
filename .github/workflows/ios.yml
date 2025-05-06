@@ -1,0 +1,22 @@
+name: iOS starter workflow
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build and Test default scheme using any available iPhone simulator
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: |
+          xcodebuild build-for-testing -scheme Smithereen -project Smithereen.xcodeproj -destination "platform=iOS Simulator,name=iPhone 16 Pro"
+      - name: Test
+        run: |
+          xcodebuild test-without-building -scheme Smithereen -project Smithereen.xcodeproj -destination "platform=iOS Simulator,name=iPhone 16 Pro"
