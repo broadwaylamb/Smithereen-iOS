@@ -97,6 +97,7 @@ struct RootView: View {
                         }
                 )
                 .onChangePolyfill(of: selectedItem, hideMenu)
+                .preferredColorScheme(.dark)
             }
         }
 	}

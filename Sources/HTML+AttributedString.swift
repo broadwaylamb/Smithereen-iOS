@@ -108,7 +108,7 @@ private class HtmlRenderer: NodeVisitor {
 
     private func normalisedWhitespace(_ string: String) -> String {
         var accum = String()
-        var reachedNonWhite: Bool  = false
+        var reachedNonWhite: Bool = false
 
         for c in string {
             if (c.isWhitespace) {
