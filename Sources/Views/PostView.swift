@@ -1,8 +1,8 @@
 import SwiftUI
 import Prefire
 
-struct PostView: View {
-	var profilePicture: Image
+struct PostView<ProfilePicture: View>: View {
+	var profilePicture: ImageOrAsyncImage<ProfilePicture>
 	var name: String
 	var date: String
 	var text: AttributedString?
@@ -23,8 +23,8 @@ struct PostView: View {
     }
 }
 
-struct PostHeaderView: View {
-	var profilePicture: Image
+private struct PostHeaderView<ProfilePicture: View>: View {
+	var profilePicture: ImageOrAsyncImage<ProfilePicture>
 	var name: String
 	var date: String
 
@@ -59,7 +59,7 @@ private let numberFormatter: NumberFormatter = {
 	return formatter
 }()
 
-struct PostFooterView: View {
+private struct PostFooterView: View {
 	var replyCount: Int
 	var shareCount: Int
 	var likesCount: Int
@@ -102,8 +102,8 @@ struct PostFooterButton: View {
 
 @available(iOS 17.0, *)
 #Preview("Text-only post", traits: .sizeThatFitsLayout) {
-    PostView(
-        profilePicture: Image(.boromirProfilePicture),
+    PostView<Never>(
+        profilePicture: .image(Image(.boromirProfilePicture)),
         name: "Boromir",
         date: "five minutes ago",
         text: "One does not simply walk into Mordor.",
@@ -117,8 +117,8 @@ struct PostFooterButton: View {
 
 @available(iOS 17.0, *)
 #Preview("Post with formatting", traits: .sizeThatFitsLayout) {
-    PostView(
-        profilePicture: Image(.boromirProfilePicture),
+    PostView<Never>(
+        profilePicture: .image(Image(.boromirProfilePicture)),
         name: "Boromir",
         date: "five minutes ago",
         text: renderHTML(

@@ -20,7 +20,14 @@ struct FeedView: View {
     var body: some View {
         List(posts) { post in
             PostView(
-                profilePicture: Image(.boromirProfilePicture),
+                profilePicture: .asyncImage(
+                    AsyncImage(
+                        url: post.authorProfilePictureURL,
+                        scale: 2.0,
+                        content: { $0.resizable() },
+                        placeholder: { Color.gray },
+                    )
+                ),
                 name: post.authorName,
                 date: post.date,
                 text: post.text,

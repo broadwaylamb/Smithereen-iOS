@@ -154,6 +154,28 @@ class HTMLScrapingApi: AuthenticationService, FeedService {
         }
     }
 
+    private func parsePicture(_ element: Element) -> URL? {
+        do {
+            for resource in try element.select("source") {
+                if try resource.attr("type") != "image/jpeg" {
+                    continue
+                }
+                let srcsets = try resource.attr("srcset")
+                    .split(separator: ",")
+                    .map { $0.trimmingCharacters(in: .whitespaces) }
+
+                for srcset in srcsets {
+                    if srcset.hasSuffix(" 2x") {
+                        return URL(string: String(srcset.prefix(srcset.count - 3)))
+                    }
+                }
+            }
+        } catch {
+            // If there is an error, we ignonre it and return nil
+        }
+        return nil
+    }
+
     func loadFeed(start: Int?, offset: Int?) async throws -> [Post] {
         let request = createRequest(instance: instance!, "GET", "/feed")
         let (document, statusCode) = try await sendRequest(request)
@@ -178,6 +200,9 @@ class HTMLScrapingApi: AuthenticationService, FeedService {
                         .flatMap(URL.init(string:))
                 let date = try postLink.text(trimAndNormaliseWhitespace: true)
 
+                let profilePicture = (try? post.select("span.avaHasImage picture").first())
+                    .flatMap(parsePicture)
+
                 func actionCount(_ actionName: String) throws -> Int {
                     try (
                         post
@@ -197,7 +222,7 @@ class HTMLScrapingApi: AuthenticationService, FeedService {
                         localAuthorID: authorURL,
                         authorName: authorName,
                         date: date,
-                        authorProfilePictureURL: nil, // TODO
+                        authorProfilePictureURL: profilePicture,
 						text: text.map(renderHTML),
                         likeCount: likeCount,
                         replyCount: commentCount,
