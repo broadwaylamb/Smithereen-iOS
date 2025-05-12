@@ -52,6 +52,7 @@ struct FeedView: View {
         .alert(isPresented: errorAlertShown, error: error) {
             Button("OK", action: {})
         }
+        .background(Color.white)
         .colorScheme(.light)
     }
 }
