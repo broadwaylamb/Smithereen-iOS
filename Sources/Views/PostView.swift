@@ -5,7 +5,7 @@ struct PostView: View {
 	var profilePicture: Image
 	var name: String
 	var date: String
-	var text: String?
+	var text: AttributedString?
 	var replyCount: Int
 	var shareCount: Int
 	var likesCount: Int
@@ -14,18 +14,7 @@ struct PostView: View {
         VStack(alignment: .leading) {
             PostHeaderView(profilePicture: profilePicture, name: name, date: date)
             if let text {
-                Text(
-                    AttributedString(
-                        (try? NSAttributedString(
-                            data: Data(text.utf8),
-                            options: [
-                                .documentType : NSAttributedString.DocumentType.html,
-                                .characterEncoding : NSNumber(value: String.Encoding.utf8.rawValue),
-                            ],
-                            documentAttributes: nil
-                        )) ?? NSAttributedString("Could not parse HTML")
-                    )
-                )
+				Text(text)
             }
             PostFooterView(replyCount: replyCount, shareCount: shareCount, likesCount: likesCount)
         }
@@ -123,4 +112,67 @@ struct PostFooterButton: View {
         likesCount: 10,
     )
     .background { Color.white }
+    .snapshot(precision: 0.98)
 }
+
+@available(iOS 17.0, *)
+#Preview("Post with formatting", traits: .sizeThatFitsLayout) {
+    PostView(
+        profilePicture: Image(.boromirProfilePicture),
+        name: "Boromir",
+        date: "five minutes ago",
+        text: renderHTML(
+            """
+            <p>
+             First
+            paragraph
+            </p>
+            <p>
+            Multiple
+            <br/>
+             lines
+            <br/>
+            in one pararaph
+            </p>
+            <p>
+             <b> Bold</b>, <i> italic</i>, <b><i>bold and italic</i></b>,
+            <u>underline</u>,
+            <s>strikethrough</s>, 
+            <code>inline code</code>, <a href="http://example.com">link</a>.
+            </p>
+            <pre>
+            Code block
+            <pre>    nested code block</pre>
+            <b>bold</b> — &lt;b&gt;not bold!&lt;/b&gt;
+                         S
+                         A
+                        LUT
+                         M
+                        O N
+                        D  E
+                        DONT
+                       E SUIS
+                       LA LAN
+                      G U E  É
+                     L O Q U E N
+                    TE      QUESA
+                   B  O  U  C  H  E
+                  O        P A R I S
+                 T I R E   ET   TIRERA
+                T O U             JOURS
+               AUX                  A  L
+             LEM                      ANDS
+            </pre>
+            <blockquote>
+            Quote
+            </blockquote>
+            """
+        ),
+        replyCount: 0,
+        shareCount: 0,
+        likesCount: 0,
+    )
+    .background { Color.white }
+    .snapshot(precision: 0.98)
+}
+

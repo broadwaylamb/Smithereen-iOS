@@ -7,6 +7,12 @@ class Box<T> {
     }
 }
 
+extension Box: Equatable where T: Equatable {
+	static func == (lhs: Box<T>, rhs: Box<T>) -> Bool {
+		lhs.value == rhs.value
+	}
+}
+
 struct AnyLocalizedError: LocalizedError {
     let error: Error
     var errorDescription: String? {

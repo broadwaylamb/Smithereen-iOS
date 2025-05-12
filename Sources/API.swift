@@ -168,7 +168,7 @@ class HTMLScrapingApi: AuthenticationService, FeedService {
                     continue
                 }
                 let authorName = try authorNameLink.text(trimAndNormaliseWhitespace: true)
-                let text = try post.select(".postContent").first()?.html()
+                let text = try post.select(".postContent").first()
                 guard let postLink = try post.select("a.postLink").first(),
                       let localPostURL = try URL(string: postLink.attr("href")) else {
                     continue
@@ -198,7 +198,7 @@ class HTMLScrapingApi: AuthenticationService, FeedService {
                         authorName: authorName,
                         date: date,
                         authorProfilePictureURL: nil, // TODO
-                        text: text,
+						text: text.map(renderHTML),
                         likeCount: likeCount,
                         replyCount: commentCount,
                         repostCount: repostCount,
