@@ -3,12 +3,12 @@ import SwiftData
 
 @main
 struct SmithereenApp: App {
-    @StateObject private var api = HTMLScrapingAuthenticationService()
+    @ObservedObject var api = HTMLScrapingApi()
 
     var body: some Scene {
         WindowGroup {
             if api.isAuthenticated {
-                RootView()
+                RootView(feedService: api)
             } else {
                 AuthView(api: api)
             }

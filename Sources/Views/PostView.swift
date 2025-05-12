@@ -5,7 +5,7 @@ struct PostView: View {
 	var profilePicture: Image
 	var name: String
 	var date: String
-	var text: String
+	var text: String?
 	var replyCount: Int
 	var shareCount: Int
 	var likesCount: Int
@@ -13,7 +13,20 @@ struct PostView: View {
     var body: some View {
         VStack(alignment: .leading) {
             PostHeaderView(profilePicture: profilePicture, name: name, date: date)
-            Text(verbatim: text)
+            if let text {
+                Text(
+                    AttributedString(
+                        (try? NSAttributedString(
+                            data: Data(text.utf8),
+                            options: [
+                                .documentType : NSAttributedString.DocumentType.html,
+                                .characterEncoding : NSNumber(value: String.Encoding.utf8.rawValue),
+                            ],
+                            documentAttributes: nil
+                        )) ?? NSAttributedString("Could not parse HTML")
+                    )
+                )
+            }
             PostFooterView(replyCount: replyCount, shareCount: shareCount, likesCount: likesCount)
         }
         .padding(EdgeInsets(top: 7, leading: 4, bottom: 11, trailing: 4))

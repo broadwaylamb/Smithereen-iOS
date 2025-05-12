@@ -2,22 +2,35 @@ import SwiftUI
 import Prefire
 
 struct FeedView: View {
+    let feedService: any FeedService
+    @State private var posts: [Post] = []
+    @State private var error: AnyLocalizedError?
+
+    private var errorAlertShown: Binding<Bool> {
+        Binding {
+            error != nil
+        } set: {
+            if !$0 {
+                error = nil
+            }
+        }
+
+    }
+
     var body: some View {
-		List {
-			ForEach(0..<10, id: \.self) { _ in
-				PostView(
-                    profilePicture: Image(.boromirProfilePicture),
-					name: "Boromir",
-					date: "five minutes ago",
-					text: "One does not simply walk into Mordor.",
-					replyCount: 1,
-					shareCount: 0,
-					likesCount: 10,
-				)
-                .listSeparatorLeadingInset(-4)
-                .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))
-                .listRowSeparatorTint(Color(#colorLiteral(red: 0.7843137383, green: 0.7843137383, blue: 0.7843137383, alpha: 1)))
-			}
+        List(posts) { post in
+            PostView(
+                profilePicture: Image(.boromirProfilePicture),
+                name: post.authorName,
+                date: post.date,
+                text: post.text,
+                replyCount: post.replyCount,
+                shareCount: post.repostCount,
+                likesCount: post.likeCount,
+            )
+            .listSeparatorLeadingInset(-4)
+            .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))
+            .listRowSeparatorTint(Color(#colorLiteral(red: 0.7843137383, green: 0.7843137383, blue: 0.7843137383, alpha: 1)))
 		}
 		.listStyle(.plain)
 		.toolbar {
@@ -27,10 +40,22 @@ struct FeedView: View {
 				}
 			}
 		}
+        .onAppear {
+            Task {
+                do {
+                    posts = try await feedService.loadFeed()
+                } catch {
+                    self.error = AnyLocalizedError(error: error)
+                }
+            }
+        }
+        .alert(isPresented: errorAlertShown, error: error) {
+            Button("OK", action: {})
+        }
     }
 }
 
 #Preview {
-    FeedView()
+    FeedView(feedService: MockApi())
         .prefireIgnored()
 }
