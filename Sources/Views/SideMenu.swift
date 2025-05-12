@@ -124,4 +124,5 @@ struct SideMenu: View {
         userProfilePicture: Image(.boromirProfilePicture),
         selectedItem: .constant(.news)
     )
+	.snapshot(perceptualPrecision: 0.96)
 }

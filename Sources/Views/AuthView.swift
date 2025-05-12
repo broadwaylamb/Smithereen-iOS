@@ -146,6 +146,7 @@ struct AuthView: View {
 }
 
 #Preview("Authentication") {
-    AuthView(api: MockApi())
-        .defaultAppStorage(UserDefaults())
+	AuthView(api: MockApi())
+		.defaultAppStorage(UserDefaults())
+		.snapshot(perceptualPrecision: 0.98)
 }
