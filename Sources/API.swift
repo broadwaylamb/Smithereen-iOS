@@ -157,7 +157,7 @@ class HTMLScrapingApi: AuthenticationService, FeedService {
     private func parsePicture(_ element: Element) -> URL? {
         do {
             for resource in try element.select("source") {
-                if try resource.attr("type") != "image/jpeg" {
+                if try resource.attr("type") != "image/webp" {
                     continue
                 }
                 let srcsets = try resource.attr("srcset")
