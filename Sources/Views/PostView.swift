@@ -1,8 +1,8 @@
 import SwiftUI
 import Prefire
 
-struct PostView<ProfilePicture: View>: View {
-	var profilePicture: ImageOrAsyncImage<ProfilePicture>
+struct PostView: View {
+	var profilePicture: ImageLocation?
 	var name: String
 	var date: String
 	var text: AttributedString?
@@ -10,31 +10,69 @@ struct PostView<ProfilePicture: View>: View {
 	var shareCount: Int
 	var likesCount: Int
 
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    private var padding: EdgeInsets {
+        switch horizontalSizeClass {
+        case .regular:
+            EdgeInsets(top: 13, leading: 13, bottom: 13, trailing: 13)
+        default:
+            EdgeInsets(top: 7, leading: 4, bottom: 11, trailing: 4)
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading) {
-            PostHeaderView(profilePicture: profilePicture, name: name, date: date)
+            PostHeaderView(
+                profilePicture: profilePicture,
+                name: name,
+                date: date,
+            )
             if let text {
 				Text(text)
             }
-            PostFooterView(replyCount: replyCount, shareCount: shareCount, likesCount: likesCount)
+            PostFooterView(
+                replyCount: replyCount,
+                shareCount: shareCount,
+                likesCount: likesCount,
+            )
         }
-        .padding(EdgeInsets(top: 7, leading: 4, bottom: 11, trailing: 4))
+        // TODO: Set padding to all 13 on iPad
+        .padding(padding)
+        .background(Color.white)
         .colorScheme(.light)
     }
 }
 
-private struct PostHeaderView<ProfilePicture: View>: View {
-	var profilePicture: ImageOrAsyncImage<ProfilePicture>
+private struct PostHeaderView: View {
+	var profilePicture: ImageLocation?
 	var name: String
 	var date: String
 
     @ScaledMetric(relativeTo: .body)
     private var imageSize = 44
 
+    @ViewBuilder
+    private var profilePictureImage: some View {
+        switch profilePicture {
+        case .remote(let url):
+            AsyncImage(
+                url: url,
+                scale: 2.0,
+                content: { $0.resizable() },
+                placeholder: { Color.gray },
+            )
+        case .bundled(let resource):
+            Image(resource)
+                .resizable()
+        case nil:
+            Color.red // TODO
+        }
+    }
+
 	var body: some View {
 		HStack(spacing: 8) {
-			profilePicture
-				.resizable()
+			profilePictureImage
 				.frame(width: imageSize, height: imageSize)
 				.cornerRadius(5)
 			VStack(alignment: .leading, spacing: 7) {
@@ -102,8 +140,8 @@ struct PostFooterButton: View {
 
 @available(iOS 17.0, *)
 #Preview("Text-only post", traits: .sizeThatFitsLayout) {
-    PostView<Never>(
-        profilePicture: .image(Image(.boromirProfilePicture)),
+    PostView(
+        profilePicture: .bundled(.boromirProfilePicture),
         name: "Boromir",
         date: "five minutes ago",
         text: "One does not simply walk into Mordor.",
@@ -117,8 +155,8 @@ struct PostFooterButton: View {
 
 @available(iOS 17.0, *)
 #Preview("Post with formatting", traits: .sizeThatFitsLayout) {
-    PostView<Never>(
-        profilePicture: .image(Image(.boromirProfilePicture)),
+    PostView(
+        profilePicture: .bundled(.boromirProfilePicture),
         name: "Boromir",
         date: "five minutes ago",
         text: renderHTML(

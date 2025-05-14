@@ -5,6 +5,8 @@ struct FeedView: View {
     @ObservedObject var viewModel: FeedViewModel
     @State private var error: AnyLocalizedError?
 
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
     private var errorAlertShown: Binding<Bool> {
         Binding {
             error != nil
@@ -26,15 +28,8 @@ struct FeedView: View {
 
     var body: some View {
         List(viewModel.posts) { post in
-            PostView(
-                profilePicture: .asyncImage(
-                    AsyncImage(
-                        url: post.authorProfilePictureURL,
-                        scale: 2.0,
-                        content: { $0.resizable() },
-                        placeholder: { Color.gray },
-                    )
-                ),
+            let post = PostView(
+                profilePicture: post.authorProfilePicture,
                 name: post.authorName,
                 date: post.date,
                 text: post.text,
@@ -42,11 +37,22 @@ struct FeedView: View {
                 shareCount: post.repostCount,
                 likesCount: post.likeCount,
             )
-            .listSeparatorLeadingInset(-4)
-            .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))
-            .listRowSeparatorTint(Color(#colorLiteral(red: 0.7843137383, green: 0.7843137383, blue: 0.7843137383, alpha: 1)))
+            .listRowBackground(Color.feedBackground)
+
+            switch horizontalSizeClass {
+            case .regular:
+                post
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                    .listRowInsets(EdgeInsets(top: 15, leading: 24, bottom: -3, trailing: 24))
+                    .listRowSeparator(.hidden)
+            default:
+                post
+                    .listSeparatorLeadingInset(-4)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))
+                    .listRowSeparatorTint(Color(#colorLiteral(red: 0.7843137383, green: 0.7843137383, blue: 0.7843137383, alpha: 1)))
+            }
 		}
-		.listStyle(.plain)
+        .listStyle(.plain)
 		.toolbar {
 			ToolbarItem(placement: .topBarTrailing) {
 				Button(action: { /* TODO */ }) {
@@ -63,7 +69,7 @@ struct FeedView: View {
         .alert(isPresented: errorAlertShown, error: error) {
             Button("OK", action: {})
         }
-        .background(Color.white)
+        .background(Color.feedBackground)
         .colorScheme(.light)
     }
 }

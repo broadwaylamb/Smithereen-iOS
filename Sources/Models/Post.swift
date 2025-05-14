@@ -6,7 +6,7 @@ struct Post: Identifiable, Equatable {
     var localAuthorID: URL
     var authorName: String
     var date: String // String because we're getting it directly from HTML
-    var authorProfilePictureURL: URL?
+    var authorProfilePicture: ImageLocation?
     var text: AttributedString?
     var likeCount: Int
     var replyCount: Int

@@ -42,18 +42,18 @@ struct MockApi: AuthenticationService, FeedService {
     }
 
     func loadFeed(start: Int?, offset: Int?) async throws -> [Post] {
-        return [
-            Post(
-                id: URL(string: "htts://smithereen.local")!,
-                localAuthorID: URL(string: "htts://smithereen.local/boromir")!,
-                authorName: "Boromir",
-                date: "five minutes ago",
-                text: "One does not simply walk into mordor.",
-                likeCount: 1013,
-                replyCount: 74,
-                repostCount: 15,
-            ),
-        ]
+        let post = Post(
+            id: URL(string: "htts://smithereen.local")!,
+            localAuthorID: URL(string: "htts://smithereen.local/boromir")!,
+            authorName: "Boromir",
+            date: "five minutes ago",
+            authorProfilePicture: .bundled(.boromirProfilePicture),
+            text: "One does not simply walk into mordor.",
+            likeCount: 1013,
+            replyCount: 74,
+            repostCount: 15,
+        )
+        return [post, post, post]
     }
 }
 
@@ -232,7 +232,7 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
                         localAuthorID: authorURL,
                         authorName: authorName,
                         date: date,
-                        authorProfilePictureURL: profilePicture,
+                        authorProfilePicture: profilePicture.map(ImageLocation.remote),
 						text: text.map(renderHTML),
                         likeCount: likeCount,
                         replyCount: commentCount,
