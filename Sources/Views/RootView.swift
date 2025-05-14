@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RootView: View {
-    let feedService: any FeedService
+    let feedViewModel: FeedViewModel
     @State private var offset: CGFloat = 0
 	@State private var menuShown: Bool = false
 	@State private var selectedItem: SideMenuItem = .news
@@ -27,12 +27,13 @@ struct RootView: View {
 		menuShown ? hideMenu() : showMenu()
 	}
 
+    @ViewBuilder
 	private var mainView: some View {
 		switch selectedItem {
 		case .news:
-			AnyView(FeedView(feedService: feedService))
+			FeedView(viewModel: feedViewModel)
 		default:
-            AnyView(Text("Coming soon!").font(.largeTitle))
+            Text("Coming soon!").font(.largeTitle)
 		}
 	}
 
@@ -104,6 +105,6 @@ struct RootView: View {
 }
 
 #Preview {
-    RootView(feedService: MockApi())
+    RootView(feedViewModel: FeedViewModel(api: MockApi()))
         .prefireIgnored()
 }

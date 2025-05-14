@@ -2,8 +2,7 @@ import SwiftUI
 import Prefire
 
 struct FeedView: View {
-    let feedService: any FeedService
-    @State private var posts: [Post] = []
+    @ObservedObject var viewModel: FeedViewModel
     @State private var error: AnyLocalizedError?
 
     private var errorAlertShown: Binding<Bool> {
@@ -18,7 +17,7 @@ struct FeedView: View {
     }
 
     var body: some View {
-        List(posts) { post in
+        List(viewModel.posts) { post in
             PostView(
                 profilePicture: .asyncImage(
                     AsyncImage(
@@ -47,13 +46,11 @@ struct FeedView: View {
 				}
 			}
 		}
-        .onAppear {
-            Task {
-                do {
-                    posts = try await feedService.loadFeed()
-                } catch {
-                    self.error = AnyLocalizedError(error: error)
-                }
+        .task {
+            do {
+                try await viewModel.update()
+            } catch {
+                self.error = AnyLocalizedError(error: error)
             }
         }
         .alert(isPresented: errorAlertShown, error: error) {
@@ -65,6 +62,6 @@ struct FeedView: View {
 }
 
 #Preview {
-    FeedView(feedService: MockApi())
+    FeedView(viewModel: FeedViewModel(api: MockApi()))
         .prefireIgnored()
 }
