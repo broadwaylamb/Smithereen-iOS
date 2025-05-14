@@ -3,19 +3,24 @@ import SwiftData
 
 @main
 struct SmithereenApp: App {
-    @StateObject private var api: HTMLScrapingApi
+    private let api: HTMLScrapingApi
+    @StateObject private var authenticationState: AuthenticationState
     @StateObject private var feedViewModel: FeedViewModel
 
     init() {
-        let api = HTMLScrapingApi()
-        self._api = StateObject(wrappedValue: api)
-        self._feedViewModel = StateObject(wrappedValue: FeedViewModel(api: api))
+        let authenticationState = AuthenticationState()
+        let api = HTMLScrapingApi(authenticationState: authenticationState)
+        let feedViewModel = FeedViewModel(api: api)
+
+        self.api = api
+        self._authenticationState = StateObject(wrappedValue: authenticationState)
+        self._feedViewModel = StateObject(wrappedValue: feedViewModel)
     }
 
     var body: some Scene {
         WindowGroup {
-            if api.isAuthenticated {
-                RootView(feedViewModel: FeedViewModel(api: api))
+            if authenticationState.isAuthenticated {
+                RootView(feedViewModel: feedViewModel)
             } else {
                 AuthView(api: api)
             }

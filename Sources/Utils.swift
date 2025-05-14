@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 final class Box<T> {
     let value: T

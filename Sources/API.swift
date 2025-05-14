@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import SwiftSoup
 
 enum AuthenticationError: LocalizedError {
@@ -22,15 +23,11 @@ enum AuthenticationError: LocalizedError {
     }
 }
 
-@MainActor
-protocol AuthenticationService: ObservableObject {
-    var isAuthenticated: Bool { get }
-
+protocol AuthenticationService: Sendable {
     func authenticate(instance: URL, email: String, password: String) async throws(AuthenticationError)
 }
 
-@MainActor
-protocol FeedService {
+protocol FeedService: Sendable {
     func loadFeed(start: Int?, offset: Int?) async throws -> [Post]
 }
 
@@ -40,11 +37,8 @@ extension FeedService {
     }
 }
 
-class MockApi: AuthenticationService, FeedService {
-    @Published var isAuthenticated: Bool = false
-
+struct MockApi: AuthenticationService, FeedService {
     func authenticate(instance: URL, email: String, password: String) async throws(AuthenticationError) {
-        isAuthenticated = true
     }
 
     func loadFeed(start: Int?, offset: Int?) async throws -> [Post] {
@@ -81,18 +75,32 @@ private final class MyUrlSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
     }
 }
 
-class HTMLScrapingApi: AuthenticationService, FeedService {
-    @Published var isAuthenticated: Bool
-    private var instance: URL?
+private func alreadyAuthenticatedOnInstance() -> URL? {
+    let cookie = (HTTPCookieStorage.shared.cookies ?? []).first {
+        !$0.isExpired && $0.name == "psid"
+    }
+    return cookie.flatMap { URL(string: "https://" + $0.domain) }
+}
 
-    init() {
-        let cookie = (HTTPCookieStorage.shared.cookies ?? []).first {
-            !$0.isExpired && $0.name == "psid"
-        }
-        if let cookie {
-            instance = URL(string: "https://" + cookie.domain)
-        }
-        isAuthenticated = instance != nil
+@MainActor
+final class AuthenticationState: ObservableObject {
+    @Published var instance: URL? = alreadyAuthenticatedOnInstance()
+
+    var isAuthenticated: Bool {
+        instance != nil
+    }
+
+    @MainActor
+    func setAuthenticated(instance: URL) {
+        self.instance = instance
+    }
+}
+
+actor HTMLScrapingApi: AuthenticationService, FeedService {
+    private let authenticationState: AuthenticationState
+
+    init(authenticationState: AuthenticationState) {
+        self.authenticationState = authenticationState
     }
 
     private let urlSession = URLSession(
@@ -147,8 +155,7 @@ class HTMLScrapingApi: AuthenticationService, FeedService {
             throw .other(error)
         }
         if statusCode == 302 {
-            isAuthenticated = true
-            self.instance = instance
+            await self.authenticationState.setAuthenticated(instance: instance)
         } else {
             throw .invalidCredentials
         }
@@ -177,7 +184,10 @@ class HTMLScrapingApi: AuthenticationService, FeedService {
     }
 
     func loadFeed(start: Int?, offset: Int?) async throws -> [Post] {
-        let request = createRequest(instance: instance!, "GET", "/feed")
+        guard let instance = await self.authenticationState.instance else {
+            throw AuthenticationError.invalidCredentials
+        }
+        let request = createRequest(instance: instance, "GET", "/feed")
         let (document, statusCode) = try await sendRequest(request)
         if statusCode != 200 {
             throw ServerError(statusCode: statusCode)
