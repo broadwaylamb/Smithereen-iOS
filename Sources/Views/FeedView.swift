@@ -16,6 +16,14 @@ struct FeedView: View {
 
     }
 
+    private func refreshFeed() async {
+        do {
+            try await viewModel.update()
+        } catch {
+            self.error = AnyLocalizedError(error: error)
+        }
+    }
+
     var body: some View {
         List(viewModel.posts) { post in
             PostView(
@@ -47,11 +55,10 @@ struct FeedView: View {
 			}
 		}
         .task {
-            do {
-                try await viewModel.update()
-            } catch {
-                self.error = AnyLocalizedError(error: error)
-            }
+            await refreshFeed()
+        }
+        .refreshable {
+            await refreshFeed()
         }
         .alert(isPresented: errorAlertShown, error: error) {
             Button("OK", action: {})
