@@ -1,11 +1,13 @@
 import Foundation
 
-class Box<T> {
-    var value: T
+final class Box<T> {
+    let value: T
     init(value: T) {
         self.value = value
     }
 }
+
+extension Box: Sendable where T: Sendable {}
 
 extension Box: Equatable where T: Equatable {
 	static func == (lhs: Box<T>, rhs: Box<T>) -> Bool {
