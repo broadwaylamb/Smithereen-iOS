@@ -65,41 +65,41 @@ struct RootView: View {
                 .offset(x: alwaysShowMenu ? menuWidth : offset)
                 .frame(maxWidth: alwaysShowMenu ? viewportWidth - menuWidth : viewportWidth)
                 .animation(.interactiveSpring(extraBounce: 0), value: offset)
-                .gesture(
-                    DragGesture()
-                        .onChanged { value in
-                            let newOffset = previousOffset + value.translation.width
-                            if alwaysShowMenu {
-                                // Do nothing
-                            } else if value.translation.width > 0 {
-                                if newOffset < menuWidth {
-                                    offset = newOffset
-                                } else {
-                                    // Resist dragging too far right
-                                    let springOffset = newOffset - menuWidth
-                                    offset = menuWidth + springOffset * 0.3
-                                }
-                            } else if menuShown {
-                                offset = max(value.translation.width + menuWidth, 0)
-                            }
-
-                        }
-                        .onEnded { value in
-                            if alwaysShowMenu {
-                                // Do nothing
-                            } else if value.translation.width > dragThreshold {
-                                showMenu()
-                            } else if -value.translation.width > dragThreshold && menuShown {
-                                hideMenu()
-                            } else {
-                                offset = menuShown ? menuWidth : 0
-                                previousOffset = offset
-                            }
-                        }
-                )
                 .onChangePolyfill(of: selectedItem, hideMenu)
                 .preferredColorScheme(.dark)
             }
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        let newOffset = previousOffset + value.translation.width
+                        if alwaysShowMenu {
+                            // Do nothing
+                        } else if value.translation.width > 0 {
+                            if newOffset < menuWidth {
+                                offset = newOffset
+                            } else {
+                                // Resist dragging too far right
+                                let springOffset = newOffset - menuWidth
+                                offset = menuWidth + springOffset * 0.3
+                            }
+                        } else if menuShown {
+                            offset = max(value.translation.width + menuWidth, 0)
+                        }
+
+                    }
+                    .onEnded { value in
+                        if alwaysShowMenu {
+                            // Do nothing
+                        } else if value.translation.width > dragThreshold {
+                            showMenu()
+                        } else if -value.translation.width > dragThreshold && menuShown {
+                            hideMenu()
+                        } else {
+                            offset = menuShown ? menuWidth : 0
+                            previousOffset = offset
+                        }
+                    }
+            )
         }
 	}
 }
