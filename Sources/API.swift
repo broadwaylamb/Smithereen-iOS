@@ -200,7 +200,8 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
                     continue
                 }
                 let authorName = try authorNameLink.text(trimAndNormaliseWhitespace: true)
-                let text = try post.select(".postContent").first()
+                let postContent = try post.select(".postContent").first()
+                let text = (try? postContent?.select(".expandableText .full").first()) ?? postContent
                 guard let postLink = try post.select("a.postLink").first(),
                       let localPostURL = try URL(string: postLink.attr("href")) else {
                     continue
