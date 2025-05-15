@@ -37,11 +37,11 @@ struct FeedView: View {
                 shareCount: post.repostCount,
                 likesCount: post.likeCount,
             )
-            .listRowBackground(Color.feedBackground)
 
             switch horizontalSizeClass {
             case .regular:
                 post
+                    .listRowBackground(Color.feedBackground)
                     .clipShape(RoundedRectangle(cornerRadius: 4))
                     .listRowInsets(EdgeInsets(top: 15, leading: 24, bottom: -3, trailing: 24))
                     .listRowSeparator(.hidden)
