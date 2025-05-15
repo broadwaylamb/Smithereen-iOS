@@ -42,18 +42,11 @@ private struct LeadingInsetListSeparatorViewModifier: ViewModifier {
     }
 }
 
-private struct ListSectionSpacingPolyfillViewModifier: ViewModifier {
-    let spacing: CGFloat
-    func body(content: Content) -> some View {
-        content // TODO
-    }
-}
-
 private struct ContentMarginPolyfillViewModifier: ViewModifier {
     let edges: Edge.Set
     let length: CGFloat
     @Environment(\.layoutDirection) private var layoutDirection
-    
+
     func body(content: Content) -> some View {
         if #available(iOS 17.0, *) {
             return content.contentMargins(edges, length)
