@@ -36,6 +36,7 @@ struct FeedView: View {
                 replyCount: post.replyCount,
                 shareCount: post.repostCount,
                 likesCount: post.likeCount,
+                originalPostURL: post.remoteInstanceLink ?? post.id,
             )
 
             switch horizontalSizeClass {

@@ -9,6 +9,7 @@ struct PostView: View {
 	var replyCount: Int
 	var shareCount: Int
 	var likesCount: Int
+    var originalPostURL: URL
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
@@ -37,10 +38,10 @@ struct PostView: View {
                 likesCount: likesCount,
             )
         }
-        // TODO: Set padding to all 13 on iPad
         .padding(padding)
         .background(Color.white)
         .colorScheme(.light)
+        .draggableAsURL(originalPostURL)
     }
 }
 
@@ -148,6 +149,7 @@ struct PostFooterButton: View {
         replyCount: 1,
         shareCount: 0,
         likesCount: 10,
+        originalPostURL: URL(string: "https://example.com/posts/123")!,
     )
     .background { Color.white }
     .snapshot(precision: 0.98)
@@ -209,6 +211,7 @@ struct PostFooterButton: View {
         replyCount: 0,
         shareCount: 0,
         likesCount: 0,
+        originalPostURL: URL(string: "https://example.com/posts/123")!,
     )
     .background { Color.white }
     .snapshot(precision: 0.98)

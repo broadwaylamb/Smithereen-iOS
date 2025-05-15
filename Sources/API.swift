@@ -205,9 +205,6 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
                       let localPostURL = try URL(string: postLink.attr("href")) else {
                     continue
                 }
-                let remotePostURL =
-                    try (postLink.nextSibling()?.nextSibling()?.attr("href"))
-                        .flatMap(URL.init(string:))
                 let date = try postLink.text(trimAndNormaliseWhitespace: true)
 
                 let profilePicture = (try? post.select("span.avaHasImage picture").first())
@@ -228,7 +225,7 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
                 posts.append(
                     Post(
                         id: localPostURL,
-                        remoteInstanceLink: remotePostURL,
+                        remoteInstanceLink: nil, // FIXME: the HTML from the mobile version that we use as data source doesn't contain the link to a remote server.
                         localAuthorID: authorURL,
                         authorName: authorName,
                         date: date,

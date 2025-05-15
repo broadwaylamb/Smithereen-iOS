@@ -168,4 +168,12 @@ extension View {
             }
         }
     }
+
+    func draggableAsURL(_ url: URL) -> some View {
+        if #available(iOS 16.0, *) {
+            return draggable(url)
+        } else {
+            return self
+        }
+    }
 }
