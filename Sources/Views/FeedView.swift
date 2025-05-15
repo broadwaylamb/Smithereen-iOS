@@ -28,33 +28,45 @@ struct FeedView: View {
 
     var body: some View {
         List(viewModel.posts) { post in
-            let post = PostView(
-                profilePicture: post.authorProfilePicture,
-                name: post.authorName,
-                date: post.date,
-                text: post.text,
-                replyCount: post.replyCount,
-                shareCount: post.repostCount,
-                likesCount: post.likeCount,
-                originalPostURL: post.remoteInstanceLink ?? post.id,
-                alwaysShowFullText: false,
-            )
-
-            switch horizontalSizeClass {
-            case .regular:
-                post
-                    .listRowBackground(Color.feedBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                    .listRowInsets(EdgeInsets(top: 15, leading: 24, bottom: -3, trailing: 24))
-                    .listRowSeparator(.hidden)
-            default:
-                post
-                    .listSeparatorLeadingInset(-4)
-                    .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))
-                    .listRowSeparatorTint(Color(#colorLiteral(red: 0.7843137383, green: 0.7843137383, blue: 0.7843137383, alpha: 1)))
+            Section {
+                let postView = PostView(
+                    profilePicture: post.authorProfilePicture,
+                    name: post.authorName,
+                    date: post.date,
+                    text: post.text,
+                    replyCount: post.replyCount,
+                    shareCount: post.repostCount,
+                    likesCount: post.likeCount,
+                    originalPostURL: post.remoteInstanceLink ?? post.id,
+                    alwaysShowFullText: false,
+                )
+                if horizontalSizeClass == .regular {
+                    postView
+                        .listSectionSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                        .shadow(color: Color(#colorLiteral(red: 0.8445754647, green: 0.8591627479, blue: 0.8676676154, alpha: 1)), radius: 0, x: 0, y: 1)
+                        .listRowInsets(
+                            EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24)
+                        )
+                } else {
+                    postView
+                        .listRowInsets(
+                            EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
+                        )
+                        .listSectionSeparatorTint(Color(#colorLiteral(red: 0.7843137383, green: 0.7843137383, blue: 0.7843137383, alpha: 1)))
+                }
+            } header: {
+                // Removing the top blank space
+                // https://stackoverflow.com/a/78618856
+                Spacer(minLength: 0)
+                    .listRowInsets(EdgeInsets())
             }
 		}
-        .listStyle(.plain)
+        .listStyle(.grouped)
+        .contentMarginsPolyfill(.top, horizontalSizeClass == .regular ? 16 : 0)
+        .listSectionSpacingPolyfill(horizontalSizeClass == .regular ? 13 : 0)
+        .environment(\.defaultMinListHeaderHeight, 0)
 		.toolbar {
 			ToolbarItem(placement: .topBarTrailing) {
 				Button(action: { /* TODO */ }) {
@@ -71,6 +83,7 @@ struct FeedView: View {
         .alert(isPresented: errorAlertShown, error: error) {
             Button("OK", action: {})
         }
+        .scrollContentBackgroundPolyfill(.hidden)
         .background(Color.feedBackground)
         .colorScheme(.light)
     }

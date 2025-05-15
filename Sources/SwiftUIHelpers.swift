@@ -49,6 +49,46 @@ private struct ListSectionSpacingPolyfillViewModifier: ViewModifier {
     }
 }
 
+private struct ContentMarginPolyfillViewModifier: ViewModifier {
+    let edges: Edge.Set
+    let length: CGFloat
+    @Environment(\.layoutDirection) private var layoutDirection
+    
+    func body(content: Content) -> some View {
+        if #available(iOS 17.0, *) {
+            return content.contentMargins(edges, length)
+        }
+        return content.introspect(.scrollView, on: .iOS(.v15, .v16)) { scrollView in
+            if edges.contains(.top) {
+                scrollView.contentInset.top = length
+            }
+            if edges.contains(.bottom) {
+                scrollView.contentInset.bottom = length
+            }
+            if edges.contains(.leading) {
+                switch layoutDirection {
+                case .leftToRight:
+                    scrollView.contentInset.left = length
+                case .rightToLeft:
+                    scrollView.contentInset.right = length
+                @unknown default:
+                    fatalError("unreachable, iOS >17 is handled above")
+                }
+            }
+            if edges.contains(.trailing) {
+                switch layoutDirection {
+                case .leftToRight:
+                    scrollView.contentInset.right = length
+                case .rightToLeft:
+                    scrollView.contentInset.left = length
+                @unknown default:
+                    fatalError("unreachable, iOS >17 is handled above")
+                }
+            }
+        }
+    }
+}
+
 extension View {
 	func onChangePolyfill<V: Equatable>(
 		of value: V,
@@ -97,17 +137,6 @@ extension View {
 			return self
 		}
 	}
-
-    func listSeparatorLeadingInset(_ leadingInset: CGFloat) -> some View {
-        // Starting from iOS 16 list row separators in SwiftUI are aligned by default
-        // to the leading text in the row, if text is present.
-        // It's different from the iOS 15 behavior, where the insets of the separator
-        // don't adjust to the content of the row.
-        if #available(iOS 16.0, *) {
-            return alignmentGuide(.listRowSeparatorLeading) { _ in leadingInset }
-        }
-        return self
-    }
 
     func listSectionSpacingPolyfill(_ spacing: CGFloat) -> some View {
         if #available(iOS 17.0, *) {
@@ -167,6 +196,10 @@ extension View {
                 break
             }
         }
+    }
+
+    func contentMarginsPolyfill(_ edges: Edge.Set, _ length: CGFloat) -> some View {
+        modifier(ContentMarginPolyfillViewModifier(edges: edges, length: length))
     }
 
     func draggableAsURL(_ url: URL) -> some View {
