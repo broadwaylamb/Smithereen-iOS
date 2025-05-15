@@ -58,6 +58,7 @@ struct RootView: View {
                                     Button(action: toggleMenu) {
                                         Image(systemName: "list.bullet")
                                     }
+                                    .tint(Color.white)
                                 }
                             }
                         }

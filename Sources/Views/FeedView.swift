@@ -72,7 +72,8 @@ struct FeedView: View {
 				Button(action: { /* TODO */ }) {
 					Image(systemName: "square.and.pencil")
 				}
-			}
+                .tint(Color.white)
+            }
 		}
         .task {
             await refreshFeed()
