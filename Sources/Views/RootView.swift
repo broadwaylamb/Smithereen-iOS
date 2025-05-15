@@ -54,8 +54,10 @@ struct RootView: View {
                         .navigationBarBackground(.accent)
                         .toolbar {
                             ToolbarItem(placement: .navigationBarLeading) {
-                                Button(action: toggleMenu) {
-                                    Image(systemName: "list.bullet")
+                                if !alwaysShowMenu {
+                                    Button(action: toggleMenu) {
+                                        Image(systemName: "list.bullet")
+                                    }
                                 }
                             }
                         }
