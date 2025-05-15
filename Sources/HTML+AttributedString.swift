@@ -11,12 +11,14 @@ func renderHTML(_ html: Element) -> AttributedString {
     return renderer.result
 }
 
-func renderHTML(_ htmlString: String) -> AttributedString {
-    do {
-        let html = try SwiftSoup.parse(htmlString)
-        return renderHTML(html)
-    } catch {
-        return AttributedString(htmlString)
+extension String {
+    func renderAsHTML() -> AttributedString {
+        do {
+            let html = try SwiftSoup.parse(self)
+            return renderHTML(html)
+        } catch {
+            return AttributedString(self)
+        }
     }
 }
 
