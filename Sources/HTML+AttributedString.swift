@@ -4,10 +4,7 @@ import SwiftSoup
 
 func renderHTML(_ html: Element) -> AttributedString {
     let renderer = HtmlRenderer()
-
-    // The renderer itself doesn't throw, so it's safe to force-try.
-    try! html.traverse(renderer)
-
+    html.traverse(renderer)
     return renderer.result
 }
 
@@ -23,6 +20,7 @@ extension String {
 }
 
 private class HtmlRenderer: NodeVisitor {
+    typealias Error = Never
     var result = AttributedString()
     private var attributesStack: [AttributeContainer] = [AttributeContainer().font(.body)]
     private var presentationIntentCounter = 1
@@ -31,7 +29,7 @@ private class HtmlRenderer: NodeVisitor {
     private var lastWasWhite = false
     private var stripLeading = true
 
-    func head(_ node: Node, _ depth: Int) throws {
+    func head(_ node: Node, _ depth: Int) {
         var newContainer = attributesStack.last ?? AttributeContainer()
         if let textNode = node as? TextNode {
             let text = textNode.getWholeText()
@@ -42,7 +40,7 @@ private class HtmlRenderer: NodeVisitor {
             // If it sends other tags, we ignore them.
             switch element.tagNameNormal() {
             case "a":
-                let href = try element.attr("href")
+                let href = (try? element.attr("href")) ?? ""
                 if !href.isEmpty {
                     newContainer.link = URL(string: href)
                 }
@@ -87,7 +85,7 @@ private class HtmlRenderer: NodeVisitor {
         attributesStack.append(newContainer)
     }
 
-    func tail(_ node: Node, _ depth: Int) throws {
+    func tail(_ node: Node, _ depth: Int) {
         attributesStack.removeLast()
         if let element = node as? Element, element.tagNameNormal() == "pre" {
             codeBlockDepth -= 1
