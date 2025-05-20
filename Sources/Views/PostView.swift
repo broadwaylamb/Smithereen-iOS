@@ -51,6 +51,8 @@ private struct PostHeaderView: View {
 	var name: String
 	var date: String
 
+    @Environment(\.palette) private var palette
+
     @ScaledMetric(relativeTo: .body)
     private var imageSize = 44
 
@@ -80,14 +82,14 @@ private struct PostHeaderView: View {
 			VStack(alignment: .leading, spacing: 7) {
 				Text(name)
 					.bold()
-					.foregroundStyle(Color.accentColor)
+                    .foregroundStyle(palette.accent)
 				Text(date)
 					.font(.caption)
 					.foregroundStyle(.secondary)
 			}
 			Spacer()
 			Button(action: { /* TODO */ }) {
-                Image(systemName: "ellipsis").foregroundStyle(Color(#colorLiteral(red: 0.8549019098, green: 0.8549019694, blue: 0.8549019694, alpha: 1)))
+                Image(systemName: "ellipsis").foregroundStyle(palette.ellipsis)
 			}
 		}
 	}

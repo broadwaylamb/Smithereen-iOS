@@ -2,6 +2,9 @@ import SwiftUI
 
 struct RootView: View {
     let feedViewModel: FeedViewModel
+
+    @Environment(\.palette) private var palette
+
     @State private var offset: CGFloat = 0
 	@State private var menuShown: Bool = false
 	@State private var selectedItem: SideMenuItem = .news
@@ -32,6 +35,8 @@ struct RootView: View {
 		switch selectedItem {
 		case .news:
 			FeedView(viewModel: feedViewModel)
+        case .settings:
+            SettingsView()
 		default:
             Text("Coming soon!").font(.largeTitle)
 		}
@@ -41,7 +46,7 @@ struct RootView: View {
         GeometryReader { proxy in
             let viewportWidth = proxy.size.width
             let alwaysShowMenu = viewportWidth >= 1024
-            return ZStack(alignment: .topLeading) {
+            ZStack(alignment: .topLeading) {
                 SideMenu(
                     userFullName: "Boromir",
                     userProfilePicture: Image(.boromirProfilePicture),
@@ -51,7 +56,7 @@ struct RootView: View {
                     mainView
                         .navigationBarTitleDisplayMode(.inline)
                         .navigationTitle(selectedItem.localizedDescription)
-                        .navigationBarBackground(.accent)
+                        .navigationBarBackground(palette.accent)
                         .toolbar {
                             ToolbarItem(placement: .navigationBarLeading) {
                                 if !alwaysShowMenu {

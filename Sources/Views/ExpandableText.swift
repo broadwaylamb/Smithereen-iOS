@@ -5,6 +5,8 @@ struct ExpandableText: View {
     var text: AttributedString
     var lineLimit: Int?
 
+    @Environment(\.palette) private var palette
+
     @State private var isExpanded: Bool = false
     @State private var intrinsicHeight: CGFloat = 0
     @State private var truncatedHeight: CGFloat = 0
@@ -21,7 +23,7 @@ struct ExpandableText: View {
     private var expandTextButton: some View {
         Button(action: { isExpanded.toggle() }) {
             Text("Expand text…")
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(palette.accent)
         }
     }
 

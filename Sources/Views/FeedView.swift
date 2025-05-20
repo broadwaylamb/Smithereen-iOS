@@ -5,6 +5,7 @@ struct FeedView: View {
     @ObservedObject var viewModel: FeedViewModel
     @State private var error: AnyLocalizedError?
 
+    @Environment(\.palette) private var palette
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     private var errorAlertShown: Binding<Bool> {
@@ -85,7 +86,7 @@ struct FeedView: View {
             Button("OK", action: {})
         }
         .scrollContentBackgroundPolyfill(.hidden)
-        .background(Color.feedBackground)
+        .background(palette.feedBackground)
         .colorScheme(.light)
     }
 }

@@ -21,6 +21,7 @@ private struct InputFields: View {
 
 struct AuthView: View {
     let api: any AuthenticationService
+    @Environment(\.palette) private var palette
     @AppStorage(.smithereenInstance) private var instanceAddress: String = ""
     @State private var email: String = ""
     @State private var password: String = ""
@@ -140,7 +141,7 @@ struct AuthView: View {
             Spacer(minLength: 0)
         }
         .background(alignment: .center) {
-            Color.accent.ignoresSafeArea()
+            palette.accent.ignoresSafeArea()
         }
     }
 }

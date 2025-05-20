@@ -4,6 +4,8 @@ import SwiftData
 @main
 struct SmithereenApp: App {
     private let api: HTMLScrapingApi
+
+    @StateObject private var paletteState: PaletteState = PaletteState()
     @StateObject private var authenticationState: AuthenticationState
     @StateObject private var feedViewModel: FeedViewModel
 
@@ -17,13 +19,21 @@ struct SmithereenApp: App {
         self._feedViewModel = StateObject(wrappedValue: feedViewModel)
     }
 
+    @ViewBuilder
+    private var window: some View {
+        if authenticationState.isAuthenticated {
+            RootView(feedViewModel: feedViewModel)
+        } else {
+            AuthView(api: api)
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
-            if authenticationState.isAuthenticated {
-                RootView(feedViewModel: feedViewModel)
-            } else {
-                AuthView(api: api)
-            }
+            window
+                .tint(paletteState.palette.accent)
+                .environmentObject(paletteState)
+                .environment(\.palette, paletteState.palette)
         }
     }
 }

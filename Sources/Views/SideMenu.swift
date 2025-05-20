@@ -62,6 +62,7 @@ enum SideMenuItem: Int, Identifiable, CaseIterable {
 }
 
 struct SideMenu: View {
+    @Environment(\.palette) private var palette
     @State var userFullName: String
     var userProfilePicture: Image
     @Binding var selectedItem: SideMenuItem
@@ -89,20 +90,20 @@ struct SideMenu: View {
                     } icon: {
                         Image(systemName: item.sfSymbolsIconName!)
                             .font(.callout.weight(.light))
-                            .foregroundStyle(Color.SideMenu.icon)
+                            .foregroundStyle(palette.sideMenu.icon)
                     }
                 }
             }
             .listRowBackground(
                 item == selectedItem
-                    ? Color.SideMenu.selectedBackground
+                    ? palette.sideMenu.selectedBackground
                     : Color.clear
             )
-            .listRowSeparatorTint(Color.SideMenu.separator)
+            .listRowSeparatorTint(palette.sideMenu.separator)
         }
         .listStyle(.plain)
-        .background(Color.SideMenu.background)
-        .foregroundStyle(Color.SideMenu.text)
+        .background(palette.sideMenu.background)
+        .foregroundStyle(palette.sideMenu.text)
     }
 }
 
