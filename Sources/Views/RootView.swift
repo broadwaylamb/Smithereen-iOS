@@ -11,8 +11,9 @@ struct RootView: View {
 
     @State private var previousOffset: CGFloat = 0
 
-	private let menuWidth: CGFloat = 256
-	private let dragThreshold: CGFloat = 128
+	private let collapsibleMenuWidth: CGFloat = 276
+    private let alwaysShownMenuWidth: CGFloat = 256
+	private let dragThreshold: CGFloat = 138
 
 	private func hideMenu() {
 		offset = 0
@@ -21,7 +22,7 @@ struct RootView: View {
 	}
 
     private func showMenu() {
-		offset = menuWidth
+		offset = collapsibleMenuWidth
         previousOffset = offset
 		menuShown = true
 	}
@@ -70,8 +71,8 @@ struct RootView: View {
                 }
                 .navigationViewStyle(.stack)
                 .shadow(radius: 7)
-                .offset(x: alwaysShowMenu ? menuWidth : offset)
-                .frame(maxWidth: alwaysShowMenu ? viewportWidth - menuWidth : viewportWidth)
+                .offset(x: alwaysShowMenu ? alwaysShownMenuWidth : offset)
+                .frame(maxWidth: alwaysShowMenu ? viewportWidth - alwaysShownMenuWidth : viewportWidth)
                 .animation(.interactiveSpring(extraBounce: 0), value: offset)
                 .onChangePolyfill(of: selectedItem, hideMenu)
                 .preferredColorScheme(.dark)
@@ -83,15 +84,15 @@ struct RootView: View {
                         if alwaysShowMenu {
                             // Do nothing
                         } else if value.translation.width > 0 {
-                            if newOffset < menuWidth {
+                            if newOffset < collapsibleMenuWidth {
                                 offset = newOffset
                             } else {
                                 // Resist dragging too far right
-                                let springOffset = newOffset - menuWidth
-                                offset = menuWidth + springOffset * 0.3
+                                let springOffset = newOffset - collapsibleMenuWidth
+                                offset = collapsibleMenuWidth + springOffset * 0.3
                             }
                         } else if menuShown {
-                            offset = max(value.translation.width + menuWidth, 0)
+                            offset = max(value.translation.width + collapsibleMenuWidth, 0)
                         }
 
                     }
@@ -103,7 +104,7 @@ struct RootView: View {
                         } else if -value.translation.width > dragThreshold && menuShown {
                             hideMenu()
                         } else {
-                            offset = menuShown ? menuWidth : 0
+                            offset = menuShown ? collapsibleMenuWidth : 0
                             previousOffset = offset
                         }
                     }
