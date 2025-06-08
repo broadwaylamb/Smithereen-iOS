@@ -61,7 +61,7 @@ struct RootView: View {
                             ToolbarItem(placement: .navigationBarLeading) {
                                 if !alwaysShowMenu {
                                     Button(action: toggleMenu) {
-                                        Image(systemName: "list.bullet")
+                                        Image(.menu)
                                     }
                                     .tint(Color.white)
                                 }
