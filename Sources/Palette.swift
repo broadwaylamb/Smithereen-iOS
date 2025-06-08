@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct Palette: Hashable {
+struct Palette {
     var name: String
     @RGBAColor var accent: Color
     @RGBAColor var feedBackground: Color
@@ -48,18 +48,39 @@ struct Palette: Hashable {
     )
 }
 
+extension Palette: Equatable {
+    static func ==(lhs: Palette, rhs: Palette) -> Bool {
+        lhs.name == rhs.name
+    }
+}
+
+extension Palette: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+    }
+}
+
 extension Palette: Identifiable {
     var id: String {
         name
     }
 }
 
-extension Palette: CaseIterable {
-    static let allCases: [Palette] = [.smithereen, .vk]
+extension Palette: RawRepresentable {
+    var rawValue: String {
+        name
+    }
+
+    init?(rawValue: String) {
+        guard let palette = Palette.allCases.first(where: { $0.name == rawValue }) else {
+            return nil
+        }
+        self = palette
+    }
 }
 
-final class PaletteState: ObservableObject {
-    @Published var palette: Palette = .smithereen
+extension Palette: CaseIterable {
+    static let allCases: [Palette] = [.smithereen, .vk]
 }
 
 fileprivate extension RGBAColor {
@@ -68,19 +89,5 @@ fileprivate extension RGBAColor {
         lch.h += 208
         lch.c *= 3
         return lch.toRGB()
-    }
-}
-
-private struct PaletteEnvironmentKey: EnvironmentKey {
-    static let defaultValue: Palette = .smithereen
-}
-
-extension EnvironmentValues {
-    var palette: Palette {
-        get {
-            self[PaletteEnvironmentKey.self]
-        } set {
-            self[PaletteEnvironmentKey.self] = newValue
-        }
     }
 }

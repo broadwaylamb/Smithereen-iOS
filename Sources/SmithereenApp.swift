@@ -5,7 +5,7 @@ import SwiftData
 struct SmithereenApp: App {
     private let api: HTMLScrapingApi
 
-    @StateObject private var paletteState: PaletteState = PaletteState()
+    @AppStorage(.palette) private var palette: Palette = .smithereen
     @StateObject private var authenticationState: AuthenticationState
     @StateObject private var feedViewModel: FeedViewModel
 
@@ -31,9 +31,7 @@ struct SmithereenApp: App {
     var body: some Scene {
         WindowGroup {
             window
-                .tint(paletteState.palette.accent)
-                .environmentObject(paletteState)
-                .environment(\.palette, paletteState.palette)
+                .tint(palette.accent)
         }
     }
 }

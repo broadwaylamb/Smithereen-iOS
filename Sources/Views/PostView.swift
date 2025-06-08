@@ -51,7 +51,7 @@ private struct PostHeaderView: View {
 	var name: String
 	var date: String
 
-    @Environment(\.palette) private var palette
+    @AppStorage(.palette) private var palette: Palette = .smithereen
 
     @ScaledMetric(relativeTo: .body)
     private var imageSize = 44

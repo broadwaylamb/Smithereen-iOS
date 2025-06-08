@@ -5,7 +5,7 @@ struct FeedView: View {
     @ObservedObject var viewModel: FeedViewModel
     @State private var error: AnyLocalizedError?
 
-    @Environment(\.palette) private var palette
+    @AppStorage(.palette) private var palette: Palette = .smithereen
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     private var errorAlertShown: Binding<Bool> {

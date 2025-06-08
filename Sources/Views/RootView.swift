@@ -3,7 +3,7 @@ import SwiftUI
 struct RootView: View {
     let feedViewModel: FeedViewModel
 
-    @Environment(\.palette) private var palette
+    @AppStorage(.palette) private var palette: Palette = .smithereen
 
     @State private var offset: CGFloat = 0
 	@State private var menuShown: Bool = false

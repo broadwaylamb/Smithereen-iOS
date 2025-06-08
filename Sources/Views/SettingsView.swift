@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @EnvironmentObject var paletteState: PaletteState
+    @AppStorage(.palette) private var palette: Palette = .smithereen
 
     var body: some View {
         List {
             Section(header: Text("Appearance")) {
-                Picker("Color theme", selection: $paletteState.palette) {
+                Picker("Color theme", selection: $palette) {
                     ForEach(Palette.allCases) { palette in
-                        Text(palette.name)
+                        Text(verbatim: palette.name)
                             .tag(palette)
                     }
                 }
@@ -20,10 +20,6 @@ struct SettingsView: View {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview("Settings") {
-    @Previewable @StateObject var paletteState = PaletteState()
     SettingsView()
-        .environmentObject(paletteState)
-        .environment(\.palette, paletteState.palette)
 }

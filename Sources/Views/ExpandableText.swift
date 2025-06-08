@@ -5,7 +5,7 @@ struct ExpandableText: View {
     var text: AttributedString
     var lineLimit: Int?
 
-    @Environment(\.palette) private var palette
+    @AppStorage(.palette) private var palette: Palette = .smithereen
 
     @State private var isExpanded: Bool = false
     @State private var intrinsicHeight: CGFloat = 0
