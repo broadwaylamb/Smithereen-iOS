@@ -3,12 +3,6 @@ import SwiftUI
 enum SideMenuItem: Int, Identifiable, CaseIterable {
     case profile
     case news
-    case feedback
-    case messages
-    case friends
-    case groups
-    case photos
-    case bookmarks
     case settings
 
     var id: Int { rawValue }
@@ -20,43 +14,19 @@ enum SideMenuItem: Int, Identifiable, CaseIterable {
             "Profile"
         case .news:
             "News"
-        case .feedback:
-            "Feedback"
-        case .messages:
-            "Messages"
-        case .friends:
-            "Friends"
-        case .groups:
-            "Groups"
-        case .photos:
-            "Photos"
-        case .bookmarks:
-            "Bookmarks"
         case .settings:
             "Settings"
         }
     }
 
-    var sfSymbolsIconName: String? {
+    var imageResource: ImageResource? {
         switch self {
         case .profile:
             nil
         case .news:
-            "message"
-        case .feedback:
-            "bubble.left.and.bubble.right"
-        case .messages:
-            "envelope"
-        case .friends:
-            "person"
-        case .groups:
-            "person.2"
-        case .photos:
-            "rectangle.on.rectangle"
-        case .bookmarks:
-            "star"
+            .news
         case .settings:
-            "gear"
+            nil
         }
     }
 }
@@ -88,9 +58,10 @@ struct SideMenu: View {
                     Label {
                         Text(verbatim: item.localizedDescription)
                     } icon: {
-                        Image(systemName: item.sfSymbolsIconName!)
-                            .font(.callout.weight(.light))
-                            .foregroundStyle(palette.sideMenu.icon)
+                        if let icon = item.imageResource {
+                            Image(icon)
+                                .foregroundStyle(palette.sideMenu.icon)
+                        }
                     }
                 }
             }
