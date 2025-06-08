@@ -26,7 +26,7 @@ enum SideMenuItem: Int, Identifiable, CaseIterable {
         case .news:
             .news
         case .settings:
-            nil
+            .settings
         }
     }
 }
