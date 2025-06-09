@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SettingsView: View {
+    let api: any AuthenticationService
     @AppStorage(.palette) private var palette: Palette = .smithereen
 
     var body: some View {
@@ -14,6 +15,13 @@ struct SettingsView: View {
                 }
 
             }
+            Section {
+                Button("Sign out", role: .destructive) {
+                    Task {
+                        await api.logOut()
+                    }
+                }
+            }
         }
         .listStyle(.grouped)
         .colorScheme(.light)
@@ -21,5 +29,5 @@ struct SettingsView: View {
 }
 
 #Preview("Settings") {
-    SettingsView()
+    SettingsView(api: MockApi())
 }

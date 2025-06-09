@@ -21,8 +21,9 @@ struct SmithereenApp: App {
 
     @ViewBuilder
     private var window: some View {
+        // TODO: Animate the transitions
         if authenticationState.isAuthenticated {
-            RootView(feedViewModel: feedViewModel)
+            RootView(api: api, feedViewModel: feedViewModel)
         } else {
             AuthView(api: api)
         }

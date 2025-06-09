@@ -25,6 +25,7 @@ enum AuthenticationError: LocalizedError {
 
 protocol AuthenticationService: Sendable {
     func authenticate(instance: URL, email: String, password: String) async throws(AuthenticationError)
+    func logOut() async
 }
 
 protocol FeedService: Sendable {
@@ -39,6 +40,9 @@ extension FeedService {
 
 struct MockApi: AuthenticationService, FeedService {
     func authenticate(instance: URL, email: String, password: String) async throws(AuthenticationError) {
+    }
+
+    func logOut() async {
     }
 
     func loadFeed(start: Int?, offset: Int?) async throws -> [Post] {
@@ -111,11 +115,32 @@ private final class MyUrlSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
     }
 }
 
-private func alreadyAuthenticatedOnInstance() -> URL? {
-    let cookie = (HTTPCookieStorage.shared.cookies ?? []).first {
-        !$0.isExpired && $0.name == "psid"
+extension HTTPCookieStorage {
+    private func getCookieByName(_ name: String) -> HTTPCookie? {
+        guard let cookies = self.cookies else { return nil }
+        for cookie in cookies {
+            if cookie.isExpired {
+                deleteCookie(cookie)
+                continue
+            }
+            if cookie.name == name {
+                return cookie
+            }
+        }
+        return nil
     }
-    return cookie.flatMap { URL(string: "https://" + $0.domain) }
+
+    fileprivate var psidCookie: HTTPCookie? {
+        getCookieByName("psid")
+    }
+
+    fileprivate var jsessionCookie: HTTPCookie? {
+        getCookieByName("JSESSIONID")
+    }
+}
+
+private func alreadyAuthenticatedOnInstance() -> URL? {
+    HTTPCookieStorage.shared.psidCookie.flatMap { URL(string: "https://" + $0.domain) }
 }
 
 @MainActor
@@ -127,13 +152,14 @@ final class AuthenticationState: ObservableObject {
     }
 
     @MainActor
-    func setAuthenticated(instance: URL) {
+    func setAuthenticated(instance: URL?) {
         self.instance = instance
     }
 }
 
 actor HTMLScrapingApi: AuthenticationService, FeedService {
     private let authenticationState: AuthenticationState
+    private var csrf: String?
 
     init(authenticationState: AuthenticationState) {
         self.authenticationState = authenticationState
@@ -156,9 +182,11 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
         instance: URL,
         _ method: String,
         _ path: String,
+        queryItems: [URLQueryItem]? = nil,
         cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy,
     ) -> URLRequest {
         var components = URLComponents(url: instance, resolvingAgainstBaseURL: false)!
+        components.queryItems = queryItems
         components.path = path
         var request = URLRequest(url: components.url!, cachePolicy: cachePolicy)
         request.httpMethod = method
@@ -195,6 +223,42 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
         } else {
             throw .invalidCredentials
         }
+    }
+
+    func logOut() async {
+        if let instance = await authenticationState.instance {
+            let request = createRequest(
+                instance: instance,
+                "GET",
+                "/account/logout",
+                queryItems: [URLQueryItem(name: "csrf", value: csrf)],
+            )
+            Task {
+                // Don't wait for the response.
+                // If it fails, we don't care, we'll log out anyway.
+                do {
+                    _ = try await sendRequest(request)
+                } catch {}
+            }
+        }
+        if let psidCookie = HTTPCookieStorage.shared.psidCookie {
+            HTTPCookieStorage.shared.deleteCookie(psidCookie)
+        }
+        if let jsessionCookie = HTTPCookieStorage.shared.jsessionCookie {
+            HTTPCookieStorage.shared.deleteCookie(jsessionCookie)
+        }
+        await authenticationState.setAuthenticated(instance: nil)
+    }
+
+    private func saveCSRF(_ document: Document) {
+        do {
+            let logoutListItem = try document.select(".mainMenu .actionList > li").last()
+            guard let logoutUrl = try logoutListItem?.select("a").attr("href"),
+                  let components = URLComponents(string: logoutUrl) else {
+                return
+            }
+            self.csrf = components.queryItems?.first { $0.name == "csrf" }?.value
+        } catch {}
     }
 
     private func parsePicture(_ element: Element) -> URL? {

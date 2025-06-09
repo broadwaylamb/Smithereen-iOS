@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct RootView: View {
+    let api: any AuthenticationService
     let feedViewModel: FeedViewModel
 
     @AppStorage(.palette) private var palette: Palette = .smithereen
@@ -37,7 +38,7 @@ struct RootView: View {
 		case .news:
 			FeedView(viewModel: feedViewModel)
         case .settings:
-            SettingsView()
+            SettingsView(api: api)
 		default:
             Text("Coming soon!").font(.largeTitle)
 		}
@@ -114,6 +115,7 @@ struct RootView: View {
 }
 
 #Preview {
-    RootView(feedViewModel: FeedViewModel(api: MockApi()))
+    let api = MockApi()
+    RootView(api: api, feedViewModel: FeedViewModel(api: api))
         .prefireIgnored()
 }
