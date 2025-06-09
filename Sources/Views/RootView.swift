@@ -6,6 +6,8 @@ struct RootView: View {
 
     @AppStorage(.palette) private var palette: Palette = .smithereen
 
+    @Environment(\.layoutDirection) private var layoutDirection
+
     @State private var offset: CGFloat = 0
 	@State private var menuShown: Bool = false
 	@State private var selectedItem: SideMenuItem = .news
@@ -81,10 +83,14 @@ struct RootView: View {
             .gesture(
                 DragGesture()
                     .onChanged { value in
-                        let newOffset = previousOffset + value.translation.width
+                        var translationWidth = value.translation.width
+                        if layoutDirection == .rightToLeft {
+                            translationWidth.negate()
+                        }
+                        let newOffset = previousOffset + translationWidth
                         if alwaysShowMenu {
                             // Do nothing
-                        } else if value.translation.width > 0 {
+                        } else if translationWidth > 0 {
                             if newOffset < collapsibleMenuWidth {
                                 offset = newOffset
                             } else {
@@ -93,16 +99,20 @@ struct RootView: View {
                                 offset = collapsibleMenuWidth + springOffset * 0.3
                             }
                         } else if menuShown {
-                            offset = max(value.translation.width + collapsibleMenuWidth, 0)
+                            offset = max(translationWidth + collapsibleMenuWidth, 0)
                         }
 
                     }
                     .onEnded { value in
+                        var translationWidth = value.translation.width
+                        if layoutDirection == .rightToLeft {
+                            translationWidth.negate()
+                        }
                         if alwaysShowMenu {
                             // Do nothing
-                        } else if value.translation.width > dragThreshold {
+                        } else if translationWidth > dragThreshold {
                             showMenu()
-                        } else if -value.translation.width > dragThreshold && menuShown {
+                        } else if -translationWidth > dragThreshold && menuShown {
                             hideMenu()
                         } else {
                             offset = menuShown ? collapsibleMenuWidth : 0
