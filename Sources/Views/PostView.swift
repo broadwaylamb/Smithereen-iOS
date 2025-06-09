@@ -54,7 +54,7 @@ private struct PostHeaderView: View {
     @AppStorage(.palette) private var palette: Palette = .smithereen
 
     @ScaledMetric(relativeTo: .body)
-    private var imageSize = 44
+    private var imageSize = 40
 
     @ViewBuilder
     private var profilePictureImage: some View {
@@ -78,7 +78,7 @@ private struct PostHeaderView: View {
 		HStack(spacing: 8) {
 			profilePictureImage
 				.frame(width: imageSize, height: imageSize)
-				.cornerRadius(5)
+                .cornerRadius(2.5)
 			VStack(alignment: .leading, spacing: 7) {
 				Text(name)
 					.bold()
@@ -115,29 +115,47 @@ private struct PostFooterView: View {
 
 	var body: some View {
 		HStack {
-            PostFooterButton(image: Icons.comment(layoutDirection), text: formatCount(replyCount))
+            PostFooterButton(
+                image: Icons.comment(layoutDirection)
+                    .resizable()
+                    .frame(width: 15, height: 14),
+                text: formatCount(replyCount),
+            )
 			Spacer()
-            PostFooterButton(image: Icons.share(), text: formatCount(shareCount))
-            PostFooterButton(image: Icons.like(), text: formatCount(likesCount))
+            PostFooterButton(
+                image: Image(.repostFilled)
+                    .resizable()
+                    .frame(width: 15, height: 14),
+                text: formatCount(shareCount),
+            )
+            PostFooterButton(
+                image: Icons.like()
+                    .resizable()
+                    .frame(width: 15, height: 13),
+                text: formatCount(likesCount),
+            )
 		}
 	}
 }
 
-struct PostFooterButton: View {
+struct PostFooterButton<Image: View>: View {
 	var image: Image
 	var text: String?
 	var body: some View {
 		Button(action: { /* TODO */ }) {
-			HStack(spacing: 8) {
+			HStack(spacing: 6) {
 				image
 				if let text {
 					Text(verbatim: text)
+                        .font(.caption)
+                        .fontWeight(.bold)
 				}
 			}
+            .padding([.leading, .trailing], 9)
 		}
-		.padding(7)
-		.foregroundStyle(Color(#colorLiteral(red: 0.6374332905, green: 0.6473867297, blue: 0.6686993241, alpha: 1)))
-		.background(Color(#colorLiteral(red: 0.9188938141, green: 0.93382442, blue: 0.9421684742, alpha: 1)))
+        .frame(minWidth: 40, minHeight: 26, maxHeight: 26)
+        .foregroundStyle(Color(#colorLiteral(red: 0.6374332905, green: 0.6473867297, blue: 0.6686993241, alpha: 1)))
+        .background(Color(#colorLiteral(red: 0.9188938141, green: 0.93382442, blue: 0.9421684742, alpha: 1)))
 		.cornerRadius(4)
 	}
 }

@@ -31,8 +31,4 @@ struct Icons {
     static func like() -> Image {
         Image(systemName: "heart.fill")
     }
-
-    static func share() -> Image {
-        Image(systemName: "megaphone.fill")
-    }
 }
