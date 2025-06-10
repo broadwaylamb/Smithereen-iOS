@@ -11,5 +11,6 @@ struct Post: Identifiable, Equatable {
     var likeCount: Int
     var replyCount: Int
     var repostCount: Int
+    var liked: Bool
     var reposted: Box<Post>?
 }

@@ -36,8 +36,9 @@ struct FeedView: View {
                     date: post.date,
                     text: post.text,
                     replyCount: post.replyCount,
-                    shareCount: post.repostCount,
+                    repostCount: post.repostCount,
                     likesCount: post.likeCount,
+                    liked: post.liked,
                     originalPostURL: post.remoteInstanceLink ?? post.id,
                     alwaysShowFullText: false,
                 )

@@ -57,6 +57,7 @@ struct MockApi: AuthenticationService, FeedService {
                 likeCount: 1013,
                 replyCount: 74,
                 repostCount: 15,
+                liked: true,
             ),
             Post(
                 id: URL(string: "htts://smithereen.local/posts/2")!,
@@ -92,6 +93,7 @@ struct MockApi: AuthenticationService, FeedService {
                 likeCount: 1311,
                 replyCount: 34,
                 repostCount: 129,
+                liked: false,
             )
         ]
     }
@@ -323,6 +325,7 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
                 let likeCount = try actionCount("like")
                 let repostCount = try actionCount("share")
                 let commentCount = try actionCount("comment")
+                let liked = try !post.select(".postActions .action.like.liked").isEmpty()
                 posts.append(
                     Post(
                         id: localPostURL,
@@ -335,6 +338,7 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
                         likeCount: likeCount,
                         replyCount: commentCount,
                         repostCount: repostCount,
+                        liked: liked,
                         reposted: nil, // TODO
                     )
                 )

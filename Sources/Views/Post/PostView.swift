@@ -7,164 +7,56 @@ struct PostView: View {
 	var date: String
 	var text: AttributedString?
 	var replyCount: Int
-	var shareCount: Int
+	var repostCount: Int
 	var likesCount: Int
+    var liked: Bool
     var originalPostURL: URL
     var alwaysShowFullText: Bool
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @AppStorage(.palette) private var palette: Palette = .smithereen
 
-    private var padding: EdgeInsets {
-        switch horizontalSizeClass {
-        case .regular:
-            EdgeInsets(top: 13, leading: 13, bottom: 13, trailing: 13)
-        default:
-            EdgeInsets(top: 7, leading: 4, bottom: 11, trailing: 4)
-        }
+    private var horizontalPadding: CGFloat {
+        horizontalSizeClass == .regular ? 13 : 4
     }
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             PostHeaderView(
                 profilePicture: profilePicture,
                 name: name,
                 date: date,
             )
+            .padding(.horizontal, horizontalPadding)
+            .padding(.top, horizontalSizeClass == .regular ? 13 : 7)
+            .padding(.bottom, 13)
+
             if let text {
                 ExpandableText(text, lineLimit: alwaysShowFullText ? nil : 12)
+                    .padding(.horizontal, horizontalPadding)
             }
+
+            if horizontalSizeClass == .regular {
+                palette.postFooterSeparator
+                    .frame(width: .infinity, height: 1)
+                    .padding(.leading, 16)
+                    .padding(.top, 15)
+            }
+
             PostFooterView(
                 replyCount: replyCount,
-                shareCount: shareCount,
+                repostCount: repostCount,
                 likesCount: likesCount,
+                liked: liked,
             )
+            .padding(.horizontal, horizontalPadding)
+            .padding(.top, horizontalSizeClass == .regular ? 0 : 13)
+            .padding(.bottom, horizontalSizeClass == .regular ? 0 : 11)
         }
-        .padding(padding)
         .background(Color.white)
         .colorScheme(.light)
         .draggableAsURL(originalPostURL)
     }
-}
-
-private struct PostHeaderView: View {
-	var profilePicture: ImageLocation?
-	var name: String
-	var date: String
-
-    @AppStorage(.palette) private var palette: Palette = .smithereen
-
-    @ScaledMetric(relativeTo: .body)
-    private var imageSize = 40
-
-    @ViewBuilder
-    private var profilePictureImage: some View {
-        switch profilePicture {
-        case .remote(let url):
-            AsyncImage(
-                url: url,
-                scale: 2.0,
-                content: { $0.resizable() },
-                placeholder: { Color.gray },
-            )
-        case .bundled(let resource):
-            Image(resource)
-                .resizable()
-        case nil:
-            Color.red // TODO
-        }
-    }
-
-	var body: some View {
-		HStack(spacing: 8) {
-			profilePictureImage
-				.frame(width: imageSize, height: imageSize)
-                .cornerRadius(2.5)
-			VStack(alignment: .leading, spacing: 7) {
-				Text(name)
-					.bold()
-                    .foregroundStyle(palette.accent)
-				Text(date)
-					.font(.caption)
-					.foregroundStyle(.secondary)
-			}
-			Spacer()
-			Button(action: { /* TODO */ }) {
-                Image(systemName: "ellipsis").foregroundStyle(palette.ellipsis)
-			}
-		}
-	}
-}
-
-private let numberFormatter: NumberFormatter = {
-	let formatter = NumberFormatter()
-	formatter.numberStyle = .decimal
-	return formatter
-}()
-
-private struct PostFooterView: View {
-	var replyCount: Int
-	var shareCount: Int
-	var likesCount: Int
-
-    @Environment(\.layoutDirection)
-    private var layoutDirection: LayoutDirection
-
-	private func formatCount(_ count: Int) -> String? {
-		count == 0 ? nil : numberFormatter.string(from: count as NSNumber)
-	}
-
-	var body: some View {
-		HStack {
-            PostFooterButton(
-                alignment: .firstTextBaseline,
-                image:
-                    Image(.commentFilled)
-                    .resizable()
-                    .frame(width: 15, height: 14)
-                    .alignmentGuide(.firstTextBaseline) { $0.height - 3.5 },
-                text: formatCount(replyCount),
-            )
-			Spacer()
-            PostFooterButton(
-                alignment: .center,
-                image: Image(.repostFilled)
-                    .resizable()
-                    .frame(width: 15, height: 14),
-                text: formatCount(shareCount),
-            )
-            PostFooterButton(
-                alignment: .center,
-                image: Image(.likeFilled)
-                    .resizable()
-                    .frame(width: 15, height: 13)
-                    .alignmentGuide(VerticalAlignment.center) { $0.height / 2 },
-                text: formatCount(likesCount),
-            )
-		}
-	}
-}
-
-struct PostFooterButton<Image: View>: View {
-    var alignment: VerticalAlignment
-	var image: Image
-	var text: String?
-	var body: some View {
-		Button(action: { /* TODO */ }) {
-            HStack(alignment: alignment, spacing: 6) {
-				image
-				if let text {
-					Text(verbatim: text)
-                        .font(.caption)
-                        .fontWeight(.bold)
-				}
-			}
-            .padding([.leading, .trailing], 9)
-		}
-        .frame(minWidth: 40, minHeight: 26, maxHeight: 26)
-        .foregroundStyle(Color(#colorLiteral(red: 0.6374332905, green: 0.6473867297, blue: 0.6686993241, alpha: 1)))
-        .background(Color(#colorLiteral(red: 0.9188938141, green: 0.93382442, blue: 0.9421684742, alpha: 1)))
-		.cornerRadius(4)
-	}
 }
 
 @available(iOS 17.0, *)
@@ -175,8 +67,9 @@ struct PostFooterButton<Image: View>: View {
         date: "five minutes ago",
         text: "One does not simply walk into Mordor.",
         replyCount: 1,
-        shareCount: 0,
+        repostCount: 2,
         likesCount: 10,
+        liked: false,
         originalPostURL: URL(string: "https://example.com/posts/123")!,
         alwaysShowFullText: true,
     )
@@ -236,8 +129,9 @@ struct PostFooterButton<Image: View>: View {
         </blockquote>
         """.renderAsHTML(),
         replyCount: 0,
-        shareCount: 0,
+        repostCount: 0,
         likesCount: 0,
+        liked: true,
         originalPostURL: URL(string: "https://example.com/posts/123")!,
         alwaysShowFullText: true,
     )
@@ -278,8 +172,9 @@ struct PostFooterButton<Image: View>: View {
         </p>
         """.renderAsHTML(),
         replyCount: 129,
-        shareCount: 34,
+        repostCount: 34,
         likesCount: 1311,
+        liked: true,
         originalPostURL: URL(string: "https://example.com/posts/123")!,
         alwaysShowFullText: false,
     )
