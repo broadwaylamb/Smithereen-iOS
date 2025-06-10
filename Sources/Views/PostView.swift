@@ -116,22 +116,28 @@ private struct PostFooterView: View {
 	var body: some View {
 		HStack {
             PostFooterButton(
-                image: Icons.comment(layoutDirection)
+                alignment: .firstTextBaseline,
+                image:
+                    Image(.commentFilled)
                     .resizable()
-                    .frame(width: 15, height: 14),
+                    .frame(width: 15, height: 14)
+                    .alignmentGuide(.firstTextBaseline) { $0.height - 3.5 },
                 text: formatCount(replyCount),
             )
 			Spacer()
             PostFooterButton(
+                alignment: .center,
                 image: Image(.repostFilled)
                     .resizable()
                     .frame(width: 15, height: 14),
                 text: formatCount(shareCount),
             )
             PostFooterButton(
+                alignment: .center,
                 image: Image(.likeFilled)
                     .resizable()
-                    .frame(width: 15, height: 13),
+                    .frame(width: 15, height: 13)
+                    .alignmentGuide(VerticalAlignment.center) { $0.height / 2 },
                 text: formatCount(likesCount),
             )
 		}
@@ -139,11 +145,12 @@ private struct PostFooterView: View {
 }
 
 struct PostFooterButton<Image: View>: View {
+    var alignment: VerticalAlignment
 	var image: Image
 	var text: String?
 	var body: some View {
 		Button(action: { /* TODO */ }) {
-			HStack(spacing: 6) {
+            HStack(alignment: alignment, spacing: 6) {
 				image
 				if let text {
 					Text(verbatim: text)

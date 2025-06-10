@@ -1,0 +1,12 @@
+<svg
+   width="16"
+   height="16"
+   version="1.1"
+   xml:space="preserve"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><path
+     fill="none"
+     stroke="black"
+     stroke-width="1"
+     stroke-linejoin="round"
+     d="m 1.5,0.5 h 13 c 0.554,0 1,0.446 1,1 v 9 c 0,0.554 -0.446,1 -1,1 h -6 L 4,15.296451 V 11.5 H 1.5 c -0.554,0 -1,-0.446 -1,-1 v -9 c 0,-0.554 0.446,-1 1,-1 z" /></svg>
