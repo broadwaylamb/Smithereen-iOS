@@ -27,8 +27,4 @@ struct Icons {
              rtlName: "bubble.right.fill"
         )
     }
-
-    static func like() -> Image {
-        Image(systemName: "heart.fill")
-    }
 }

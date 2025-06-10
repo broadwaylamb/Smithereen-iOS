@@ -129,7 +129,7 @@ private struct PostFooterView: View {
                 text: formatCount(shareCount),
             )
             PostFooterButton(
-                image: Icons.like()
+                image: Image(.likeFilled)
                     .resizable()
                     .frame(width: 15, height: 13),
                 text: formatCount(likesCount),
