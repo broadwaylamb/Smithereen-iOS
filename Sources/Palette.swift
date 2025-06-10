@@ -7,6 +7,8 @@ struct Palette {
     @RGBAColor var ellipsis: Color
     @RGBAColor var avatarLoading: Color
     @RGBAColor var postFooterSeparator: Color
+    @RGBAColor var compactPostButtonTint: Color
+    @RGBAColor var compactPostButtonHighlightedTint: Color
     @RGBAColor var regularPostCommentButton: Color
     @RGBAColor var regularPostLikeAndRepostButton: Color
     @RGBAColor var regularPostLikeText: Color
@@ -28,6 +30,8 @@ struct Palette {
         ellipsis: #colorLiteral(red: 0.8549019098, green: 0.8549019694, blue: 0.8549019694, alpha: 1),
         avatarLoading: #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1), // TODO: Reevaluate
         postFooterSeparator: #colorLiteral(red: 0.8031623363, green: 0.8078625798, blue: 0.8165373206, alpha: 1),
+        compactPostButtonTint: #colorLiteral(red: 0.6374332905, green: 0.6473867297, blue: 0.6686993241, alpha: 1),
+        compactPostButtonHighlightedTint: #colorLiteral(red: 0.1697994363, green: 0.371793279, blue: 0.6778445559, alpha: 1),
         regularPostCommentButton: #colorLiteral(red: 0.5647058824, green: 0.5764705882, blue: 0.5803921569, alpha: 1),
         regularPostLikeAndRepostButton: #colorLiteral(red: 0.3568627451, green: 0.4862745098, blue: 0.6823529412, alpha: 1),
         regularPostLikeText: #colorLiteral(red: 0.5098039216, green: 0.6235294118, blue: 0.7843137255, alpha: 1),
@@ -47,6 +51,8 @@ struct Palette {
         ellipsis:       vk.$feedBackground.smithereenify(),
         avatarLoading:  vk.$avatarLoading.smithereenify(),
         postFooterSeparator: vk.$postFooterSeparator.smithereenify(),
+        compactPostButtonTint: vk.$compactPostButtonTint.smithereenify(),
+        compactPostButtonHighlightedTint: vk.$compactPostButtonHighlightedTint.smithereenify(),
         regularPostCommentButton: vk.$regularPostCommentButton.smithereenify(),
         regularPostLikeAndRepostButton: vk.$regularPostLikeAndRepostButton.smithereenify(),
         regularPostLikeText: vk.$regularPostLikeText.smithereenify(),

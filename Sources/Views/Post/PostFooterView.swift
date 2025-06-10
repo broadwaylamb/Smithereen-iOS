@@ -30,7 +30,10 @@ private struct CompactPostFooterButton<Image: View>: View {
     var alignment: VerticalAlignment
     var image: Image
     var count: Int
+    var highlighted: Bool
     var action: @MainActor () -> Void
+
+    @AppStorage(.palette) private var palette = .smithereen
 
     var body: some View {
         Button(action: action) {
@@ -45,7 +48,7 @@ private struct CompactPostFooterButton<Image: View>: View {
         .padding(0)
         .buttonStyle(.bordered)
         .buttonBorderShape(.roundedRectangle(radius: 4))
-        .tint(Color(#colorLiteral(red: 0.6374332905, green: 0.6473867297, blue: 0.6686993241, alpha: 1)))
+        .tint(highlighted ? palette.compactPostButtonHighlightedTint : palette.compactPostButtonTint)
         .frame(minWidth: 40, minHeight: 26, maxHeight: 26)
     }
 }
@@ -86,6 +89,7 @@ private struct CommentButton: View {
                     .frame(width: 15, height: 14)
                     .alignmentGuide(.firstTextBaseline) { $0.height - 3.5 },
                 count: count,
+                highlighted: false,
                 action: action,
             )
         }
@@ -125,6 +129,7 @@ private struct RepostButton: View {
                     .resizable()
                     .frame(width: 15, height: 14),
                 count: count,
+                highlighted: false,
                 action: action,
             )
         }
@@ -140,15 +145,15 @@ private struct LikeButton: View {
 
     private func action() {
         withAnimation(.easeInOut(duration: 0.2)) {
-            if liked {
-                count -= 1
-            } else {
-                count += 1
-            }
             liked.toggle()
+            if liked {
+                count += 1
+            } else {
+                count -= 1
+            }
         }
         // TODO: Actually send the like to the server
-        // If the server returned an error, reset `liked` to false
+        // If the server returned an error, reset `liked` and `count` to previous state
     }
 
     var body: some View {
@@ -175,6 +180,7 @@ private struct LikeButton: View {
                     .resizable()
                     .frame(width: 15, height: 13),
                 count: count,
+                highlighted: liked,
                 action: action,
             )
         }

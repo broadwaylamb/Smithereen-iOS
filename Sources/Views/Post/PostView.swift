@@ -131,7 +131,7 @@ struct PostView: View {
         replyCount: 0,
         repostCount: 0,
         likesCount: 0,
-        liked: true,
+        liked: false,
         originalPostURL: URL(string: "https://example.com/posts/123")!,
         alwaysShowFullText: true,
     )
