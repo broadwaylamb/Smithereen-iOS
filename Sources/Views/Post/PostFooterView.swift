@@ -41,12 +41,12 @@ private struct CompactPostFooterButton<Image: View>: View {
                         .fontWeight(.bold)
                 }
             }
-            .padding(.horizontal, 9)
         }
+        .padding(0)
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.roundedRectangle(radius: 4))
+        .tint(Color(#colorLiteral(red: 0.6374332905, green: 0.6473867297, blue: 0.6686993241, alpha: 1)))
         .frame(minWidth: 40, minHeight: 26, maxHeight: 26)
-        .foregroundStyle(Color(#colorLiteral(red: 0.6374332905, green: 0.6473867297, blue: 0.6686993241, alpha: 1)))
-        .background(Color(#colorLiteral(red: 0.9188938141, green: 0.93382442, blue: 0.9421684742, alpha: 1)))
-        .cornerRadius(4)
     }
 }
 
@@ -74,8 +74,9 @@ private struct CommentButton: View {
                 }
                 .padding(.horizontal, 15)
                 .padding(.vertical, 14)
-                .tint(palette.regularPostCommentButton)
             }
+            .buttonStyle(.borderless)
+            .tint(palette.regularPostCommentButton)
         } else {
             CompactPostFooterButton(
                 alignment: .firstTextBaseline,
@@ -113,8 +114,9 @@ private struct RepostButton: View {
                 }
                 .padding(.horizontal, 15)
                 .padding(.vertical, 14)
-                .tint(palette.regularPostLikeAndRepostButton)
             }
+            .buttonStyle(.borderless)
+            .tint(palette.regularPostLikeAndRepostButton)
         } else {
             CompactPostFooterButton(
                 alignment: .center,
@@ -163,8 +165,9 @@ private struct LikeButton: View {
                 }
                 .padding(.horizontal, 15)
                 .padding(.vertical, 14)
-                .tint(palette.regularPostLikeAndRepostButton)
             }
+            .buttonStyle(.borderless)
+            .tint(palette.regularPostLikeAndRepostButton)
         } else {
             CompactPostFooterButton(
                 alignment: .center,
