@@ -1,12 +1,5 @@
 import SwiftUI
 
-// TODO: Account for large numbers, e.g. shorten 1234 to 1.2K in compact size class
-private let numberFormatter: NumberFormatter = {
-    let formatter = NumberFormatter()
-    formatter.numberStyle = .decimal
-    return formatter
-}()
-
 struct PostFooterView: View {
     var replyCount: Int
     var repostCount: Int
@@ -40,7 +33,7 @@ private struct CompactPostFooterButton<Image: View>: View {
             HStack(alignment: alignment, spacing: 6) {
                 image
                 if count != 0 {
-                    Text(verbatim: numberFormatter.string(from: count as NSNumber)!)
+                    Text("\(count)", comment: "The number of comments/likes/reposts of a post")
                         .fontWeight(.bold)
                 }
             }
@@ -70,9 +63,9 @@ private struct CommentButton: View {
                     Image(.commentOutline)
                         .alignmentGuide(.firstTextBaseline) { $0.height - 4 }
                     if count == 0 {
-                        Text("Comment")
+                        Text("Comment", comment: "A button when there are no comments in a post; imperative.")
                     } else {
-                        Text("\(count as NSNumber, formatter: numberFormatter) comments")
+                        Text("\(count) comments", comment: "The number of comments of a post")
                     }
                 }
                 .padding(.horizontal, 15)
@@ -112,7 +105,7 @@ private struct RepostButton: View {
                 HStack(spacing: 8) {
                     Image(.repostOutline)
                     if count != 0 {
-                        Text(verbatim: numberFormatter.string(from: count as NSNumber)!)
+                        Text("\(count)", comment: "The number of reposts of a post")
                             .fontWeight(.semibold)
                     }
                 }
@@ -164,7 +157,7 @@ private struct LikeButton: View {
                         .tint(palette.regularPostLikeText)
                     Image(liked ? .likeFilled : .likeOutline)
                     if count != 0 {
-                        Text(verbatim: numberFormatter.string(from: count as NSNumber)!)
+                        Text("\(count)", comment: "The number of likes of a post")
                             .fontWeight(.semibold)
                     }
                 }

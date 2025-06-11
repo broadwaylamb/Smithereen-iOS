@@ -201,6 +201,7 @@
 				en,
 				Base,
 				ru,
+				uk,
 			);
 			mainGroup = 01E20AB12DB7926D00CC0EBE;
 			minimizedProjectReferenceProxies = 1;

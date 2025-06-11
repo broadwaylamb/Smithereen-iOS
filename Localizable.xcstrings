@@ -2,10 +2,11 @@
   "sourceLanguage" : "en",
   "strings" : {
     "%lld" : {
+      "comment" : "The number of comments/likes/reposts of a post\nThe number of likes of a post\nThe number of reposts of a post",
       "shouldTranslate" : false
     },
     "%lld comments" : {
-      "comment" : "A button with the number of comments in the post footer",
+      "comment" : "The number of comments of a post",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -34,12 +35,6 @@
                   "value" : "%lld комментария"
                 }
               },
-              "many" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld комментариев"
-                }
-              },
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -54,6 +49,30 @@
               }
             }
           }
+        },
+        "uk" : {
+          "variations" : {
+            "plural" : {
+              "few" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld коментаря"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld коментар"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld коментарів"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -63,6 +82,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Внешний вид"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зовнішній вигляд"
           }
         }
       }
@@ -74,6 +99,12 @@
             "state" : "translated",
             "value" : "Цветовая тема"
           }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Колірна тема"
+          }
         }
       }
     },
@@ -81,12 +112,18 @@
       "shouldTranslate" : false
     },
     "Comment" : {
-      "comment" : "A button in the post footer when there are no comments. Imperative.",
+      "comment" : "A button when there are no comments in a post; imperative.",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Комментировать"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Коментувати"
           }
         }
       }
@@ -98,6 +135,12 @@
             "state" : "translated",
             "value" : "Email или имя пользователя"
           }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email або ім'я користувача"
+          }
         }
       }
     },
@@ -107,6 +150,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Показать полностью…"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показати повністю…"
           }
         }
       }
@@ -118,6 +167,12 @@
             "state" : "translated",
             "value" : "Забыли пароль?"
           }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Забули пароль?"
+          }
         }
       }
     },
@@ -127,6 +182,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Адрес сервера"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Адреса сервера"
           }
         }
       }
@@ -138,6 +199,12 @@
             "state" : "translated",
             "value" : "Мне нравится"
           }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мені подобається"
+          }
         }
       }
     },
@@ -147,6 +214,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Войти"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Увійти"
           }
         }
       }
@@ -158,12 +231,24 @@
             "state" : "translated",
             "value" : "Новости"
           }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новини"
+          }
         }
       }
     },
     "OK" : {
       "localizations" : {
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ОК"
+          }
+        },
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "ОК"
@@ -178,6 +263,12 @@
             "state" : "translated",
             "value" : "Пароль"
           }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пароль"
+          }
         }
       }
     },
@@ -186,7 +277,13 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Профиль"
+            "value" : "Страница"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сторінка"
           }
         }
       }
@@ -198,6 +295,12 @@
             "state" : "translated",
             "value" : "Настройки"
           }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Налаштування"
+          }
         }
       }
     },
@@ -207,6 +310,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Выйти"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вийти"
           }
         }
       }
