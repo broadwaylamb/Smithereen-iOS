@@ -7,8 +7,7 @@ enum SideMenuItem: Int, Identifiable, CaseIterable {
 
     var id: Int { rawValue }
 
-    // TODO: Make localizable
-    var localizedDescription: String {
+    var localizedDescription: LocalizedStringKey {
         switch self {
         case .profile:
             "Profile"
@@ -56,7 +55,7 @@ struct SideMenu: View {
                     }
                 } else {
                     Label {
-                        Text(verbatim: item.localizedDescription)
+                        Text(item.localizedDescription)
                     } icon: {
                         if let icon = item.imageResource {
                             Image(icon)

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		870D40ED2DF8FFA80026AB8A /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 870D40EC2DF8FFA80026AB8A /* Localizable.xcstrings */; };
 		872205E32DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 872205E22DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig */; };
 		872205E52DB9754200B65CBA /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 872205E42DB9753F00B65CBA /* README.md */; };
 		874291B92DC29C7F00571022 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 874291B82DC29C7F00571022 /* SnapshotTesting */; };
@@ -29,6 +30,7 @@
 /* Begin PBXFileReference section */
 		01E20ABA2DB7926D00CC0EBE /* Smithereen.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Smithereen.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		01E20ACA2DB7926F00CC0EBE /* SmithereenTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SmithereenTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		870D40EC2DF8FFA80026AB8A /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		872205E22DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DefaultDeveloperSettings.xcconfig; sourceTree = "<group>"; };
 		872205E42DB9753F00B65CBA /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
 		874291BF2DC2ACD400571022 /* .prefire.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .prefire.yml; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.yaml; };
@@ -91,6 +93,7 @@
 		01E20AB12DB7926D00CC0EBE = {
 			isa = PBXGroup;
 			children = (
+				870D40EC2DF8FFA80026AB8A /* Localizable.xcstrings */,
 				874291BF2DC2ACD400571022 /* .prefire.yml */,
 				872205E42DB9753F00B65CBA /* README.md */,
 				01E20ABC2DB7926D00CC0EBE /* Sources */,
@@ -197,6 +200,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ru,
 			);
 			mainGroup = 01E20AB12DB7926D00CC0EBE;
 			minimizedProjectReferenceProxies = 1;
@@ -223,6 +227,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				872205E32DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig in Resources */,
+				870D40ED2DF8FFA80026AB8A /* Localizable.xcstrings in Resources */,
 				872205E52DB9754200B65CBA /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -327,6 +332,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(ORGANIZATION_IDENTIFIER).$(PRODUCT_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -387,6 +393,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(ORGANIZATION_IDENTIFIER).$(PRODUCT_NAME)";
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
