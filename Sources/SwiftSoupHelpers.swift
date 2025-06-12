@@ -20,18 +20,22 @@ extension Node {
                 node = currentNode.childNode(0)
                 depth += 1
             } else {
-                while !currentNode.hasNextSibling() && depth > 0 {
+                var node2: Node? = currentNode
+                while let currentNode = node2,
+                      !currentNode.hasNextSibling() && depth > 0 {
                     let parent = currentNode.parent()
                     try visitor.tail(currentNode, depth)
-                    node = parent
+                    node2 = parent
                     depth -= 1
                 }
-                let nextSib = currentNode.nextSibling()
-                try visitor.tail(currentNode, depth)
-                if node === self {
-                    break
+                if let currentNode = node2 {
+                    let nextSib = currentNode.nextSibling()
+                    try visitor.tail(currentNode, depth)
+                    if currentNode === self {
+                        break
+                    }
+                    node = nextSib
                 }
-                node = nextSib
             }
         }
     }
