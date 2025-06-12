@@ -97,7 +97,8 @@ struct AuthView: View {
                 Image(.logoWithText)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 330)
+                    .frame(maxWidth: 330)
+                    .padding(.horizontal, 20)
                     .shadow(color: .black.opacity(0.15), radius: 4, y: 3)
                     .accessibilityLabel(Text("Smithereen"))
                 Form {
