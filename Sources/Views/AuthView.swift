@@ -94,10 +94,12 @@ struct AuthView: View {
         HStack(spacing: 0) {
             Spacer(minLength: 0)
             VStack {
-                Text("Smithereen")
-                    .font(.system(.largeTitle, design: .serif)) // TODO: Use a more appropriate font
-                    .foregroundStyle(Color.white)
-                    .padding(EdgeInsets(top: 100, leading: 0, bottom: 0, trailing: 0))
+                Image(.logoWithText)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 330)
+                    .shadow(color: .black.opacity(0.15), radius: 4, y: 3)
+                    .accessibilityLabel(Text("Smithereen"))
                 Form {
                     Section {
                         InputFields(
@@ -117,7 +119,7 @@ struct AuthView: View {
                     }
                     Section {
                         Button {
-                            
+                            // TODO
                         } label: {
                             Text("Forgot password?")
                                 .frame(maxWidth: .infinity, alignment: .center)
@@ -137,6 +139,7 @@ struct AuthView: View {
             .alert(isPresented: errorAlertShown, error: error) { 
                 Button("OK", action: {})
             }
+            .padding(.top, 100)
             .frame(maxWidth: 440)
             Spacer(minLength: 0)
         }
