@@ -1,4 +1,5 @@
 import Foundation
+import SwiftSoup
 
 struct Post: Identifiable, Equatable {
     var id: URL
@@ -7,7 +8,7 @@ struct Post: Identifiable, Equatable {
     var authorName: String
     var date: String // String because we're getting it directly from HTML
     var authorProfilePicture: ImageLocation?
-    var text: AttributedString?
+    var text: PostText
     var likeCount: Int
     var replyCount: Int
     var repostCount: Int

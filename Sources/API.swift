@@ -53,7 +53,7 @@ struct MockApi: AuthenticationService, FeedService {
                 authorName: "Boromir",
                 date: "five minutes ago",
                 authorProfilePicture: .bundled(.boromirProfilePicture),
-                text: "One does not simply walk into mordor.",
+                text: try! PostText(html: "One does not simply walk into mordor."),
                 likeCount: 1013,
                 replyCount: 74,
                 repostCount: 15,
@@ -65,7 +65,7 @@ struct MockApi: AuthenticationService, FeedService {
                 authorName: "Richard Stallman",
                 date: "17 June 2009 at 13:12",
                 authorProfilePicture: .bundled(.rmsProfilePicture),
-                text: """
+                text: try! PostText(html: """
                 <p>
                 I'd just like to interject for a moment.  What you're referring to as Linux,
                 is in fact, GNU/Linux, or as I've recently taken to calling it, GNU plus Linux.
@@ -89,7 +89,7 @@ struct MockApi: AuthenticationService, FeedService {
                 is basically GNU with Linux added, or GNU/Linux.  All the so-called "Linux"
                 distributions are really distributions of GNU/Linux.
                 </p>
-                """.renderAsHTML(),
+                """),
                 likeCount: 1311,
                 replyCount: 34,
                 repostCount: 129,
@@ -334,7 +334,7 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
                         authorName: authorName,
                         date: date,
                         authorProfilePicture: profilePicture.map(ImageLocation.remote),
-						text: text.map(renderHTML),
+                        text: text.map(PostText.init) ?? PostText(),
                         likeCount: likeCount,
                         replyCount: commentCount,
                         repostCount: repostCount,

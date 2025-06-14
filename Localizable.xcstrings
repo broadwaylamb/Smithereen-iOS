@@ -145,6 +145,7 @@
       }
     },
     "Expand text…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ru" : {
           "stringUnit" : {

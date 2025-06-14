@@ -5,7 +5,7 @@ struct PostView: View {
 	var profilePicture: ImageLocation?
 	var name: String
 	var date: String
-	var text: AttributedString?
+	var text: PostText
 	var replyCount: Int
 	var repostCount: Int
 	var likesCount: Int
@@ -31,10 +31,7 @@ struct PostView: View {
             .padding(.top, horizontalSizeClass == .regular ? 13 : 7)
             .padding(.bottom, 13)
 
-            if let text {
-                ExpandableText(text, lineLimit: alwaysShowFullText ? nil : 12)
-                    .padding(.horizontal, horizontalPadding)
-            }
+            PostTextView(text)
 
             if horizontalSizeClass == .regular {
                 palette.postFooterSeparator
@@ -83,7 +80,7 @@ struct PostView: View {
         profilePicture: .bundled(.boromirProfilePicture),
         name: "Boromir",
         date: "five minutes ago",
-        text: """
+        text: try! PostText(html: """
         <p>
          First
         paragraph
@@ -127,7 +124,7 @@ struct PostView: View {
         <blockquote>
         Quote
         </blockquote>
-        """.renderAsHTML(),
+        """),
         replyCount: 0,
         repostCount: 0,
         likesCount: 0,
@@ -146,7 +143,7 @@ struct PostView: View {
         profilePicture: .bundled(.rmsProfilePicture),
         name: "Richard Stallman",
         date: "17 June 2009 at 13:12",
-        text: """
+        text: try! PostText(html: """
         <p>
         I'd just like to interject for a moment.  What you're referring to as Linux,
         is in fact, GNU/Linux, or as I've recently taken to calling it, GNU plus Linux.
@@ -170,7 +167,7 @@ struct PostView: View {
         is basically GNU with Linux added, or GNU/Linux.  All the so-called "Linux"
         distributions are really distributions of GNU/Linux.
         </p>
-        """.renderAsHTML(),
+        """),
         replyCount: 129,
         repostCount: 34,
         likesCount: 1311,

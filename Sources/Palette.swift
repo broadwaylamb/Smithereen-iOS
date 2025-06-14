@@ -6,12 +6,15 @@ struct Palette {
     @RGBAColor var feedBackground: Color
     @RGBAColor var ellipsis: Color
     @RGBAColor var avatarLoading: Color
+
     @RGBAColor var postFooterSeparator: Color
     @RGBAColor var compactPostButtonTint: Color
     @RGBAColor var compactPostButtonHighlightedTint: Color
     @RGBAColor var regularPostCommentButton: Color
     @RGBAColor var regularPostLikeAndRepostButton: Color
     @RGBAColor var regularPostLikeText: Color
+
+    @RGBAColor var postCodeBlockBackground: Color
 
     struct SideMenuPalette: Hashable {
         @RGBAColor var background: Color
@@ -35,6 +38,7 @@ struct Palette {
         regularPostCommentButton: #colorLiteral(red: 0.5647058824, green: 0.5764705882, blue: 0.5803921569, alpha: 1),
         regularPostLikeAndRepostButton: #colorLiteral(red: 0.3568627451, green: 0.4862745098, blue: 0.6823529412, alpha: 1),
         regularPostLikeText: #colorLiteral(red: 0.5098039216, green: 0.6235294118, blue: 0.7843137255, alpha: 1),
+        postCodeBlockBackground: #colorLiteral(red: 0.9348388314, green: 0.9348388314, blue: 0.9348388314, alpha: 1),
         sideMenu: .init(
             background: #colorLiteral(red: 0.2235294118, green: 0.2705882353, blue: 0.3215686275, alpha: 1),
             selectedBackground: #colorLiteral(red: 0.1882352941, green: 0.2235294118, blue: 0.2705882353, alpha: 1),
@@ -56,6 +60,7 @@ struct Palette {
         regularPostCommentButton: vk.$regularPostCommentButton.smithereenify(),
         regularPostLikeAndRepostButton: vk.$regularPostLikeAndRepostButton.smithereenify(),
         regularPostLikeText: vk.$regularPostLikeText.smithereenify(),
+        postCodeBlockBackground: vk.$postCodeBlockBackground,
         sideMenu: .init(
             background:         vk.sideMenu.$background.smithereenify(),
             selectedBackground: vk.sideMenu.$selectedBackground.smithereenify(),
