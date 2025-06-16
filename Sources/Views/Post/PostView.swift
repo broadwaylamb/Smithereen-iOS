@@ -32,6 +32,7 @@ struct PostView: View {
             .padding(.bottom, 13)
 
             PostTextView(text)
+                .padding(.horizontal, horizontalPadding)
 
             if horizontalSizeClass == .regular {
                 palette.postFooterSeparator
