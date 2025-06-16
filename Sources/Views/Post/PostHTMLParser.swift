@@ -121,10 +121,13 @@ private final class Parser: NodeVisitor {
                     code = ""
                 }
             case "blockquote":
-                if !blocks.isEmpty {
-                    let children = blocks.removeLast()
-                    appendBlock(.quote(children: children))
+                var children = blocks.pop() ?? []
+                if children.isEmpty {
+                    let inlineNodes = self.inlineNodes.first ?? []
+                    self.inlineNodes = []
+                    children = [.paragraph(content: inlineNodes)]
                 }
+                appendBlock(.quote(children: children))
             case "a":
                 let href = (try? element.attr("href")) ?? ""
                 if !href.isEmpty, let url = URL(string: href) {
@@ -162,8 +165,7 @@ private final class Parser: NodeVisitor {
     }
 
     private func finalizeInlineNode(_ createNode: ([PostTextInlineNode]) -> PostTextInlineNode) {
-        if !inlineNodes.isEmpty {
-            let children = inlineNodes.removeLast()
+        if let children = inlineNodes.pop() {
             appendInlineNode(createNode(children))
         }
     }
@@ -194,5 +196,11 @@ private final class Parser: NodeVisitor {
             }
         }
         return String(accum)
+    }
+}
+
+private extension Array {
+    mutating func pop() -> Element? {
+        return isEmpty ? nil : removeLast()
     }
 }
