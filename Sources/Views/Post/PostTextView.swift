@@ -4,13 +4,41 @@ import SwiftSoup
 struct PostTextView: View {
     var blocks: [PostTextBlock]
 
-    @ScaledMetric(relativeTo: .body) private var paragraphSpacing = 8
+    private static let defaultBodyFont = UIFont
+        .preferredFont(
+            forTextStyle: .body,
+            compatibleWith: UITraitCollection(preferredContentSizeCategory: .large)
+        )
+
+    // https://en.wikipedia.org/wiki/Subscript_and_superscript#HTML
+    fileprivate static let subscriptFontSizeMultiplier: CGFloat = 0.75
+
+    @ScaledMetric(relativeTo: .body)
+    private var paragraphSpacing = 8
+
+    @ScaledMetric(relativeTo: .body)
+    private var baseFontSize = defaultBodyFont.pointSize
+
+    @ScaledMetric(relativeTo: .body)
+    private var subscriptBaselineOffset: CGFloat =
+        -defaultBodyFont.capHeight * subscriptFontSizeMultiplier / 2
+
+    @ScaledMetric(relativeTo: .body)
+    private var superscriptBaselineOffset: CGFloat =
+        defaultBodyFont.capHeight * (1 - subscriptFontSizeMultiplier / 2)
 
     @ViewBuilder
     private func renderBlock(_ block: PostTextBlock) -> some View {
         switch block {
         case .paragraph(let content):
-            Text(AttributedString(content))
+            Text(
+                AttributedString(
+                    content,
+                    baseFontSize: baseFontSize,
+                    subscriptBaselineOffset: subscriptBaselineOffset,
+                    superscriptBaselineOffset: superscriptBaselineOffset,
+                )
+            )
                 .fixedSize(horizontal: false, vertical: true)
         case .quote(let children):
             QuoteView(blocks: children)
@@ -79,9 +107,19 @@ private struct CodeBlockView: View {
 }
 
 extension AttributedString {
-    init(_ nodes: [PostTextInlineNode]) {
+    @MainActor
+    init(
+        _ nodes: [PostTextInlineNode],
+        baseFontSize: CGFloat,
+        subscriptBaselineOffset: CGFloat,
+        superscriptBaselineOffset: CGFloat,
+    ) {
         self.init()
-        func recurse(_ nodes: [PostTextInlineNode], attributes: AttributeContainer) {
+        func recurse(
+            _ nodes: [PostTextInlineNode],
+            attributes: AttributeContainer,
+            subscriptDepth: Int,
+        ) {
             for node in nodes {
                 var newAttributes = attributes
                 switch node {
@@ -91,35 +129,40 @@ extension AttributedString {
                     self += AttributedString("\n", attributes: attributes)
                 case .code(let children):
                     newAttributes.inlinePresentationIntent.insert(.code)
-                    recurse(children, attributes: newAttributes)
+                    recurse(children, attributes: newAttributes, subscriptDepth: subscriptDepth)
                 case .strong(let children):
                     newAttributes.inlinePresentationIntent.insert(.stronglyEmphasized)
-                    recurse(children, attributes: newAttributes)
+                    recurse(children, attributes: newAttributes, subscriptDepth: subscriptDepth)
                 case .emphasis(let children):
                     newAttributes.inlinePresentationIntent.insert(.emphasized)
-                    recurse(children, attributes: newAttributes)
+                    recurse(children, attributes: newAttributes, subscriptDepth: subscriptDepth)
                 case .underline(let children):
                     newAttributes.underlineStyle = .single
-                    recurse(children, attributes: newAttributes)
+                    recurse(children, attributes: newAttributes, subscriptDepth: subscriptDepth)
                 case .strikethrough(let children):
                     newAttributes.inlinePresentationIntent.insert(.strikethrough)
-                    recurse(children, attributes: newAttributes)
-                case .subscript(let children):
-                    newAttributes.baselineOffset = -6
-                    newAttributes.font = .footnote
-                    recurse(children, attributes: newAttributes)
-                case .superscript(let children):
-                    newAttributes.baselineOffset = 6
-                    newAttributes.font = .footnote
-                    recurse(children, attributes: newAttributes)
+                    recurse(children, attributes: newAttributes, subscriptDepth: subscriptDepth)
+                case .subscript(let children), .superscript(let children):
+                    let currentBaselineOffset = attributes.baselineOffset ?? 0
+                    let baselineOffset = if case .subscript = node {
+                        subscriptBaselineOffset
+                    } else {
+                        superscriptBaselineOffset
+                    }
+                    let m = PostTextView.subscriptFontSizeMultiplier
+                    newAttributes.baselineOffset = currentBaselineOffset +
+                        baselineOffset * pow(m, CGFloat(subscriptDepth))
+                    newAttributes.font =
+                        .system(size: baseFontSize * pow(m, CGFloat(subscriptDepth + 1)))
+                    recurse(children, attributes: newAttributes, subscriptDepth: subscriptDepth + 1)
                 case .link(let url, let children):
                     var newAttributes = attributes
                     newAttributes.link = url
-                    recurse(children, attributes: newAttributes)
+                    recurse(children, attributes: newAttributes, subscriptDepth: subscriptDepth)
                 }
             }
         }
-        recurse(nodes, attributes: AttributeContainer())
+        recurse(nodes, attributes: AttributeContainer(), subscriptDepth: 0)
     }
 }
 
@@ -132,6 +175,18 @@ extension AttributedString {
         <br>
         Subscripts and superscripts are also supported:
         C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>, χ<sup>2</sup>.
+        <br>
+        ps<sub>ps<sub>ps<sub>ps<sub>ps<sub>ps<sub>ps<sub>ps
+        <sub>ps<sub>ps<sub>ps<sub>ps<sub>ps<sub>ps
+        </sub></sub></sub></sub></sub></sub></sub></sub></sub></sub></sub></sub></sub>
+        <br>
+        ps<sup>ps<sup>ps<sup>ps<sup>ps<sup>ps<sup>ps<sup>ps
+        <sup>ps<sup>ps<sup>ps<sup>ps<sup>ps<sup>ps
+        </sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup>
+        <br>
+        ps<sub>ps<sup>ps<sub>ps<sup>ps<sub>ps<sup>ps<sub>ps
+        <sup>ps<sub>ps<sup>ps<sub>ps<sup>ps<sub>ps<sup>ps</sup></sub>
+        </sup></sub></sup></sub></sup></sub></sup></sub></sup></sub></sup></sub>
         <br>
         <a href="http://example.com">Links</a> are supported too.
     </p>
