@@ -78,9 +78,9 @@ private struct CommentButton: View {
                 alignment: .firstTextBaseline,
                 image:
                     Image(.commentFilled)
-                    .resizable()
-                    .frame(width: 15, height: 14)
-                    .alignmentGuide(.firstTextBaseline) { $0.height - 3.5 },
+                        .resizable()
+                        .frame(width: 15, height: 14)
+                        .alignmentGuide(.firstTextBaseline) { $0.height - 3.5 },
                 count: count,
                 highlighted: false,
                 action: action,

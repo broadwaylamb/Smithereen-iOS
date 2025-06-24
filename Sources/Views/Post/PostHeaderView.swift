@@ -1,18 +1,45 @@
 import SwiftUI
 
 struct PostHeaderView: View {
-    var profilePicture: ImageLocation?
-    var name: String
-    var date: String
+    var postHeader: PostHeader
+    var kind: Kind
+
+    enum Kind {
+        case regular
+        case repost(isMastodonStyle: Bool)
+        case commentRepost(inReplyTo: String, isMastodonStyle: Bool)
+        case commentToDeletedPostRepost(isMastodonStyle: Bool)
+    }
 
     @AppStorage(.palette) private var palette: Palette = .smithereen
 
-    @ScaledMetric(relativeTo: .body)
-    private var imageSize = 40
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    @ScaledMetric private var imageSize: CGFloat
+
+    init(
+        postHeader: PostHeader,
+        kind: Kind,
+        horizontalSizeClass: UserInterfaceSizeClass?,
+    ) {
+        self.postHeader = postHeader
+        self.kind = kind
+        let imageSize: CGFloat = switch (kind, horizontalSizeClass) {
+        case (.regular, .regular):
+            55
+        case (.regular, _):
+            40
+        case (_, .regular):
+            50
+        case (_, _):
+            32
+        }
+        self._imageSize = ScaledMetric(wrappedValue: imageSize, relativeTo: .body)
+    }
 
     @ViewBuilder
     private var profilePictureImage: some View {
-        switch profilePicture {
+        switch postHeader.authorProfilePicture {
         case .remote(let url):
             AsyncImage(
                 url: url,
@@ -28,22 +55,65 @@ struct PostHeaderView: View {
         }
     }
 
+    private var grayText: LocalizedStringKey {
+        switch kind {
+        case .regular, .repost:
+            "\(postHeader.date)"
+        case .commentRepost(let inReplyTo, _):
+            "\(postHeader.date) on post \(inReplyTo)"
+        case .commentToDeletedPostRepost:
+            "\(postHeader.date) on a deleted post"
+        }
+    }
+
+    @ScaledMetric(relativeTo: .body)
+    private var repostIconSize = 13
+
+    private var repostIcon: Image? {
+        switch kind {
+        case .regular:
+            nil
+        case .repost(isMastodonStyle: false),
+             .commentRepost(_, isMastodonStyle: false),
+             .commentToDeletedPostRepost(isMastodonStyle: false):
+            Image(.repostHeaderQuote)
+        case .repost(isMastodonStyle: true),
+             .commentRepost(_, isMastodonStyle: true),
+             .commentToDeletedPostRepost(isMastodonStyle: true):
+            Image(.repostHeaderMastodonStyle)
+        }
+    }
+
     var body: some View {
         HStack(spacing: 8) {
             profilePictureImage
                 .frame(width: imageSize, height: imageSize)
                 .cornerRadius(2.5)
-            VStack(alignment: .leading, spacing: 7) {
-                Text(name)
-                    .bold()
-                    .foregroundStyle(palette.accent)
-                Text(date)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(alignment: .center, spacing: 6) {
+                    if let repostIcon {
+                        repostIcon
+                            .resizable()
+                            .frame(width: repostIconSize, height: repostIconSize)
+                            .foregroundStyle(palette.repostIcon)
+                    }
+                    Text(postHeader.authorName)
+                        .bold()
+                        .foregroundStyle(palette.accent)
+                }
+                Button(grayText) {
+                    // TODO: Navigate to the post
+                }
+                .buttonStyle(.borderless)
+                .font(.caption)
+                .foregroundStyle(.secondary)
             }
-            Spacer()
-            Button(action: { /* TODO */ }) {
-                Image(systemName: "ellipsis").foregroundStyle(palette.ellipsis)
+            if case .regular = kind {
+                Spacer()
+                Button(action: { /* TODO */ }) {
+                    Image(systemName: "ellipsis").foregroundStyle(palette.ellipsis)
+                }
+                .buttonStyle(.borderless)
             }
         }
     }

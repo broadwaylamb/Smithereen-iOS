@@ -20,6 +20,10 @@ struct PostText: Equatable {
     init(html: String) throws {
         self.init(try SwiftSoup.parse(html))
     }
+
+    var isEmpty: Bool {
+        blocks.isEmpty
+    }
 }
 
 extension PostText: ExpressibleByStringLiteral {

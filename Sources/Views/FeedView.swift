@@ -31,15 +31,7 @@ struct FeedView: View {
         List(viewModel.posts) { post in
             Section {
                 let postView = PostView(
-                    profilePicture: post.authorProfilePicture,
-                    name: post.authorName,
-                    date: post.date,
-                    text: post.text,
-                    replyCount: post.replyCount,
-                    repostCount: post.repostCount,
-                    likesCount: post.likeCount,
-                    liked: post.liked,
-                    originalPostURL: post.remoteInstanceLink ?? post.id,
+                    post: post,
                     alwaysShowFullText: false,
                 )
                 if horizontalSizeClass == .regular {

@@ -285,6 +285,39 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
         return nil
     }
 
+    private func parseSinglePost(
+        _ container: Element,
+        authorNameLinkSelector: String,
+        postLinkSelector: String,
+    ) throws -> PostHeader? {
+        guard let authorNameLink = try container.select(authorNameLinkSelector).first(),
+              let authorURL = try URL(string: authorNameLink.attr("href")) else {
+            return nil
+        }
+
+        let authorName = try authorNameLink.text(trimAndNormaliseWhitespace: true)
+
+        guard let postLink = try container.select(postLinkSelector).first(),
+              let localPostURL = try URL(string: postLink.attr("href")) else {
+            return nil
+        }
+        let date = try postLink.text(trimAndNormaliseWhitespace: true)
+
+        let profilePicture = (try? container.select("span.avaHasImage picture").first())
+            .flatMap(parsePicture)
+
+//        let text = (try? postContent?.select(".expandableText .full").first()) ?? postContent
+
+        return PostHeader(
+            localInstanceLink: localPostURL,
+            remoteInstanceLink: nil, // FIXME: the HTML from the mobile version that we use as data source doesn't contain the link to a remote server.
+            localAuthorID: authorURL,
+            authorName: authorName,
+            date: date,
+            authorProfilePicture: profilePicture.map(ImageLocation.remote),
+        )
+    }
+
     func loadFeed(start: Int?, offset: Int?) async throws -> [Post] {
         guard let instance = await self.authenticationState.instance else {
             throw AuthenticationError.invalidCredentials
@@ -295,27 +328,20 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
             throw ServerError(statusCode: statusCode)
         }
         var posts: [Post] = []
-        for post in try document.select(".post") {
+        for postElement in try document.select(".post") {
             do {
-                guard let authorNameLink = try post.select("a.authorName").first(),
-                      let authorURL = try URL(string: authorNameLink.attr("href")) else {
-                    continue
-                }
-                let authorName = try authorNameLink.text(trimAndNormaliseWhitespace: true)
-                let postContent = try post.select(".postContent").first()
-                let text = (try? postContent?.select(".expandableText .full").first()) ?? postContent
-                guard let postLink = try post.select("a.postLink").first(),
-                      let localPostURL = try URL(string: postLink.attr("href")) else {
-                    continue
-                }
-                let date = try postLink.text(trimAndNormaliseWhitespace: true)
+                guard let postHeader = try parseSinglePost(
+                    postElement,
+                    authorNameLinkSelector: "a.authorName",
+                    postLinkSelector: "a.postLink",
+                ) else { continue }
 
-                let profilePicture = (try? post.select("span.avaHasImage picture").first())
-                    .flatMap(parsePicture)
+                let postContent = try postElement.select(".postContent").first()
+                let text = (try? postContent?.select(".expandableText .full").first()) ?? postContent
 
                 func actionCount(_ actionName: String) throws -> Int {
                     try (
-                        post
+                        postElement
                             .select(".postActions .action.\(actionName) .counter")
                             .first()?
                             .text(trimAndNormaliseWhitespace: true)
@@ -324,22 +350,39 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
 
                 let likeCount = try actionCount("like")
                 let repostCount = try actionCount("share")
-                let commentCount = try actionCount("comment")
-                let liked = try !post.select(".postActions .action.like.liked").isEmpty()
+                let replyCount = try actionCount("comment")
+                let liked = try !postElement.select(".postActions .action.like.liked").isEmpty()
+
+                let reposts = try postElement
+                    .select(".repostHeader")
+                    .compactMap { repostHeaderElement -> Repost? in
+                        guard let repostHeader = try parseSinglePost(
+                            repostHeaderElement,
+                            authorNameLinkSelector: "a.name",
+                            postLinkSelector: "a.grayText"
+                        ) else { return nil }
+
+                        let postContent = try repostHeaderElement.nextElementSibling()
+                        let text = (try? postContent?.select(".expandableText .full").first()) ?? postContent
+                        let isMastodonStyle = try !repostHeaderElement
+                            .select(".repostIcon.mastodonStyle").isEmpty()
+
+                        return Repost(
+                            header: repostHeader,
+                            text: text.map(PostText.init) ?? PostText(),
+                            isMastodonStyleRepost: isMastodonStyle,
+                        )
+                    }
+
                 posts.append(
                     Post(
-                        id: localPostURL,
-                        remoteInstanceLink: nil, // FIXME: the HTML from the mobile version that we use as data source doesn't contain the link to a remote server.
-                        localAuthorID: authorURL,
-                        authorName: authorName,
-                        date: date,
-                        authorProfilePicture: profilePicture.map(ImageLocation.remote),
+                        header: postHeader,
                         text: text.map(PostText.init) ?? PostText(),
                         likeCount: likeCount,
-                        replyCount: commentCount,
+                        replyCount: replyCount,
                         repostCount: repostCount,
                         liked: liked,
-                        reposted: nil, // TODO
+                        reposted: reposts,
                     )
                 )
             } catch {

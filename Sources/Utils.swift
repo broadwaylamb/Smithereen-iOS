@@ -1,21 +1,6 @@
 import Foundation
 import SwiftUI
 
-final class Box<T> {
-    let value: T
-    init(value: T) {
-        self.value = value
-    }
-}
-
-extension Box: Sendable where T: Sendable {}
-
-extension Box: Equatable where T: Equatable {
-	static func == (lhs: Box<T>, rhs: Box<T>) -> Bool {
-		lhs.value == rhs.value
-	}
-}
-
 struct AnyLocalizedError: LocalizedError {
     let error: Error
     var errorDescription: String? {
