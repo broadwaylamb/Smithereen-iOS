@@ -20,6 +20,10 @@ struct Post: Identifiable, Equatable, Sendable {
     var reposted: [Repost] = []
 
     var id: URL { header.localInstanceLink }
+
+    var hasContent: Bool {
+        !text.isEmpty
+    }
 }
 
 extension Post {
@@ -60,6 +64,10 @@ struct Repost: Identifiable, Equatable {
     var isMastodonStyleRepost: Bool
 
     var id: URL { header.localInstanceLink }
+
+    var hasContent: Bool {
+        !text.isEmpty
+    }
 }
 
 extension Repost {

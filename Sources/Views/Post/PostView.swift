@@ -16,6 +16,67 @@ struct PostView: View {
         horizontalSizeClass == .regular ? 13 : 4
     }
 
+    @ScaledMetric(relativeTo: .body) private var repostVerticalLineThickness = 2
+    @ScaledMetric(relativeTo: .body) private var repostContentPadding = 12
+
+    private static let maxRepostChainDepth = 2
+
+    @ViewBuilder
+    private func singleRepost(_ repost: Repost, headerOnly: Bool) -> some View {
+        VStack(alignment: .leading, spacing: horizontalSizeClass == .regular ? 13 : 6) {
+            PostHeaderView(
+                postHeader: repost.header,
+                kind: .repost(isMastodonStyle: repost.isMastodonStyleRepost),
+                horizontalSizeClass: horizontalSizeClass,
+            )
+            if !headerOnly {
+                PostTextView(repost.text)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func repostChain(
+        _ reposts: ArraySlice<Repost>,
+        hasContentAbove: Bool,
+        depth: Int = 1,
+    ) -> some View {
+        if let repost = reposts.first {
+            if horizontalSizeClass == .regular {
+                HStack(spacing: 0) {
+                    palette
+                        .repostVerticalLine
+                        .frame(width: repostVerticalLineThickness)
+                    VStack(alignment: .leading, spacing: 0) {
+                        singleRepost(
+                            repost,
+                            headerOnly: depth >= PostView.maxRepostChainDepth,
+                        )
+                        AnyView(
+                            repostChain(
+                                reposts.dropFirst(),
+                                hasContentAbove: repost.hasContent,
+                                depth: depth + 1,
+                            )
+                        )
+                    }
+                    .padding(.leading, 12)
+                }
+                .padding(.top, hasContentAbove ? 10 : 0)
+            } else {
+                // TODO: Remove Array() call in Swift 6.2
+                ForEach(Array(reposts.enumerated()), id: \.element.id) { (i, repost) in
+                    let hasTopPadding =
+                        i == 0 && hasContentAbove || i > 0 && reposts[i - 1].hasContent
+                    singleRepost(repost, headerOnly: i + 1 >= PostView.maxRepostChainDepth)
+                        .padding(.top, hasTopPadding ? 6 : 0)
+                }
+            }
+        } else {
+            EmptyView()
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             PostHeaderView(
@@ -30,18 +91,11 @@ struct PostView: View {
             PostTextView(post.text)
                 .padding(.horizontal, horizontalPadding)
 
-            ForEach(post.reposted) { repost in
-                PostHeaderView(
-                    postHeader: repost.header,
-                    kind: .repost(isMastodonStyle: repost.isMastodonStyleRepost),
-                    horizontalSizeClass: horizontalSizeClass,
-                )
-                .padding(.horizontal, horizontalPadding)
-                .padding(.top, post.text.isEmpty ? 0 : 6)
-                .padding(.bottom, 6)
-                PostTextView(repost.text)
-                    .padding(.horizontal, horizontalPadding)
-            }
+            repostChain(
+                post.reposted.prefix(PostView.maxRepostChainDepth),
+                hasContentAbove: post.hasContent
+            )
+            .padding(.horizontal, horizontalPadding)
 
             if horizontalSizeClass == .regular {
                 palette.postFooterSeparator
