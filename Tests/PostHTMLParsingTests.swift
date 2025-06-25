@@ -1,4 +1,5 @@
 import Testing
+import SwiftSoup
 @testable import Smithereen
 
 struct PostHTMLParsingTests {
@@ -110,6 +111,28 @@ struct PostHTMLParsingTests {
         </blockquote>
         """)
     }
+
+    @Test func testNonBreakingSpace() async throws {
+        let postText = try PostText(html: """
+        <p>
+        &nbsp;&nbsp;▲
+        <br/>
+        ▲&nbsp;▲
+        <br/>
+        . &nbsp; &nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.
+        </p>
+        """)
+
+        #expect(postText.toHTML() == """
+        <p>
+          &nbsp;&nbsp;▲ 
+          <br/>
+          ▲&nbsp;▲ 
+          <br/>
+          . &nbsp; &nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;. 
+        </p>
+        """)
+    }
 }
 
 extension PostText {
@@ -159,7 +182,9 @@ extension PostTextInlineNode {
     func toHTML(level: Int) -> String {
         switch self {
         case .text(let text):
-            return text
+            return Entities.escape(text)
+                // Fixing a SwiftSoup bug https://github.com/scinfu/SwiftSoup/issues/313
+                .replacingOccurrences(of: "\u{A0}", with: "&nbsp;")
         case .lineBreak:
             return "\n\(indent(level))<br/>\n\(indent(level))"
         case .code(children: let children):

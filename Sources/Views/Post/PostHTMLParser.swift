@@ -186,7 +186,7 @@ private final class Parser: NodeVisitor {
         var reachedNonWhite: Bool = false
 
         for c in string {
-            if (c.isWhitespace) {
+            if (c == " " || c == "\n" || c == "\r" || c == "\t" || c == "\u{000C}") {
                 if stripLeadingWhitespace && !reachedNonWhite || lastWasWhite {
                     continue
                 }
