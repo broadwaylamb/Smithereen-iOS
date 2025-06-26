@@ -21,6 +21,7 @@ struct SettingsView: View {
                         await api.logOut()
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .center)
             }
         }
         .listStyle(.grouped)
