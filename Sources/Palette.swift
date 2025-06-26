@@ -4,7 +4,6 @@ struct Palette {
     var name: String
     @RGBAColor var accent: Color
     @RGBAColor var feedBackground: Color
-    @RGBAColor var ellipsis: Color
     @RGBAColor var avatarLoading: Color
 
     @RGBAColor var postFooterSeparator: Color
@@ -33,7 +32,6 @@ struct Palette {
         name: "VK",
         accent: #colorLiteral(red: 0.3397949338, green: 0.5224637985, blue: 0.718362391, alpha: 1),
         feedBackground: #colorLiteral(red: 0.9254901961, green: 0.9333333333, blue: 0.9529411765, alpha: 1),
-        ellipsis: #colorLiteral(red: 0.8549019098, green: 0.8549019694, blue: 0.8549019694, alpha: 1),
         avatarLoading: #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1), // TODO: Reevaluate
         postFooterSeparator: #colorLiteral(red: 0.8031623363, green: 0.8078625798, blue: 0.8165373206, alpha: 1),
         compactPostButtonTint: #colorLiteral(red: 0.6374332905, green: 0.6473867297, blue: 0.6686993241, alpha: 1),
@@ -57,7 +55,6 @@ struct Palette {
         name: "Smithereen",
         accent:         vk.$accent.smithereenify(),
         feedBackground: vk.$feedBackground.smithereenify(),
-        ellipsis:       vk.$feedBackground.smithereenify(),
         avatarLoading:  vk.$avatarLoading.smithereenify(),
         postFooterSeparator: vk.$postFooterSeparator.smithereenify(),
         compactPostButtonTint: vk.$compactPostButtonTint.smithereenify(),

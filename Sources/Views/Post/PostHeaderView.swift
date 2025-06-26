@@ -111,9 +111,10 @@ struct PostHeaderView: View {
             if case .regular = kind {
                 Spacer()
                 Button(action: { /* TODO */ }) {
-                    Image(systemName: "ellipsis").foregroundStyle(palette.ellipsis)
+                    Image(.ellipsis)
                 }
                 .buttonStyle(.borderless)
+                .accessibilityLabel("Post settings")
             }
         }
     }

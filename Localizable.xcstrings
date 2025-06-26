@@ -321,6 +321,22 @@
         }
       }
     },
+    "Post settings" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Настройки записи"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Налаштування запису"
+          }
+        }
+      }
+    },
     "Profile" : {
       "localizations" : {
         "ru" : {
