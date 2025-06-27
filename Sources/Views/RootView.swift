@@ -61,6 +61,8 @@ struct RootView: View {
                         .navigationBarTitleDisplayMode(.inline)
                         .navigationTitle(selectedItem.localizedDescription)
                         .navigationBarBackground(palette.accent)
+                        .navigationBarBackground(.visible)
+                        .navigationBarColorScheme(.dark)
                         .toolbar {
                             ToolbarItem(placement: .navigationBarLeading) {
                                 if !alwaysShowMenu {
@@ -73,6 +75,9 @@ struct RootView: View {
                         }
                 }
                 .navigationViewStyle(.stack)
+                .navigationBarBackground(palette.accent)
+                .navigationBarBackground(.visible)
+                .navigationBarColorScheme(.dark)
                 .shadow(radius: 7)
                 .offset(x: alwaysShowMenu ? alwaysShownMenuWidth : offset)
                 .frame(maxWidth: alwaysShowMenu ? viewportWidth - alwaysShownMenuWidth : viewportWidth)

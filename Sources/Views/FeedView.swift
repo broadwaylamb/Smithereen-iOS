@@ -8,6 +8,8 @@ struct FeedView: View {
     @AppStorage(.palette) private var palette: Palette = .smithereen
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
+    @State private var composePostShown = false
+
     private var errorAlertShown: Binding<Bool> {
         Binding {
             error != nil
@@ -62,13 +64,18 @@ struct FeedView: View {
         .listSectionSpacingPolyfill(horizontalSizeClass == .regular ? 13 : 0)
         .environment(\.defaultMinListHeaderHeight, 0)
 		.toolbar {
-			ToolbarItem(placement: .topBarTrailing) {
-				Button(action: { /* TODO */ }) {
-					Image(systemName: "square.and.pencil")
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    composePostShown = true
+                } label: {
+                    Image(.composePost)
 				}
                 .tint(Color.white)
             }
 		}
+        .sheet(isPresented: $composePostShown) {
+            ComposePostView("New Post", isShown: $composePostShown)
+        }
         .task {
             await refreshFeed()
         }
