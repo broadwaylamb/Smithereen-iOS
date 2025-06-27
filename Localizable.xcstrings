@@ -435,6 +435,22 @@
     },
     "Smithereen" : {
       "shouldTranslate" : false
+    },
+    "What's new?" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Что у вас нового?"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Що у вас нового?"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

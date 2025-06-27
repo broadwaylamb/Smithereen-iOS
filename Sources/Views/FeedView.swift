@@ -74,7 +74,11 @@ struct FeedView: View {
             }
 		}
         .sheet(isPresented: $composePostShown) {
-            ComposePostView("New Post", isShown: $composePostShown)
+            ComposePostView(
+                "New Post",
+                placeholder: "What's new?",
+                isShown: $composePostShown,
+            )
         }
         .task {
             await refreshFeed()
