@@ -11,10 +11,12 @@
 		872205E32DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 872205E22DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig */; };
 		872205E52DB9754200B65CBA /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 872205E42DB9753F00B65CBA /* README.md */; };
 		874291B92DC29C7F00571022 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 874291B82DC29C7F00571022 /* SnapshotTesting */; };
+		8755183A2E11B03B006EDF63 /* Hammond in Frameworks */ = {isa = PBXBuildFile; productRef = 875518392E11B03B006EDF63 /* Hammond */; };
 		876659422DC8E76E00D62CCA /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 876659412DC8E76E00D62CCA /* SwiftUIIntrospect */; };
 		876659742DC920E200D62CCA /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 876659732DC920E200D62CCA /* SwiftSoup */; };
 		8792C5C62DCA9F1200C58B79 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 8792C5C52DCA9F1200C58B79 /* Prefire */; };
 		87B0C99B2DC41A4200D5DB87 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 87B0C99A2DC41A4200D5DB87 /* Prefire */; };
+		87B5CEE82E1732C900ADFA70 /* Hammond in Frameworks */ = {isa = PBXBuildFile; productRef = 87B5CEE72E1732C900ADFA70 /* Hammond */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +77,8 @@
 				8792C5C62DCA9F1200C58B79 /* Prefire in Frameworks */,
 				876659422DC8E76E00D62CCA /* SwiftUIIntrospect in Frameworks */,
 				876659742DC920E200D62CCA /* SwiftSoup in Frameworks */,
+				87B5CEE82E1732C900ADFA70 /* Hammond in Frameworks */,
+				8755183A2E11B03B006EDF63 /* Hammond in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,6 +147,8 @@
 				876659412DC8E76E00D62CCA /* SwiftUIIntrospect */,
 				876659732DC920E200D62CCA /* SwiftSoup */,
 				8792C5C52DCA9F1200C58B79 /* Prefire */,
+				875518392E11B03B006EDF63 /* Hammond */,
+				87B5CEE72E1732C900ADFA70 /* Hammond */,
 			);
 			productName = Smithereen;
 			productReference = 01E20ABA2DB7926D00CC0EBE /* Smithereen.app */;
@@ -210,6 +216,7 @@
 				87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */,
 				876659402DC8E76E00D62CCA /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
 				876659722DC920E200D62CCA /* XCRemoteSwiftPackageReference "SwiftSoup" */,
+				87B5CEE62E1732C900ADFA70 /* XCRemoteSwiftPackageReference "Hammond" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 01E20ABB2DB7926D00CC0EBE /* Products */;
@@ -585,6 +592,14 @@
 				kind = branch;
 			};
 		};
+		87B5CEE62E1732C900ADFA70 /* XCRemoteSwiftPackageReference "Hammond" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/broadwaylamb/Hammond.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -592,6 +607,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 874291B72DC29C7F00571022 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
 			productName = SnapshotTesting;
+		};
+		875518392E11B03B006EDF63 /* Hammond */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Hammond;
 		};
 		876659412DC8E76E00D62CCA /* SwiftUIIntrospect */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -617,6 +636,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */;
 			productName = Prefire;
+		};
+		87B5CEE72E1732C900ADFA70 /* Hammond */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 87B5CEE62E1732C900ADFA70 /* XCRemoteSwiftPackageReference "Hammond" */;
+			productName = Hammond;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

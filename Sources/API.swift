@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import SwiftSoup
+import Hammond
 
 enum AuthenticationError: LocalizedError {
     case instanceNotFound(String)
@@ -24,7 +25,7 @@ enum AuthenticationError: LocalizedError {
 }
 
 protocol AuthenticationService: Sendable {
-    func authenticate(instance: URL, email: String, password: String) async throws(AuthenticationError)
+    func authenticate(instance: URL, email: String, password: String) async throws
     func logOut() async
 }
 
@@ -39,7 +40,7 @@ extension FeedService {
 }
 
 struct MockApi: AuthenticationService, FeedService {
-    func authenticate(instance: URL, email: String, password: String) async throws(AuthenticationError) {
+    func authenticate(instance: URL, email: String, password: String) async throws {
     }
 
     func logOut() async {
@@ -96,13 +97,6 @@ struct MockApi: AuthenticationService, FeedService {
                 liked: false,
             )
         ]
-    }
-}
-
-struct ServerError: LocalizedError {
-    var statusCode: Int
-    var errorDescription: String {
-        HTTPURLResponse.localizedString(forStatusCode: statusCode)
     }
 }
 
@@ -173,83 +167,60 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
         delegateQueue: nil
     )
 
-    private func sendRequest(_ request: URLRequest) async throws -> (Document, Int) {
-        let (data, response) = try await urlSession.data(for: request)
-        let document = try SwiftSoup
-            .parse(String(data: data, encoding: .utf8)!, request.url!.host!)
-        return (document, (response as! HTTPURLResponse).statusCode)
-    }
+    func send<Request: EncodableRequestProtocol & DecodableRequestProtocol>(
+        _ request: Request,
+        instance: URL? = nil,
+    ) async throws -> Request.Result where Request.ResponseBody == Document {
+        var instance = instance
+        if instance == nil {
+            instance = await self.authenticationState.instance
+        }
+        guard let instance else {
+            throw AuthenticationError.invalidCredentials
+        }
 
-    private func createRequest(
-        instance: URL,
-        _ method: String,
-        _ path: String,
-        queryItems: [URLQueryItem]? = nil,
-        cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy,
-    ) -> URLRequest {
+        let encoder = URLEncodedFormEncoder()
+        var queryItems = [URLQueryItem]()
+        try encoder.encode(request.encodableQuery, into: &queryItems)
+
         var components = URLComponents(url: instance, resolvingAgainstBaseURL: false)!
         components.queryItems = queryItems
-        components.path = path
-        var request = URLRequest(url: components.url!, cachePolicy: cachePolicy)
-        request.httpMethod = method
-        request.setValue(
+        components.path = request.path
+
+        var urlRequest = URLRequest(url: components.url!)
+        urlRequest.httpMethod = Request.method.rawValue
+        urlRequest.setValue(
             "Mozilla/5.0 (iPhone; CPU OS 18_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Mobile/14E304 Safari/605.1.15",
             forHTTPHeaderField: "User-Agent"
         )
-        request.setValue(instance.host!, forHTTPHeaderField: "Host")
-        request.setValue("text/html", forHTTPHeaderField: "Accept")
-        request.setValue("en-GB,en", forHTTPHeaderField: "Accept-Language")
-        return request
-    }
+        urlRequest.setValue(instance.host!, forHTTPHeaderField: "Host")
+        urlRequest.setValue("text/html", forHTTPHeaderField: "Accept")
+        urlRequest.setValue("en-GB,en", forHTTPHeaderField: "Accept-Language")
 
-    func authenticate(instance: URL, email: String, password: String) async throws(AuthenticationError) {
-        // TODO: Check /activitypub/nodeinfo/2.1 and throw AuthenticationError.notSmithereenInstance if it's not Smithereen
-        let escapedEmail = email.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-        let escapedPassword = password.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-        let body = "username=\(escapedEmail)&password=\(escapedPassword)"
-        var request = createRequest(instance: instance, "POST", "/account/login")
-        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        request.httpBody = Data(body.utf8)
-        let statusCode: Int
-        do {
-            (_, statusCode) = try await sendRequest(request)
-        } catch {
-            let nsError = error as NSError
-            if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCannotFindHost {
-                throw .instanceNotFound(instance.absoluteString)
-            }
-            throw .other(error)
-        }
-        if statusCode == 302 {
-            await self.authenticationState.setAuthenticated(instance: instance)
-        } else {
-            throw .invalidCredentials
-        }
-    }
-
-    func logOut() async {
-        if let instance = await authenticationState.instance {
-            let request = createRequest(
-                instance: instance,
-                "GET",
-                "/account/logout",
-                queryItems: [URLQueryItem(name: "csrf", value: csrf)],
+        switch Request.method {
+        case .post:
+            urlRequest.setValue(
+                "application/x-www-form-urlencoded",
+                forHTTPHeaderField: "Content-Type",
             )
-            Task {
-                // Don't wait for the response.
-                // If it fails, we don't care, we'll log out anyway.
-                do {
-                    _ = try await sendRequest(request)
-                } catch {}
+            urlRequest.httpBody = try request.encodableBody.map {
+                Data(try encoder.encode($0).utf8)
             }
+        default:
+            break
         }
-        if let psidCookie = HTTPCookieStorage.shared.psidCookie {
-            HTTPCookieStorage.shared.deleteCookie(psidCookie)
-        }
-        if let jsessionCookie = HTTPCookieStorage.shared.jsessionCookie {
-            HTTPCookieStorage.shared.deleteCookie(jsessionCookie)
-        }
-        await authenticationState.setAuthenticated(instance: nil)
+
+        let (data, urlResponse) = try await urlSession.data(for: urlRequest)
+        let document = try SwiftSoup
+            .parse(String(decoding: data, as: UTF8.self), urlRequest.url!.host!)
+        let response = APIResponse(
+            statusCode: HTTPStatusCode(
+                rawValue: (urlResponse as! HTTPURLResponse).statusCode
+            ),
+            body: document,
+        )
+        saveCSRF(document)
+        return try Request.extractResult(from: response)
     }
 
     private func saveCSRF(_ document: Document) {
@@ -263,132 +234,44 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
         } catch {}
     }
 
-    private func parsePicture(_ element: Element) -> URL? {
+    func authenticate(instance: URL, email: String, password: String) async throws {
         do {
-            for resource in try element.select("source") {
-                if try resource.attr("type") != "image/webp" {
-                    continue
-                }
-                let srcsets = try resource.attr("srcset")
-                    .split(separator: ",")
-                    .map { $0.trimmingCharacters(in: .whitespaces) }
-
-                for srcset in srcsets {
-                    if srcset.hasSuffix(" 2x") {
-                        return URL(string: String(srcset.prefix(srcset.count - 3)))
-                    }
-                }
-            }
+            try await send(
+                LogInRequest(username: email, password: password),
+                instance: instance,
+            )
+        } catch let error as AuthenticationError {
+            throw error
         } catch {
-            // If there is an error, we ignonre it and return nil
+            let nsError = error as NSError
+            if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCannotFindHost {
+                throw AuthenticationError.instanceNotFound(instance.absoluteString)
+            }
+            throw AuthenticationError.other(error)
         }
-        return nil
+        await self.authenticationState.setAuthenticated(instance: instance)
     }
 
-    private func parseSinglePost(
-        _ container: Element,
-        authorNameLinkSelector: String,
-        postLinkSelector: String,
-    ) throws -> PostHeader? {
-        guard let authorNameLink = try container.select(authorNameLinkSelector).first(),
-              let authorURL = try URL(string: authorNameLink.attr("href")) else {
-            return nil
+    func logOut() async {
+        Task {
+            // Don't wait for the response.
+            // If it fails, we don't care, we'll log out anyway.
+            do {
+                if let csrf {
+                    _ = try await send(LogOutRequest(csrf: csrf))
+                }
+            } catch {}
         }
-
-        let authorName = try authorNameLink.text(trimAndNormaliseWhitespace: true)
-
-        guard let postLink = try container.select(postLinkSelector).first(),
-              let localPostURL = try URL(string: postLink.attr("href")) else {
-            return nil
+        if let psidCookie = HTTPCookieStorage.shared.psidCookie {
+            HTTPCookieStorage.shared.deleteCookie(psidCookie)
         }
-        let date = try postLink.text(trimAndNormaliseWhitespace: true)
-
-        let profilePicture = (try? container.select("span.avaHasImage picture").first())
-            .flatMap(parsePicture)
-
-//        let text = (try? postContent?.select(".expandableText .full").first()) ?? postContent
-
-        return PostHeader(
-            localInstanceLink: localPostURL,
-            remoteInstanceLink: nil, // FIXME: the HTML from the mobile version that we use as data source doesn't contain the link to a remote server.
-            localAuthorID: authorURL,
-            authorName: authorName,
-            date: date,
-            authorProfilePicture: profilePicture.map(ImageLocation.remote),
-        )
+        if let jsessionCookie = HTTPCookieStorage.shared.jsessionCookie {
+            HTTPCookieStorage.shared.deleteCookie(jsessionCookie)
+        }
+        await authenticationState.setAuthenticated(instance: nil)
     }
 
     func loadFeed(start: Int?, offset: Int?) async throws -> [Post] {
-        guard let instance = await self.authenticationState.instance else {
-            throw AuthenticationError.invalidCredentials
-        }
-        let request = createRequest(instance: instance, "GET", "/feed")
-        let (document, statusCode) = try await sendRequest(request)
-        if statusCode != 200 {
-            throw ServerError(statusCode: statusCode)
-        }
-        var posts: [Post] = []
-        for postElement in try document.select(".post") {
-            do {
-                guard let postHeader = try parseSinglePost(
-                    postElement,
-                    authorNameLinkSelector: "a.authorName",
-                    postLinkSelector: "a.postLink",
-                ) else { continue }
-
-                let postContent = try postElement.select(".postContent").first()
-                let text = (try? postContent?.select(".expandableText .full").first()) ?? postContent
-
-                func actionCount(_ actionName: String) throws -> Int {
-                    try (
-                        postElement
-                            .select(".postActions .action.\(actionName) .counter")
-                            .first()?
-                            .text(trimAndNormaliseWhitespace: true)
-                    ).flatMap(Int.init) ?? 0
-                }
-
-                let likeCount = try actionCount("like")
-                let repostCount = try actionCount("share")
-                let replyCount = try actionCount("comment")
-                let liked = try !postElement.select(".postActions .action.like.liked").isEmpty()
-
-                let reposts = try postElement
-                    .select(".repostHeader")
-                    .compactMap { repostHeaderElement -> Repost? in
-                        guard let repostHeader = try parseSinglePost(
-                            repostHeaderElement,
-                            authorNameLinkSelector: "a.name",
-                            postLinkSelector: "a.grayText"
-                        ) else { return nil }
-
-                        let postContent = try repostHeaderElement.nextElementSibling()
-                        let text = (try? postContent?.select(".expandableText .full").first()) ?? postContent
-                        let isMastodonStyle = try !repostHeaderElement
-                            .select(".repostIcon.mastodonStyle").isEmpty()
-
-                        return Repost(
-                            header: repostHeader,
-                            text: text.map(PostText.init) ?? PostText(),
-                            isMastodonStyleRepost: isMastodonStyle,
-                        )
-                    }
-
-                posts.append(
-                    Post(
-                        header: postHeader,
-                        text: text.map(PostText.init) ?? PostText(),
-                        likeCount: likeCount,
-                        replyCount: replyCount,
-                        repostCount: repostCount,
-                        liked: liked,
-                        reposted: reposts,
-                    )
-                )
-            } catch {
-                continue
-            }
-        }
-        return posts
+        try await send(FeedRequest(start: start, offset: offset))
     }
 }
