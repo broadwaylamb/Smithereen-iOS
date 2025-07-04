@@ -49,7 +49,7 @@ struct MockApi: AuthenticationService, FeedService {
     func loadFeed(start: Int?, offset: Int?) async throws -> [Post] {
         return [
             Post(
-                id: URL(string: "htts://smithereen.local/posts/1")!,
+                id: PostID(rawValue: 1),
                 localAuthorID: URL(string: "htts://smithereen.local/boromir")!,
                 authorName: "Boromir",
                 date: "five minutes ago",
@@ -61,7 +61,7 @@ struct MockApi: AuthenticationService, FeedService {
                 liked: true,
             ),
             Post(
-                id: URL(string: "htts://smithereen.local/posts/2")!,
+                id: PostID(rawValue: 2),
                 localAuthorID: URL(string: "htts://smithereen.local/rms")!,
                 authorName: "Richard Stallman",
                 date: "17 June 2009 at 13:12",
@@ -141,15 +141,11 @@ private func alreadyAuthenticatedOnInstance() -> URL? {
 
 @MainActor
 final class AuthenticationState: ObservableObject {
-    @Published var instance: URL? = alreadyAuthenticatedOnInstance()
-
-    var isAuthenticated: Bool {
-        instance != nil
-    }
+    @Published var authenticatedInstance: URL? = alreadyAuthenticatedOnInstance()
 
     @MainActor
     func setAuthenticated(instance: URL?) {
-        self.instance = instance
+        self.authenticatedInstance = instance
     }
 }
 
@@ -173,7 +169,7 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
     ) async throws -> Request.Result where Request.ResponseBody == Document {
         var instance = instance
         if instance == nil {
-            instance = await self.authenticationState.instance
+            instance = await self.authenticationState.authenticatedInstance
         }
         guard let instance else {
             throw AuthenticationError.invalidCredentials

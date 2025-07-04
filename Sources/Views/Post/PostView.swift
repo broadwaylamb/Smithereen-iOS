@@ -5,9 +5,7 @@ struct PostView: View {
     var post: Post
     var alwaysShowFullText: Bool
 
-    private var originalPostURL: URL {
-        post.header.remoteInstanceLink ?? post.header.localInstanceLink
-    }
+    @Environment(\.instanceURL) private var instanceURL
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @AppStorage(.palette) private var palette: Palette = .smithereen
@@ -116,7 +114,7 @@ struct PostView: View {
         }
         .background(Color.white)
         .colorScheme(.light)
-        .draggableAsURL(originalPostURL)
+        .draggableAsURL(post.originalPostURL(base: instanceURL))
     }
 }
 
@@ -124,7 +122,7 @@ struct PostView: View {
 #Preview("Text-only post", traits: .sizeThatFitsLayout) {
     PostView(
         post: Post(
-            id: URL(string: "/posts/1")!,
+            id: PostID(rawValue: 1),
             remoteInstanceLink: URL(string: "https://example.com/posts/123")!,
             localAuthorID: URL(string: "/users/1")!,
             authorName: "Boromir",
@@ -147,7 +145,7 @@ struct PostView: View {
 #Preview("Post with formatting", traits: .sizeThatFitsLayout) {
     PostView(
         post: Post(
-            id: URL(string: "/posts/2")!,
+            id: PostID(rawValue: 2),
             remoteInstanceLink: URL(string: "https://example.com/posts/123")!,
             localAuthorID: URL(string: "/users/1")!,
             authorName: "Boromir",
@@ -215,7 +213,7 @@ struct PostView: View {
 #Preview("Truncated text-only post", traits: .sizeThatFitsLayout) {
     PostView(
         post: Post(
-            id: URL(string: "/posts/3")!,
+            id: PostID(rawValue: 3),
             remoteInstanceLink: URL(string: "https://example.com/posts/123")!,
             localAuthorID: URL(string: "/users/2")!,
             authorName: "Richard Stallman",
@@ -261,7 +259,7 @@ struct PostView: View {
 #Preview("Quote repost", traits: .sizeThatFitsLayout) {
     PostView(
         post: Post(
-            id: URL(string: "/posts/4")!,
+            id: PostID(rawValue: 4),
             remoteInstanceLink: URL(string: "https://example.com/posts/123")!,
             localAuthorID: URL(string: "/users/1")!,
             authorName: "Boromir",
@@ -274,7 +272,7 @@ struct PostView: View {
             liked: false,
             reposted: [
                 Repost(
-                    id: URL(string: "/posts/4")!,
+                    id: PostID(rawValue: 4),
                     localAuthorID: URL(string: "/users/1")!,
                     authorName: "Boromir",
                     date: "seven minues ago",
@@ -292,7 +290,7 @@ struct PostView: View {
 #Preview("Mastodon-style repost", traits: .sizeThatFitsLayout) {
     PostView(
         post: Post(
-            id: URL(string: "/posts/4")!,
+            id: PostID(rawValue: 4),
             remoteInstanceLink: URL(string: "https://example.com/posts/123")!,
             localAuthorID: URL(string: "/users/1")!,
             authorName: "Boromir",
@@ -305,7 +303,7 @@ struct PostView: View {
             liked: false,
             reposted: [
                 Repost(
-                    id: URL(string: "/posts/4")!,
+                    id: PostID(rawValue: 4),
                     localAuthorID: URL(string: "/users/1")!,
                     authorName: "Boromir",
                     date: "seven minues ago",

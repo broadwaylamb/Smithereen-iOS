@@ -22,8 +22,9 @@ struct SmithereenApp: App {
     @ViewBuilder
     private var window: some View {
         // TODO: Animate the transitions
-        if authenticationState.isAuthenticated {
-            RootView(api: api, feedViewModel: feedViewModel)
+        if let authenticatedInstance = authenticationState.authenticatedInstance {
+            RootView(api: api, feedViewModel: feedViewModel,)
+                .environment(\.instanceURL, authenticatedInstance)
         } else {
             AuthView(api: api)
         }
@@ -35,4 +36,9 @@ struct SmithereenApp: App {
                 .tint(palette.accent)
         }
     }
+}
+
+extension EnvironmentValues {
+    @Entry var instanceURL: URL =
+        URL(string: "http://smithereen.local")! // Stub, should not be used
 }

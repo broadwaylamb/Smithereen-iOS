@@ -2,7 +2,7 @@ import Foundation
 import SwiftSoup
 
 struct PostHeader: Equatable {
-    var localInstanceLink: URL
+    var id: PostID
     var remoteInstanceLink: URL?
     var localAuthorID: URL
     var authorName: String
@@ -19,16 +19,20 @@ struct Post: Identifiable, Equatable, Sendable {
     var liked: Bool
     var reposted: [Repost] = []
 
-    var id: URL { header.localInstanceLink }
+    var id: PostID { header.id }
 
     var hasContent: Bool {
         !text.isEmpty
+    }
+
+    func originalPostURL(base: URL) -> URL {
+        header.remoteInstanceLink ?? base.appendingPathComponent("/posts/\(id)")
     }
 }
 
 extension Post {
     init(
-        id: URL,
+        id: PostID,
         remoteInstanceLink: URL? = nil,
         localAuthorID: URL,
         authorName: String,
@@ -42,7 +46,7 @@ extension Post {
         reposted: [Repost] = [],
     ) {
         header = PostHeader(
-            localInstanceLink: id,
+            id: id,
             remoteInstanceLink: remoteInstanceLink,
             localAuthorID: localAuthorID,
             authorName: authorName,
@@ -63,7 +67,7 @@ struct Repost: Identifiable, Equatable {
     var text: PostText
     var isMastodonStyleRepost: Bool
 
-    var id: URL { header.localInstanceLink }
+    var id: PostID { header.id }
 
     var hasContent: Bool {
         !text.isEmpty
@@ -72,7 +76,7 @@ struct Repost: Identifiable, Equatable {
 
 extension Repost {
     init(
-        id: URL,
+        id: PostID,
         remoteInstanceLink: URL? = nil,
         localAuthorID: URL,
         authorName: String,
@@ -82,7 +86,7 @@ extension Repost {
         isMastodonStyleRepost: Bool,
     ) {
         header = PostHeader(
-            localInstanceLink: id,
+            id: id,
             remoteInstanceLink: remoteInstanceLink,
             localAuthorID: localAuthorID,
             authorName: authorName,
