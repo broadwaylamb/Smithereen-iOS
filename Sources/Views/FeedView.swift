@@ -3,29 +3,17 @@ import Prefire
 
 struct FeedView: View {
     @ObservedObject var viewModel: FeedViewModel
-    @State private var error: AnyLocalizedError?
+
+    @EnvironmentObject private var errorObserver: ErrorObserver
 
     @AppStorage(.palette) private var palette: Palette = .smithereen
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     @State private var composePostShown = false
 
-    private var errorAlertShown: Binding<Bool> {
-        Binding {
-            error != nil
-        } set: {
-            if !$0 {
-                error = nil
-            }
-        }
-
-    }
-
     private func refreshFeed() async {
-        do {
+        await errorObserver.runCatching {
             try await viewModel.update()
-        } catch {
-            self.error = AnyLocalizedError(error: error)
         }
     }
 
@@ -85,9 +73,6 @@ struct FeedView: View {
         }
         .refreshable {
             await refreshFeed()
-        }
-        .alert(isPresented: errorAlertShown, error: error) {
-            Button("OK", action: {})
         }
         .scrollContentBackgroundPolyfill(.hidden)
         .background(palette.feedBackground)

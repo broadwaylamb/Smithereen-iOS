@@ -23,21 +23,9 @@ struct AuthView: View {
     let api: any AuthenticationService
     @AppStorage(.palette) private var palette: Palette = .smithereen
     @AppStorage(.smithereenInstance) private var instanceAddress: String = ""
+    @StateObject private var errorObserver = ErrorObserver()
     @State private var email: String = ""
     @State private var password: String = ""
-
-    @State private var error: AuthenticationError?
-
-    private var errorAlertShown: Binding<Bool> {
-        Binding {
-            error != nil
-        } set: {
-            if !$0 {
-                error = nil
-            }
-        }
-
-    }
 
     private var instanceURL: URL? {
         if instanceAddress.isEmpty {
@@ -72,20 +60,20 @@ struct AuthView: View {
     private func logIn() {
         guard let instanceURL = self.instanceURL else { return }
         Task {
-            do {
+            await errorObserver.runCatching {
                 try await api.authenticate(
                     instance: instanceURL,
                     email: email,
                     password: password
                 )
-            } catch let error as AuthenticationError {
+            } onError: { error in
                 switch error {
-                case .instanceNotFound, .notSmithereenInstance:
+                case AuthenticationError.instanceNotFound,
+                    AuthenticationError.notSmithereenInstance:
                     self.instanceAddress = ""
                 default:
                     break
                 }
-                self.error = error
             }
         }
     }
@@ -137,9 +125,7 @@ struct AuthView: View {
                 .scrollContentBackgroundPolyfill(.hidden)
             }
             .preferredColorScheme(.dark) // Make sure the status bar text color is white
-            .alert(isPresented: errorAlertShown, error: error) { 
-                Button("OK", action: {})
-            }
+            .alert(errorObserver)
             .padding(.top, 100)
             .frame(maxWidth: 440)
             Spacer(minLength: 0)

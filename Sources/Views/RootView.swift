@@ -8,6 +8,8 @@ struct RootView: View {
 
     @Environment(\.layoutDirection) private var layoutDirection
 
+    @StateObject private var errorObserver = ErrorObserver()
+
     @State private var offset: CGFloat = 0
 	@State private var menuShown: Bool = false
 	@State private var selectedItem: SideMenuItem = .news
@@ -126,6 +128,8 @@ struct RootView: View {
                     }
             )
         }
+        .environmentObject(errorObserver)
+        .alert(errorObserver)
 	}
 }
 
