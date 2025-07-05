@@ -2,9 +2,6 @@ import Hammond
 import SwiftSoup
 
 @GET("/account/logout")
-@EncodableRequest
-struct LogOutRequest: DecodableRequestProtocol {
+struct LogOutRequest: DecodableRequestProtocol, RequiresCSRF {
     typealias Result = Void
-
-    @Query var csrf: String
 }

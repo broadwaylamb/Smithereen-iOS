@@ -83,8 +83,8 @@ public struct URLEncodedFormEncoder: Sendable {
     ///   - userInfo: Overrides the default coder user info.
     /// - Returns: Encoded ``String``
     /// - Throws: Any error that may occur while attempting to encode the specified type.
-    public func encode<E: Encodable>(
-        _ encodable: E,
+    public func encode(
+        _ encodable: any Encodable,
         userInfo: [CodingUserInfoKey: Sendable] = [:]
     ) throws -> String {
         try encode(encodable, userInfo: userInfo) {
@@ -92,8 +92,8 @@ public struct URLEncodedFormEncoder: Sendable {
         }
     }
 
-    public func encode<E: Encodable>(
-        _ encodable: E,
+    public func encode(
+        _ encodable: any Encodable,
         into queryItems: inout [URLQueryItem],
         userInfo: [CodingUserInfoKey: Sendable] = [:]
     ) throws {

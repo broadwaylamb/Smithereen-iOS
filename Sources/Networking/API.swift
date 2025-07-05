@@ -26,7 +26,9 @@ enum AuthenticationError: LocalizedError {
 
 protocol AuthenticationService: Sendable {
     func authenticate(instance: URL, email: String, password: String) async throws
-    func logOut() async
+
+    @MainActor
+    func logOut()
 }
 
 protocol FeedService: Sendable {
@@ -43,7 +45,7 @@ struct MockApi: AuthenticationService, FeedService {
     func authenticate(instance: URL, email: String, password: String) async throws {
     }
 
-    func logOut() async {
+    func logOut() {
     }
 
     func loadFeed(start: Int?, offset: Int?) async throws -> [Post] {
@@ -151,7 +153,7 @@ final class AuthenticationState: ObservableObject {
 
 actor HTMLScrapingApi: AuthenticationService, FeedService {
     private let authenticationState: AuthenticationState
-    private var csrf: String?
+    private var csrf: URLQueryItem?
 
     init(authenticationState: AuthenticationState) {
         self.authenticationState = authenticationState
@@ -163,7 +165,7 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
         delegateQueue: nil
     )
 
-    func send<Request: EncodableRequestProtocol & DecodableRequestProtocol>(
+    func send<Request: DecodableRequestProtocol>(
         _ request: Request,
         instance: URL? = nil,
     ) async throws -> Request.Result where Request.ResponseBody == Document {
@@ -175,9 +177,17 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
             throw AuthenticationError.invalidCredentials
         }
 
+        let encodableQuery = (request as? (any EncodableRequestProtocol))?.encodableQuery
+        let encodableBody = (request as? (any EncodableRequestProtocol))?.encodableBody
+
         let encoder = URLEncodedFormEncoder()
         var queryItems = [URLQueryItem]()
-        try encoder.encode(request.encodableQuery, into: &queryItems)
+        if let encodableQuery {
+            try encoder.encode(encodableQuery, into: &queryItems)
+        }
+        if request is RequiresCSRF, let csrf {
+            queryItems.append(csrf)
+        }
 
         var components = URLComponents(url: instance, resolvingAgainstBaseURL: false)!
         components.queryItems = queryItems
@@ -195,12 +205,12 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
 
         switch Request.method {
         case .post:
-            urlRequest.setValue(
-                "application/x-www-form-urlencoded",
-                forHTTPHeaderField: "Content-Type",
-            )
-            urlRequest.httpBody = try request.encodableBody.map {
-                Data(try encoder.encode($0).utf8)
+            if let encodableBody {
+                urlRequest.setValue(
+                    "application/x-www-form-urlencoded",
+                    forHTTPHeaderField: "Content-Type",
+                )
+                urlRequest.httpBody = Data(try encoder.encode(encodableBody).utf8)
             }
         default:
             break
@@ -226,7 +236,7 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
                   let components = URLComponents(string: logoutUrl) else {
                 return
             }
-            self.csrf = components.queryItems?.first { $0.name == "csrf" }?.value
+            self.csrf = components.queryItems?.first { $0.name == "csrf" }
         } catch {}
     }
 
@@ -248,14 +258,13 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
         await self.authenticationState.setAuthenticated(instance: instance)
     }
 
-    func logOut() async {
+    @MainActor
+    func logOut() {
         Task {
             // Don't wait for the response.
             // If it fails, we don't care, we'll log out anyway.
             do {
-                if let csrf {
-                    _ = try await send(LogOutRequest(csrf: csrf))
-                }
+                try await send(LogOutRequest())
             } catch {}
         }
         if let psidCookie = HTTPCookieStorage.shared.psidCookie {
@@ -264,7 +273,7 @@ actor HTMLScrapingApi: AuthenticationService, FeedService {
         if let jsessionCookie = HTTPCookieStorage.shared.jsessionCookie {
             HTTPCookieStorage.shared.deleteCookie(jsessionCookie)
         }
-        await authenticationState.setAuthenticated(instance: nil)
+        authenticationState.setAuthenticated(instance: nil)
     }
 
     func loadFeed(start: Int?, offset: Int?) async throws -> [Post] {

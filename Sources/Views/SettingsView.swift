@@ -17,9 +17,7 @@ struct SettingsView: View {
             }
             Section {
                 Button("Sign out", role: .destructive) {
-                    Task {
-                        await api.logOut()
-                    }
+                    api.logOut()
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
             }

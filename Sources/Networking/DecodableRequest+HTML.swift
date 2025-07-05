@@ -13,3 +13,5 @@ extension DecodableRequestProtocol where ResponseBody == Document {
         throw ServerError.defaultError(for: .noContent)
     }
 }
+
+protocol RequiresCSRF: RequestProtocol {}
