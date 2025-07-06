@@ -8,7 +8,7 @@ struct PostView: View {
     @Environment(\.instanceURL) private var instanceURL
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @AppStorage(.palette) private var palette: Palette = .smithereen
+    @EnvironmentObject private var palette: PaletteHolder
 
     private var horizontalPadding: CGFloat {
         horizontalSizeClass == .regular ? 13 : 4

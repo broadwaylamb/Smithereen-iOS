@@ -11,7 +11,7 @@ struct PostHeaderView: View {
         case commentToDeletedPostRepost(isMastodonStyle: Bool)
     }
 
-    @AppStorage(.palette) private var palette: Palette = .smithereen
+    @EnvironmentObject private var palette: PaletteHolder
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 

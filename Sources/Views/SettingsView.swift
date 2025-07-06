@@ -2,12 +2,12 @@ import SwiftUI
 
 struct SettingsView: View {
     let api: any AuthenticationService
-    @AppStorage(.palette) private var palette: Palette = .smithereen
+    @EnvironmentObject private var paletteHolder: PaletteHolder
 
     var body: some View {
         List {
             Section(header: Text("Appearance")) {
-                Picker("Color theme", selection: $palette) {
+                Picker("Color theme", selection: $paletteHolder.palette) {
                     ForEach(Palette.allCases) { palette in
                         Text(verbatim: palette.name)
                             .tag(palette)

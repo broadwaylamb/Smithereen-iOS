@@ -19,7 +19,3 @@ extension AppStorage where Value: RawRepresentable, Value.RawValue == String {
 extension AppStorageKey<String> {
     static let smithereenInstance = Self(rawValue: "smithereenInstance")
 }
-
-extension AppStorageKey<Palette> {
-    static let palette = Self(rawValue: "palette")
-}

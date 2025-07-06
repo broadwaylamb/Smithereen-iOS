@@ -6,7 +6,7 @@ struct FeedView: View {
 
     @EnvironmentObject private var errorObserver: ErrorObserver
 
-    @AppStorage(.palette) private var palette: Palette = .smithereen
+    @EnvironmentObject private var palette: PaletteHolder
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     @State private var composePostShown = false

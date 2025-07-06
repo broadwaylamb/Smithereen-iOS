@@ -85,7 +85,6 @@ private struct ContentMarginPolyfillViewModifier: ViewModifier {
 extension View {
 	func onChangePolyfill<V: Equatable>(
 		of value: V,
-		initial: Bool = false,
 		_ action: @escaping () -> Void
 	) -> some View {
 		if #available(iOS 17.0, *) {

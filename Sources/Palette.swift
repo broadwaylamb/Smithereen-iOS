@@ -51,28 +51,40 @@ struct Palette {
         ),
     )
 
-    static let smithereen: Palette = .init(
-        name: "Smithereen",
-        accent:         vk.$accent.smithereenify(),
-        feedBackground: vk.$feedBackground.smithereenify(),
-        avatarLoading:  vk.$avatarLoading.smithereenify(),
-        postFooterSeparator: vk.$postFooterSeparator.smithereenify(),
-        compactPostButtonTint: vk.$compactPostButtonTint.smithereenify(),
-        compactPostButtonHighlightedTint: vk.$compactPostButtonHighlightedTint.smithereenify(),
-        regularPostCommentButton: vk.$regularPostCommentButton.smithereenify(),
-        regularPostLikeAndRepostButton: vk.$regularPostLikeAndRepostButton.smithereenify(),
-        regularPostLikeText: vk.$regularPostLikeText.smithereenify(),
-        repostVerticalLine: vk.$repostVerticalLine.smithereenify(),
-        repostIcon: vk.$repostIcon.smithereenify(),
-        postCodeBlockBackground: vk.$postCodeBlockBackground,
-        sideMenu: .init(
-            background:         vk.sideMenu.$background.smithereenify(),
-            selectedBackground: vk.sideMenu.$selectedBackground.smithereenify(),
-            icon:               vk.sideMenu.$icon.smithereenify(),
-            separator:          vk.sideMenu.$separator.smithereenify(),
-            text:               vk.sideMenu.$text.smithereenify(),
-        ),
-    )
+    static let smithereen: Palette = Palette.vk.mapColors(name: "Smithereen") {
+        $0.h += 211
+        $0.c *= 1.5
+    }
+
+    func mapColors(name: String, _ transform: (inout LCHColor) -> Void) -> Palette {
+        func map(_ color: RGBAColor) -> RGBAColor {
+            var lch = color.toLCH()
+            transform(&lch)
+            return lch.toRGB()
+        }
+        return .init(
+            name: name,
+            accent: map($accent),
+            feedBackground: map($feedBackground),
+            avatarLoading: map($avatarLoading),
+            postFooterSeparator: map($postFooterSeparator),
+            compactPostButtonTint: map($compactPostButtonTint),
+            compactPostButtonHighlightedTint: map($compactPostButtonHighlightedTint),
+            regularPostCommentButton: map($regularPostCommentButton),
+            regularPostLikeAndRepostButton: map($regularPostLikeAndRepostButton),
+            regularPostLikeText: map($regularPostLikeText),
+            repostVerticalLine: map($repostVerticalLine),
+            repostIcon: map($repostIcon),
+            postCodeBlockBackground: map($postCodeBlockBackground),
+            sideMenu: .init(
+                background: map(sideMenu.$background),
+                selectedBackground: map(sideMenu.$selectedBackground),
+                icon: map(sideMenu.$icon),
+                separator: map(sideMenu.$separator),
+                text: map(sideMenu.$text)
+            ),
+        )
+    }
 }
 
 extension Palette: Equatable {
@@ -84,6 +96,33 @@ extension Palette: Equatable {
 extension Palette: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(name)
+    }
+}
+
+@dynamicMemberLookup
+final class PaletteHolder: ObservableObject {
+    private let userDefaults: UserDefaults
+
+    private static let userDefaultsKey = Bundle.main.bundleIdentifier! + ".palette"
+
+    @Published var palette: Palette = .smithereen {
+        didSet {
+            userDefaults.set(palette.name, forKey: Self.userDefaultsKey)
+        }
+    }
+
+    init(userDefaults: UserDefaults = .standard) {
+        self.userDefaults = userDefaults
+        if let preferredPalette = (userDefaults
+            .value(forKey: Self.userDefaultsKey) as? String)
+            .flatMap(Palette.init)
+        {
+            self.palette = preferredPalette
+        }
+    }
+
+    subscript<T>(dynamicMember keyPath: KeyPath<Palette, T>) -> T {
+        palette[keyPath: keyPath]
     }
 }
 
@@ -108,13 +147,4 @@ extension Palette: RawRepresentable {
 
 extension Palette: CaseIterable {
     static let allCases: [Palette] = [.smithereen, .vk]
-}
-
-fileprivate extension RGBAColor {
-    func smithereenify() -> RGBAColor {
-        var lch = toLCH()
-        lch.h += 208
-        lch.c *= 3
-        return lch.toRGB()
-    }
 }

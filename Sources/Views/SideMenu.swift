@@ -31,7 +31,7 @@ enum SideMenuItem: Int, Identifiable, CaseIterable {
 }
 
 struct SideMenu: View {
-    @AppStorage(.palette) private var palette: Palette = .smithereen
+    @EnvironmentObject private var palette: PaletteHolder
     @State var userFullName: String
     var userProfilePicture: Image
     @Binding var selectedItem: SideMenuItem

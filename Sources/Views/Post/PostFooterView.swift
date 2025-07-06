@@ -26,7 +26,7 @@ private struct CompactPostFooterButton<Image: View>: View {
     var highlighted: Bool
     var action: @MainActor () -> Void
 
-    @AppStorage(.palette) private var palette = .smithereen
+    @EnvironmentObject private var palette: PaletteHolder
 
     var body: some View {
         Button(action: action) {
@@ -50,7 +50,7 @@ private struct CommentButton: View {
     var count: Int
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @AppStorage(.palette) private var palette = .smithereen
+    @EnvironmentObject private var palette: PaletteHolder
 
     private func action() {
         // TODO
@@ -93,7 +93,7 @@ private struct RepostButton: View {
     var count: Int
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @AppStorage(.palette) private var palette = .smithereen
+    @EnvironmentObject private var palette: PaletteHolder
 
     private func action() {
         // TODO
@@ -134,7 +134,7 @@ private struct LikeButton: View {
     @State var liked: Bool
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @AppStorage(.palette) private var palette = .smithereen
+    @EnvironmentObject private var palette: PaletteHolder
 
     private func action() {
         withAnimation(.easeInOut(duration: 0.2)) {

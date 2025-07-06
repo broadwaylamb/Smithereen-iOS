@@ -1,11 +1,10 @@
 import SwiftUI
-import SwiftData
 
 @main
 struct SmithereenApp: App {
     private let api: HTMLScrapingApi
 
-    @AppStorage(.palette) private var palette: Palette = .smithereen
+    @StateObject private var paletteHolder = PaletteHolder()
     @StateObject private var authenticationState: AuthenticationState
     @StateObject private var feedViewModel: FeedViewModel
 
@@ -33,7 +32,13 @@ struct SmithereenApp: App {
     var body: some Scene {
         WindowGroup {
             window
-                .tint(palette.accent)
+                .tint(paletteHolder.accent)
+                .overlay(alignment: .bottom) {
+                    if false { // Flip to true if you want to experiment with colors
+                        ColorSchemeCustomizer()
+                    }
+                }
+                .environmentObject(paletteHolder)
         }
     }
 }

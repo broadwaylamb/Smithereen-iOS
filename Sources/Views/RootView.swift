@@ -4,7 +4,7 @@ struct RootView: View {
     let api: any AuthenticationService
     let feedViewModel: FeedViewModel
 
-    @AppStorage(.palette) private var palette: Palette = .smithereen
+    @EnvironmentObject private var palette: PaletteHolder
 
     @Environment(\.layoutDirection) private var layoutDirection
 

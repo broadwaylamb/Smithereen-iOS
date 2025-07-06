@@ -93,7 +93,7 @@ private struct QuoteView: View {
 private struct CodeBlockView: View {
     var code: String
 
-    @AppStorage(.palette) private var palette = .smithereen
+    @EnvironmentObject private var palette: PaletteHolder
     @ScaledMetric(relativeTo: .body) private var codePadding = 8
 
     var body: some View {

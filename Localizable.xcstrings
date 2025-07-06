@@ -156,6 +156,9 @@
         }
       }
     },
+    "Chroma: %lf" : {
+      "shouldTranslate" : false
+    },
     "Color theme" : {
       "localizations" : {
         "ru" : {
@@ -256,6 +259,9 @@
           }
         }
       }
+    },
+    "Hue: %lf" : {
+      "shouldTranslate" : false
     },
     "Instance domain" : {
       "localizations" : {
