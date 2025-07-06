@@ -195,6 +195,23 @@
         }
       }
     },
+    "Could not find a Smithereen instance at %@" : {
+      "comment" : "An error message on the login screen",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось найти сервер Smithereen по адресу %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не вдалося знайти сервер Smithereen за адресою %@"
+          }
+        }
+      }
+    },
     "Done" : {
       "localizations" : {
         "ru" : {
@@ -454,6 +471,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Що у вас нового?"
+          }
+        }
+      }
+    },
+    "Wrong email/username or password" : {
+      "comment" : "An error message on the login screen",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Неверные данные для входа"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Невірні дані для входу"
           }
         }
       }

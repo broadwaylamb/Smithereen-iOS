@@ -68,8 +68,7 @@ struct AuthView: View {
                 )
             } onError: { error in
                 switch error {
-                case AuthenticationError.instanceNotFound,
-                    AuthenticationError.notSmithereenInstance:
+                case AuthenticationError.instanceNotFound:
                     self.instanceAddress = ""
                 default:
                     break

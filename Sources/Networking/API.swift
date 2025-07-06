@@ -5,19 +5,21 @@ import Hammond
 
 enum AuthenticationError: LocalizedError {
     case instanceNotFound(String)
-    case notSmithereenInstance
     case invalidCredentials
     case other(any Error)
 
     var errorDescription: String? {
-        // TODO: Actually localize
         switch self {
         case .instanceNotFound(let url):
-            "Could not find a Smithereen instance at \(url)"
-        case .notSmithereenInstance:
-            "The provided instance is not a valid Smithereen server"
+            String(
+                localized: "Could not find a Smithereen instance at \(url)",
+                comment: "An error message on the login screen",
+            )
         case .invalidCredentials:
-            "Invalid username or password"
+            String(
+                localized: "Wrong email/username or password",
+                comment: "An error message on the login screen",
+            )
         case .other(let error):
             error.localizedDescription
         }
