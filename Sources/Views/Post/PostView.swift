@@ -27,8 +27,19 @@ struct PostView: View {
                 kind: .repost(isMastodonStyle: repost.isMastodonStyleRepost),
                 horizontalSizeClass: horizontalSizeClass,
             )
+            .padding(.horizontal, horizontalSizeClass == .regular ? 0 : 4)
+
             if !headerOnly {
                 PostTextView(repost.text)
+                    .padding(.horizontal, horizontalSizeClass == .regular ? 0 : 4)
+
+                PostAttachmentsView(attachments: repost.attachments)
+                    .padding(
+                        .top,
+                        repost.text.isEmpty
+                            ? 0
+                            : (horizontalSizeClass == .regular ? 10 : 6)
+                    )
             }
         }
     }
@@ -89,11 +100,23 @@ struct PostView: View {
             PostTextView(post.text)
                 .padding(.horizontal, horizontalPadding)
 
+            PostAttachmentsView(attachments: post.attachments)
+                .padding(.horizontal, horizontalSizeClass == .regular ? 13 : 0)
+                .padding(
+                    .top,
+                    post.text.isEmpty
+                        ? 0
+                        : (horizontalSizeClass == .regular ? 10 : 6)
+                )
+
             repostChain(
                 post.reposted.prefix(PostView.maxRepostChainDepth),
                 hasContentAbove: post.hasContent
             )
-            .padding(.horizontal, horizontalPadding)
+            .padding(
+                .horizontal,
+                horizontalSizeClass == .regular ? 13 : 0
+            )
 
             if horizontalSizeClass == .regular {
                 palette.postFooterSeparator

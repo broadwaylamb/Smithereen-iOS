@@ -8,8 +8,22 @@ struct FeedRequest: DecodableRequestProtocol {
     @Query var start: Int?
     @Query var offset: Int?
 
-    private static func parsePicture(_ element: Element) -> URL? {
+    private struct Picture {
+        var url: URL?
+        var altText: String?
+        var blurHash: RGBAColor?
+    }
+
+    private static func parsePicture(
+        _ element: Element
+    ) -> Picture {
         do {
+            let img = try element.select("img").first()
+            let altText = try img?.attr("alt")
+            let style = try img?.attr("style")
+            let blurHash = style.flatMap {
+                blurHashRegex.firstMatch(in: $0, captureGroup: 1)
+            }?.flatMap(RGBAColor.init(cssHex:))
             for resource in try element.select("source") {
                 if try resource.attr("type") != "image/webp" {
                     continue
@@ -20,14 +34,15 @@ struct FeedRequest: DecodableRequestProtocol {
 
                 for srcset in srcsets {
                     if srcset.hasSuffix(" 2x") {
-                        return URL(string: String(srcset.prefix(srcset.count - 3)))
+                        let url = URL(string: String(srcset.prefix(srcset.count - 3)))
+                        return Picture(url: url, altText: altText, blurHash: blurHash)
                     }
                 }
             }
         } catch {
             // If there is an error, we ignore it and return nil
         }
-        return nil
+        return Picture()
     }
 
     private static func parseSinglePost(
@@ -62,8 +77,36 @@ struct FeedRequest: DecodableRequestProtocol {
             localAuthorID: authorURL,
             authorName: authorName,
             date: date,
-            authorProfilePicture: profilePicture.map(ImageLocation.remote),
+            authorProfilePicture: profilePicture?.url.map(ImageLocation.remote),
         )
+    }
+
+    private static func parseSinglePhoto(_ link: Element) -> PhotoAttachment? {
+        let dataPv = try? Data(link.attr(Array("data-pv".utf8)))
+        let sizes = dataPv.flatMap {
+            try? JSONDecoder().decode(PhotoViewerInlineData.self, from: $0)
+        }
+        guard let picture = try? link.select("picture").first.flatMap(parsePicture) else {
+            return nil
+        }
+        return PhotoAttachment(
+            blurHash: picture.blurHash,
+            thumbnailURL: picture.url,
+            sizes: sizes?.urls ?? [],
+            altText: picture.altText,
+        )
+    }
+
+    private static func parsePostAttachments(
+        _ postAttachments: Element?
+    ) throws -> [PostAttachment] {
+        guard let postAttachments, postAttachments.hasClass("postAttachments") else {
+            return []
+        }
+        let photos = try postAttachments
+            .select("a.photo")
+            .compactMap { parseSinglePhoto($0).map(PostAttachment.photo) }
+        return photos
     }
 
     static func deserializeResult(from document: Document) throws -> [Post] {
@@ -78,6 +121,9 @@ struct FeedRequest: DecodableRequestProtocol {
 
                 let postContent = try postElement.select(".postContent").first()
                 let text = (try? postContent?.select(".expandableText .full").first()) ?? postContent
+
+                let attachments =
+                    try parsePostAttachments(postContent?.nextElementSibling())
 
                 func actionCount(_ actionName: String) throws -> Int {
                     try (
@@ -107,10 +153,14 @@ struct FeedRequest: DecodableRequestProtocol {
                         let isMastodonStyle = try !repostHeaderElement
                             .select(".repostIcon.mastodonStyle").isEmpty()
 
+                        let attachments =
+                            try parsePostAttachments(postContent?.nextElementSibling())
+
                         return Repost(
                             header: repostHeader,
                             text: text.map(PostText.init) ?? PostText(),
                             isMastodonStyleRepost: isMastodonStyle,
+                            attachments: attachments,
                         )
                     }
 
@@ -123,6 +173,7 @@ struct FeedRequest: DecodableRequestProtocol {
                         repostCount: repostCount,
                         liked: liked,
                         reposted: reposts,
+                        attachments: attachments,
                     )
                 )
             } catch {
@@ -132,3 +183,6 @@ struct FeedRequest: DecodableRequestProtocol {
         return posts
     }
 }
+
+private let blurHashRegex =
+    try! NSRegularExpression(pattern: #"background-color: #([a-fA-F0-9]{6})"#)

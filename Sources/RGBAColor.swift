@@ -22,6 +22,26 @@ extension RGBAColor: _ExpressibleByColorLiteral {
     }
 }
 
+extension RGBAColor {
+    init?<S: StringProtocol>(cssHex: S) {
+        guard var bits = UInt32(cssHex, radix: 16) else { return nil }
+        func component() -> Double {
+            defer {
+                bits >>= 8
+            }
+            return Double(bits & 0xFF) / 255.0
+        }
+        if bits & 0xFF000000 == 0 {
+            self.alpha = 1
+        } else {
+            self.alpha = component()
+        }
+        self.blue = component()
+        self.green = component()
+        self.red = component()
+    }
+}
+
 // https://mina86.com/2021/srgb-lab-lchab-conversions/
 
 private let RAD_TO_DEG: Double = 180 / .pi

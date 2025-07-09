@@ -21,3 +21,26 @@ extension Optional where Wrapped: OptionSet, Wrapped.Element == Wrapped {
         self = .some(existing)
     }
 }
+
+extension NSRegularExpression {
+    func firstMatch(in s: String) -> NSTextCheckingResult? {
+        firstMatch(
+            in: s,
+            range: NSRange(s.startIndex..<s.endIndex, in: s)
+        )
+    }
+
+    func firstMatch(in s: String, captureGroup: Int) -> Substring? {
+        let tcr = firstMatch(in: s)
+        return tcr?.captureGroup(captureGroup, in: s)
+    }
+}
+
+extension NSTextCheckingResult {
+    func captureGroup<S: StringProtocol>(_ n: Int, in s: S) -> S.SubSequence? {
+        if numberOfRanges < n {
+            return nil
+        }
+        return Range(range(at: n), in: s).map { s[$0] }
+    }
+}

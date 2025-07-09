@@ -18,11 +18,12 @@ struct Post: Identifiable, Equatable, Sendable {
     var repostCount: Int
     var liked: Bool
     var reposted: [Repost] = []
+    var attachments: [PostAttachment] = []
 
     var id: PostID { header.id }
 
     var hasContent: Bool {
-        !text.isEmpty
+        !text.isEmpty && !attachments.isEmpty
     }
 
     func originalPostURL(base: URL) -> URL {
@@ -43,6 +44,7 @@ extension Post {
         replyCount: Int,
         repostCount: Int,
         liked: Bool,
+        attachments: [PostAttachment] = [],
         reposted: [Repost] = [],
     ) {
         header = PostHeader(
@@ -58,6 +60,7 @@ extension Post {
         self.replyCount = replyCount
         self.repostCount = repostCount
         self.liked = liked
+        self.attachments = attachments
         self.reposted = reposted
     }
 }
@@ -66,11 +69,12 @@ struct Repost: Identifiable, Equatable {
     var header: PostHeader
     var text: PostText
     var isMastodonStyleRepost: Bool
+    var attachments: [PostAttachment] = []
 
     var id: PostID { header.id }
 
     var hasContent: Bool {
-        !text.isEmpty
+        !text.isEmpty && !attachments.isEmpty
     }
 }
 
@@ -84,6 +88,7 @@ extension Repost {
         authorProfilePicture: ImageLocation? = nil,
         text: PostText,
         isMastodonStyleRepost: Bool,
+        attachments: [PostAttachment] = [],
     ) {
         header = PostHeader(
             id: id,
@@ -95,5 +100,6 @@ extension Repost {
         )
         self.text = text
         self.isMastodonStyleRepost = isMastodonStyleRepost
+        self.attachments = attachments
     }
 }
