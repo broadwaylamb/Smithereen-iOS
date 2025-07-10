@@ -45,7 +45,7 @@ struct PostHeaderView: View {
                 url: url,
                 scale: 2.0,
                 content: { $0.resizable() },
-                placeholder: { Color.gray },
+                placeholder: { palette.loadingImagePlaceholder },
             )
         case .bundled(let resource):
             Image(resource)

@@ -4,7 +4,7 @@ struct Palette {
     var name: String
     @RGBAColor var accent: Color
     @RGBAColor var feedBackground: Color
-    @RGBAColor var avatarLoading: Color
+    @RGBAColor var loadingImagePlaceholder: Color
 
     @RGBAColor var postFooterSeparator: Color
     @RGBAColor var compactPostButtonTint: Color
@@ -32,7 +32,7 @@ struct Palette {
         name: "VK",
         accent: #colorLiteral(red: 0.3397949338, green: 0.5224637985, blue: 0.718362391, alpha: 1),
         feedBackground: #colorLiteral(red: 0.9254901961, green: 0.9333333333, blue: 0.9529411765, alpha: 1),
-        avatarLoading: #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1), // TODO: Reevaluate
+        loadingImagePlaceholder: #colorLiteral(red: 0.9420066476, green: 0.9368781447, blue: 0.9587077498, alpha: 1),
         postFooterSeparator: #colorLiteral(red: 0.8031623363, green: 0.8078625798, blue: 0.8165373206, alpha: 1),
         compactPostButtonTint: #colorLiteral(red: 0.6374332905, green: 0.6473867297, blue: 0.6686993241, alpha: 1),
         compactPostButtonHighlightedTint: #colorLiteral(red: 0.1697994363, green: 0.371793279, blue: 0.6778445559, alpha: 1),
@@ -66,7 +66,7 @@ struct Palette {
             name: name,
             accent: map($accent),
             feedBackground: map($feedBackground),
-            avatarLoading: map($avatarLoading),
+            loadingImagePlaceholder: map($loadingImagePlaceholder),
             postFooterSeparator: map($postFooterSeparator),
             compactPostButtonTint: map($compactPostButtonTint),
             compactPostButtonHighlightedTint: map($compactPostButtonHighlightedTint),

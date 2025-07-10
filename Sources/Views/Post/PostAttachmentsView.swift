@@ -4,6 +4,7 @@ struct PostAttachmentsView: View {
     var attachments: [PostAttachment]
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @EnvironmentObject private var palette: PaletteHolder
 
     private var photos: [PhotoAttachment] {
         attachments.compactMap {
@@ -20,8 +21,7 @@ struct PostAttachmentsView: View {
         AsyncImage(url: url, scale: 2) { image in
             image.resizable()
         } placeholder: {
-            // TODO: Better placeholder if no blurhash
-            photo.blurHash?.wrappedValue ?? Color.gray
+            photo.blurHash?.wrappedValue ?? palette.loadingImagePlaceholder
         }
         .aspectRatio(
             photo.sizes.first.map { CGFloat($0.width) / CGFloat($0.height) },
