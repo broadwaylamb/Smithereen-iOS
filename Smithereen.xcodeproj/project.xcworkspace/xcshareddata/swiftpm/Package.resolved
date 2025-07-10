@@ -1,5 +1,5 @@
 {
-  "originHash" : "09f64718b85cd29c292b63d93d110e0b938196caa4ac7cb0e8fa0d1e92c88e31",
+  "originHash" : "fc0aa4efe7da4bf0ec26aa1b69da178cbd3b96616869dde89eee65cb16eee7ba",
   "pins" : [
     {
       "identity" : "hammond",
@@ -7,16 +7,7 @@
       "location" : "https://github.com/broadwaylamb/Hammond.git",
       "state" : {
         "branch" : "master",
-        "revision" : "7afd0e2a4b2a6d8b2b7f707215291029258e180f"
-      }
-    },
-    {
-      "identity" : "mediagridlayout",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/broadwaylamb/MediaGridLayout.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "61ad9c454f54e7d82bf02fd454be8885c922bb73"
+        "revision" : "774cd9fc6e88604d3a1b0e6dc92822691b324a52"
       }
     },
     {
