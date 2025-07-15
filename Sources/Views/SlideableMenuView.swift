@@ -70,6 +70,15 @@ struct SlideableMenuView<Menu: View, Content: View>: View {
                 menu()
                 content(alwaysShowMenu)
                     .shadow(radius: 7)
+                    .overlay {
+                        if isMenuShown {
+                            Color.black.opacity(0.0001)
+                                .ignoresSafeArea()
+                                .onTapGesture {
+                                    isMenuShown = false
+                                }
+                        }
+                    }
                     .offset(x: contentOffset)
                     .frame(maxWidth: contentWidth)
                     .animation(.interactiveSpring(extraBounce: 0), value: contentOffset)
