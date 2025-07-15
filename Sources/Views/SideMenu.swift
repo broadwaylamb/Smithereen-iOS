@@ -51,7 +51,7 @@ struct SideMenu: View {
                         userProfilePicture
                             .resizable()
                             .frame(width: iconSize, height: iconSize)
-                            .cornerRadius(iconSize / 2)
+                            .clipShape(Circle())
                     }
                 } else {
                     Label {
