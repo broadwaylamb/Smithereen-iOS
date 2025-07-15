@@ -198,7 +198,7 @@ private extension View {
             // Counterintuitive as it is, this condition is correct.
             return sensoryFeedback(liked ? .impact : .success, trigger: liked)
         }
-        return onChangePolyfill(of: liked) {
+        return onChange(of: liked) { liked in
             if liked {
                 notificationFBG.notificationOccurred(.success)
             } else {

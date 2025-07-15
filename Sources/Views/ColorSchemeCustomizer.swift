@@ -5,7 +5,7 @@ struct ColorSchemeCustomizer: View {
     @State private var hueAdder: Double = 211
     @State private var chromaMultiplier: Double = 1.5
 
-    private func updatePalette() {
+    private func updatePalette(hueAdder: Double, chromaMultiplier: Double) {
         paletteHolder.palette = Palette.vk.mapColors(name: "Customized") {
             $0.h += hueAdder
             $0.c *= chromaMultiplier
@@ -22,7 +22,11 @@ struct ColorSchemeCustomizer: View {
             }
         }
         .frame(maxHeight: 200)
-        .onChangePolyfill(of: hueAdder, updatePalette)
-        .onChangePolyfill(of: chromaMultiplier, updatePalette)
+        .onChange(of: hueAdder) {
+            updatePalette(hueAdder: $0, chromaMultiplier: chromaMultiplier)
+        }
+        .onChange(of: chromaMultiplier) {
+            updatePalette(hueAdder: hueAdder, chromaMultiplier: $0)
+        }
     }
 }
