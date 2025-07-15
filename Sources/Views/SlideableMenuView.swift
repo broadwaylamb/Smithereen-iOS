@@ -16,9 +16,47 @@ struct SlideableMenuView<Menu: View, Content: View>: View {
 
     @Environment(\.layoutDirection) private var layoutDirection
 
-    @State private var offset: CGFloat = 0
+    @GestureState private var delta: CGFloat = 0
 
-    @State private var previousOffset: CGFloat = 0
+    private var start: CGFloat {
+        isMenuShown ? collapsibleMenuWidth : 0
+    }
+
+    private func contentOffset(alwaysShowMenu: Bool) -> CGFloat {
+        if alwaysShowMenu {
+            return alwaysShownMenuWidth
+        }
+        return start + delta
+    }
+
+    private var dragGesture: some Gesture {
+        DragGesture()
+            .updating($delta) { value, dragging, _ in
+                var translationWidth = value.translation.width
+                if layoutDirection == .rightToLeft {
+                    translationWidth.negate()
+                }
+                let start = self.start
+                let newOffset = start + translationWidth
+                if newOffset < 0 {
+                    return
+                }
+                if newOffset < collapsibleMenuWidth {
+                    dragging = translationWidth
+                } else {
+                    // Resist dragging too far right
+                    let springOffset = newOffset - collapsibleMenuWidth
+                    dragging = collapsibleMenuWidth - start + springOffset * 0.1
+                }
+            }
+            .onEnded { value in
+                var velocity = value.velocity.width
+                if layoutDirection == .rightToLeft {
+                    velocity.negate()
+                }
+                isMenuShown = velocity >= 0
+            }
+    }
 
     var body: some View {
         GeometryReader { proxy in
@@ -27,63 +65,16 @@ struct SlideableMenuView<Menu: View, Content: View>: View {
             let contentWidth = alwaysShowMenu
                 ? viewportWidth - alwaysShownMenuWidth
                 : viewportWidth
+            let contentOffset = self.contentOffset(alwaysShowMenu: alwaysShowMenu)
             ZStack(alignment: .topLeading) {
                 menu()
                 content(alwaysShowMenu)
                     .shadow(radius: 7)
-                    .offset(x: alwaysShowMenu ? alwaysShownMenuWidth : offset)
+                    .offset(x: contentOffset)
                     .frame(maxWidth: contentWidth)
-                    .animation(.interactiveSpring(extraBounce: 0), value: offset)
+                    .animation(.interactiveSpring(extraBounce: 0), value: contentOffset)
             }
-            .gesture(
-                DragGesture()
-                    .onChanged { value in
-                        var translationWidth = value.translation.width
-                        if layoutDirection == .rightToLeft {
-                            translationWidth.negate()
-                        }
-                        let newOffset = previousOffset + translationWidth
-                        if alwaysShowMenu {
-                            // Do nothing
-                        } else if translationWidth > 0 {
-                            if newOffset < collapsibleMenuWidth {
-                                offset = newOffset
-                            } else {
-                                // Resist dragging too far right
-                                let springOffset = newOffset - collapsibleMenuWidth
-                                offset = collapsibleMenuWidth + springOffset * 0.3
-                            }
-                        } else if isMenuShown {
-                            offset = max(translationWidth + collapsibleMenuWidth, 0)
-                        }
-
-                    }
-                    .onEnded { value in
-                        var translationWidth = value.translation.width
-                        if layoutDirection == .rightToLeft {
-                            translationWidth.negate()
-                        }
-                        if alwaysShowMenu {
-                            // Do nothing
-                        } else if translationWidth > dragThreshold {
-                            isMenuShown = true
-                        } else if -translationWidth > dragThreshold && isMenuShown {
-                            isMenuShown = false
-                        } else {
-                            offset = isMenuShown ? collapsibleMenuWidth : 0
-                            previousOffset = offset
-                        }
-                    }
-            )
-        }
-        .onChange(of: isMenuShown) { isMenuShown in
-            if isMenuShown {
-                offset = collapsibleMenuWidth
-                previousOffset = offset
-            } else {
-                offset = 0
-                previousOffset = offset
-            }
+            .gesture(dragGesture, isEnabled: !alwaysShowMenu)
         }
     }
 }
