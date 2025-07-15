@@ -69,7 +69,12 @@ struct SideMenu: View {
                     ? palette.sideMenu.selectedBackground
                     : Color.clear
             )
+            .listRowSeparator(.hidden, edges: .top)
             .listRowSeparatorTint(palette.sideMenu.separator)
+            .introspect(.listCell, on: .iOS(.v15)) { cell in
+                // Before iOS 16 cell separators are not aligned to the first text label
+                cell.separatorInset.left = iconSize
+            }
         }
         .listStyle(.plain)
         .background(palette.sideMenu.background)
