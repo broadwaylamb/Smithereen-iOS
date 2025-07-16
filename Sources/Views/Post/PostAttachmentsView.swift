@@ -18,16 +18,19 @@ struct PostAttachmentsView: View {
     }
 
     private func photo(_ photo: PhotoAttachment, url: URL) -> some View {
-        AsyncImage(url: url, scale: 2) { image in
+        let placeholder = photo.blurHash?.wrappedValue ?? palette.loadingImagePlaceholder
+        let aspectRatio = photo
+            .sizes
+            .first
+            .map { CGFloat($0.width) / CGFloat($0.height) }
+        let cornerRadius = horizontalSizeClass == .regular ? 2.5 : 0
+        return CacheableAsyncImage(url: url, scale: 2) { image in
             image.resizable()
         } placeholder: {
-            photo.blurHash?.wrappedValue ?? palette.loadingImagePlaceholder
+            placeholder
         }
-        .aspectRatio(
-            photo.sizes.first.map { CGFloat($0.width) / CGFloat($0.height) },
-            contentMode: .fit,
-        )
-        .cornerRadius(horizontalSizeClass == .regular ? 2.5 : 0)
+        .aspectRatio(aspectRatio, contentMode: .fit)
+        .cornerRadius(cornerRadius)
     }
 
     var body: some View {

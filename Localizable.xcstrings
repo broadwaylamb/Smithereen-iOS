@@ -140,6 +140,39 @@
         }
       }
     },
+    "Are you sure?" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы уверены?"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ви впевнені?"
+          }
+        }
+      }
+    },
+    "Cache" : {
+      "comment" : "Section title in settings",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кэш"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кеш"
+          }
+        }
+      }
+    },
     "Cancel" : {
       "localizations" : {
         "ru" : {
@@ -212,6 +245,23 @@
         }
       }
     },
+    "Deletes all media from cache" : {
+      "comment" : "Explainer section footer in settings",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Будут удалены все изображения из кэша"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Будут видаленi все зображення з кешу"
+          }
+        }
+      }
+    },
     "Done" : {
       "localizations" : {
         "ru" : {
@@ -240,6 +290,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Email або ім'я користувача"
+          }
+        }
+      }
+    },
+    "Erase" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Очистить"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Очистити"
+          }
+        }
+      }
+    },
+    "Erase cache" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Очистить кэш"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Очистити кеш"
           }
         }
       }

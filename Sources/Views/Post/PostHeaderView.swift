@@ -37,24 +37,6 @@ struct PostHeaderView: View {
         self._imageSize = ScaledMetric(wrappedValue: imageSize, relativeTo: .body)
     }
 
-    @ViewBuilder
-    private var profilePictureImage: some View {
-        switch postHeader.authorProfilePicture {
-        case .remote(let url):
-            AsyncImage(
-                url: url,
-                scale: 2.0,
-                content: { $0.resizable() },
-                placeholder: { palette.loadingImagePlaceholder },
-            )
-        case .bundled(let resource):
-            Image(resource)
-                .resizable()
-        case nil:
-            Color.red // TODO
-        }
-    }
-
     private var grayText: LocalizedStringKey {
         switch kind {
         case .regular, .repost:
@@ -86,9 +68,13 @@ struct PostHeaderView: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            profilePictureImage
-                .frame(width: imageSize, height: imageSize)
-                .cornerRadius(2.5)
+            CacheableAsyncImage(
+                postHeader.authorProfilePicture,
+                content: { $0.resizable() },
+                placeholder: { palette.loadingImagePlaceholder },
+            )
+            .frame(width: imageSize, height: imageSize)
+            .cornerRadius(2.5)
             VStack(alignment: .leading, spacing: 2) {
                 HStack(alignment: .center, spacing: 6) {
                     if let repostIcon {

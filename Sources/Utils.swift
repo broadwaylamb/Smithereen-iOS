@@ -1,4 +1,5 @@
 import Foundation
+import Hammond
 import SwiftUI
 
 struct AnyLocalizedError: LocalizedError {
@@ -42,5 +43,11 @@ extension NSTextCheckingResult {
             return nil
         }
         return Range(range(at: n), in: s).map { s[$0] }
+    }
+}
+
+extension URLResponse {
+    var statusCode: HTTPStatusCode {
+        HTTPStatusCode(rawValue: (self as! HTTPURLResponse).statusCode)
     }
 }
