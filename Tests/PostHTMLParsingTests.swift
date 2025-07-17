@@ -1,137 +1,166 @@
-import Testing
 import SwiftSoup
+import Testing
+
 @testable import Smithereen
 
 struct PostHTMLParsingTests {
     @Test func testBlocks() throws {
-        let postText = try PostText(html: """
-        <p>Paragraph with <br/> multiple <br/> lines.</p>
-        <blockquote><p>Quote</p></blockquote>
-        <pre>Code</pre>
-        """)
-        #expect(postText.toHTML() == """
-        <p>
-          Paragraph with 
-          <br/>
-          multiple 
-          <br/>
-          lines.
-        </p>
-        <blockquote>
-          <p>
-            Quote
-          </p>
-        </blockquote>
-        <pre>Code</pre>
-        """)
+        let postText = try PostText(
+            html: """
+            <p>Paragraph with <br/> multiple <br/> lines.</p>
+            <blockquote><p>Quote</p></blockquote>
+            <pre>Code</pre>
+            """
+        )
+        #expect(
+            postText.toHTML() == """
+            <p>
+              Paragraph with
+              <br/>
+              multiple
+              <br/>
+              lines.
+            </p>
+            <blockquote>
+              <p>
+                Quote
+              </p>
+            </blockquote>
+            <pre>Code</pre>
+            """
+        )
     }
 
     @Test func testNestedParagraphs() throws {
-        let postText = try PostText(html: """
-        <p>Outer<p>Inner</p>Outer</p>
-        """)
+        let postText = try PostText(
+            html: """
+            <p>Outer<p>Inner</p>Outer</p>
+            """
+        )
 
-        #expect(postText.toHTML() == """
-        <p>
-          Outer
-        </p>
-        <p>
-          Inner
-        </p>
-        """)
-    }
-
-    @Test func testQuoteInsideParagraph() throws {
-        let postText = try PostText(html: """
-        <p>1<blockquote>Quote</blockquote>2</p>
-        """)
-
-        #expect(postText.toHTML() == """
-        <p>
-          1
-        </p>
-        <blockquote>
-          <p>
-            Quote
-          </p>
-        </blockquote>
-        """)
-    }
-
-    @Test func testNestedQuotes() throws {
-        let postText = try PostText(html: """
-        <blockquote><p>Outer</p><blockquote><p>Inner</p></blockquote><p>Outer</p></blockquote>
-        """)
-
-        #expect(postText.toHTML() == """
-        <blockquote>
-          <p>
-            Outer
-          </p>
-          <blockquote>
+        #expect(
+            postText.toHTML() == """
+            <p>
+              Outer
+            </p>
             <p>
               Inner
             </p>
-          </blockquote>
-          <p>
-            Outer
-          </p>
-        </blockquote>
-        """)
+            """
+         )
+    }
+
+    @Test func testQuoteInsideParagraph() throws {
+        let postText = try PostText(
+            html: """
+            <p>1<blockquote>Quote</blockquote>2</p>
+            """
+        )
+
+        #expect(
+            postText.toHTML() == """
+            <p>
+              1
+            </p>
+            <blockquote>
+              <p>
+                Quote
+              </p>
+            </blockquote>
+            """
+        )
+    }
+
+    @Test func testNestedQuotes() throws {
+        let postText = try PostText(
+            html: """
+            <blockquote><p>Outer</p><blockquote><p>Inner</p></blockquote><p>Outer</p></blockquote>
+            """
+        )
+
+        #expect(
+            postText.toHTML() == """
+            <blockquote>
+              <p>
+                Outer
+              </p>
+              <blockquote>
+                <p>
+                  Inner
+                </p>
+              </blockquote>
+              <p>
+                Outer
+              </p>
+            </blockquote>
+            """
+        )
     }
 
     @Test func testNestedCodeBlocks() throws {
-        let postText = try PostText(html: """
-        <pre>code<pre>nested</pre>code</pre>
-        """)
+        let postText = try PostText(
+            html: """
+            <pre>code<pre>nested</pre>code</pre>
+            """
+        )
 
-        #expect(postText.toHTML() == """
-        <pre>codenestedcode</pre>
-        """)
+        #expect(
+            postText.toHTML() == """
+            <pre>codenestedcode</pre>
+            """
+        )
     }
 
     @Test func testPlainText() throws {
         let postText = try PostText(html: "Plain text")
 
-        #expect(postText.toHTML() == """
-        <p>
-          Plain text
-        </p>
-        """)
+        #expect(
+            postText.toHTML() == """
+            <p>
+              Plain text
+            </p>
+            """
+        )
     }
 
     @Test func testQuoteWithoutParagraphs() throws {
         let postText = try PostText(html: "<blockquote>Quote</blockquote>")
 
-        #expect(postText.toHTML() == """
-        <blockquote>
-          <p>
-            Quote
-          </p>
-        </blockquote>
-        """)
+        #expect(
+            postText.toHTML() == """
+            <blockquote>
+              <p>
+                Quote
+              </p>
+            </blockquote>
+            """
+        )
     }
 
     @Test func testNonBreakingSpace() async throws {
-        let postText = try PostText(html: """
-        <p>
-        &nbsp;&nbsp;▲
-        <br/>
-        ▲&nbsp;▲
-        <br/>
-        . &nbsp; &nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.
-        </p>
-        """)
+        let postText = try PostText(
+            html: """
+            <p>
+            &nbsp;&nbsp;▲
+            <br/>
+            ▲&nbsp;▲
+            <br/>
+            . &nbsp; &nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.
+            </p>
+            """
+        )
 
-        #expect(postText.toHTML() == """
-        <p>
-          &nbsp;&nbsp;▲ 
-          <br/>
-          ▲&nbsp;▲ 
-          <br/>
-          . &nbsp; &nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;. 
-        </p>
-        """)
+        #expect(
+            postText.toHTML() == """
+            <p>
+              &nbsp;&nbsp;▲
+              <br/>
+              ▲&nbsp;▲
+              <br/>
+              . &nbsp; &nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.
+            </p>
+            """
+        )
     }
 }
 
@@ -144,19 +173,19 @@ extension PostText {
 extension PostTextBlock {
     func toHTML(level: Int) -> String {
         switch self {
-        case .paragraph(content: let content):
+        case .paragraph(let content):
             return """
-            \(indent(level))<p>
-            \(indent(level + 1))\(content.toHTML(level: level + 1))
-            \(indent(level))</p>
-            """
-        case .quote(children: let children):
+                \(indent(level))<p>
+                \(indent(level + 1))\(content.toHTML(level: level + 1))
+                \(indent(level))</p>
+                """
+        case .quote(let children):
             return """
-            \(indent(level))<blockquote>
-            \(children.toHTML(level: level + 1))
-            \(indent(level))</blockquote>
-            """
-        case .codeBlock(content: let content):
+                \(indent(level))<blockquote>
+                \(children.toHTML(level: level + 1))
+                \(indent(level))</blockquote>
+                """
+        case .codeBlock(let content):
             return "\(indent(level))<pre>\(content)</pre>"
         }
     }
@@ -187,23 +216,22 @@ extension PostTextInlineNode {
                 .replacingOccurrences(of: "\u{A0}", with: "&nbsp;")
         case .lineBreak:
             return "\n\(indent(level))<br/>\n\(indent(level))"
-        case .code(children: let children):
+        case .code(let children):
             return "<code>\(children.toHTML(level: level))</code>"
-        case .strong(children: let children):
+        case .strong(let children):
             return "<b>\(children.toHTML(level: level))</b>"
-        case .emphasis(children: let children):
+        case .emphasis(let children):
             return "<i>\(children.toHTML(level: level))</i>"
-        case .underline(children: let children):
+        case .underline(let children):
             return "<u>\(children.toHTML(level: level))</u>"
-        case .strikethrough(children: let children):
+        case .strikethrough(let children):
             return "<s>\(children.toHTML(level: level))</s>"
-        case .subscript(children: let children):
+        case .subscript(let children):
             return "<sub>\(children.toHTML(level: level))</sub>"
-        case .superscript(children: let children):
+        case .superscript(let children):
             return "<sup>\(children.toHTML(level: level))</sup>"
-        case .link(let url, children: let children):
+        case .link(let url, let children):
             return "<a href=\"\(url)\">\(children.toHTML(level: level))</a>"
         }
     }
 }
-

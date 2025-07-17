@@ -99,16 +99,17 @@ extension View {
             return toolbarColorScheme(colorScheme, for: .navigationBar)
         } else {
             return introspect(.navigationView(style: .stack), on: .iOS(.v15)) { nc in
-                let textColor: UIColor = switch colorScheme {
-                case .dark:
-                    .white
-                case .light:
-                    .black
-                case nil:
-                    .label
-                @unknown default:
-                    .label
-                }
+                let textColor: UIColor =
+                    switch colorScheme {
+                    case .dark:
+                        .white
+                    case .light:
+                        .black
+                    case nil:
+                        .label
+                    @unknown default:
+                        .label
+                    }
                 nc.navigationBar.titleTextAttributes?[.foregroundColor] = textColor
             }
         }
@@ -123,11 +124,16 @@ extension View {
             tableView.sectionFooterHeight = spacing / 2
         }
         .introspect(.list, on: .iOS(.v16)) { collectionView in
-            guard let layout = collectionView.collectionViewLayout as? UICollectionViewCompositionalLayout else { return }
+            guard
+                let layout = collectionView.collectionViewLayout
+                    as? UICollectionViewCompositionalLayout
+            else { return }
             collectionView.collectionViewLayout =
                 UICollectionViewCompositionalLayout(
                     sectionProvider: { i, layoutEnvironment in
-                        var listConfig = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
+                        var listConfig = UICollectionLayoutListConfiguration(
+                            appearance: .insetGrouped
+                        )
 
                         // NOTE: Because we're replacing the layout, the value of
                         // scrollContentBackground is not respected,

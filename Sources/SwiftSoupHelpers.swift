@@ -22,7 +22,8 @@ extension Node {
             } else {
                 var node2: Node? = currentNode
                 while let currentNode = node2,
-                      !currentNode.hasNextSibling() && depth > 0 {
+                    !currentNode.hasNextSibling() && depth > 0
+                {
                     let parent = currentNode.parent()
                     try visitor.tail(currentNode, depth)
                     node2 = parent

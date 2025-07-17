@@ -88,7 +88,7 @@ struct Palette {
 }
 
 extension Palette: Equatable {
-    static func ==(lhs: Palette, rhs: Palette) -> Bool {
+    static func == (lhs: Palette, rhs: Palette) -> Bool {
         lhs.name == rhs.name
     }
 }
@@ -113,9 +113,8 @@ final class PaletteHolder: ObservableObject {
 
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
-        if let preferredPalette = (userDefaults
-            .value(forKey: Self.userDefaultsKey) as? String)
-            .flatMap(Palette.init)
+        if let paletteName = userDefaults.value(forKey: Self.userDefaultsKey) as? String,
+           let preferredPalette = Palette(paletteName)
         {
             self.palette = preferredPalette
         }

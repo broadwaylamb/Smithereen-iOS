@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftSoup
+import SwiftUI
 
 struct PostTextView: View {
     var blocks: [PostTextBlock]
@@ -39,7 +39,7 @@ struct PostTextView: View {
                     superscriptBaselineOffset: superscriptBaselineOffset,
                 )
             )
-                .fixedSize(horizontal: false, vertical: true)
+            .fixedSize(horizontal: false, vertical: true)
         case .quote(let children):
             QuoteView(blocks: children)
                 .fixedSize(horizontal: false, vertical: true)
@@ -129,36 +129,66 @@ extension AttributedString {
                     self += AttributedString("\n", attributes: attributes)
                 case .code(let children):
                     newAttributes.inlinePresentationIntent.insert(.code)
-                    recurse(children, attributes: newAttributes, subscriptDepth: subscriptDepth)
+                    recurse(
+                        children,
+                        attributes: newAttributes,
+                        subscriptDepth: subscriptDepth,
+                    )
                 case .strong(let children):
                     newAttributes.inlinePresentationIntent.insert(.stronglyEmphasized)
-                    recurse(children, attributes: newAttributes, subscriptDepth: subscriptDepth)
+                    recurse(
+                        children,
+                        attributes: newAttributes,
+                        subscriptDepth: subscriptDepth,
+                    )
                 case .emphasis(let children):
                     newAttributes.inlinePresentationIntent.insert(.emphasized)
-                    recurse(children, attributes: newAttributes, subscriptDepth: subscriptDepth)
+                    recurse(
+                        children,
+                        attributes: newAttributes,
+                        subscriptDepth: subscriptDepth,
+                    )
                 case .underline(let children):
                     newAttributes.underlineStyle = .single
-                    recurse(children, attributes: newAttributes, subscriptDepth: subscriptDepth)
+                    recurse(
+                        children,
+                        attributes: newAttributes,
+                        subscriptDepth: subscriptDepth,
+                    )
                 case .strikethrough(let children):
                     newAttributes.inlinePresentationIntent.insert(.strikethrough)
-                    recurse(children, attributes: newAttributes, subscriptDepth: subscriptDepth)
+                    recurse(
+                        children,
+                        attributes: newAttributes,
+                        subscriptDepth: subscriptDepth,
+                    )
                 case .subscript(let children), .superscript(let children):
                     let currentBaselineOffset = attributes.baselineOffset ?? 0
-                    let baselineOffset = if case .subscript = node {
-                        subscriptBaselineOffset
-                    } else {
-                        superscriptBaselineOffset
-                    }
+                    let baselineOffset =
+                        if case .subscript = node {
+                            subscriptBaselineOffset
+                        } else {
+                            superscriptBaselineOffset
+                        }
                     let m = PostTextView.subscriptFontSizeMultiplier
-                    newAttributes.baselineOffset = currentBaselineOffset +
-                        baselineOffset * pow(m, CGFloat(subscriptDepth))
+                    newAttributes.baselineOffset =
+                        currentBaselineOffset + baselineOffset
+                        * pow(m, CGFloat(subscriptDepth))
                     newAttributes.font =
                         .system(size: baseFontSize * pow(m, CGFloat(subscriptDepth + 1)))
-                    recurse(children, attributes: newAttributes, subscriptDepth: subscriptDepth + 1)
+                    recurse(
+                        children,
+                        attributes: newAttributes,
+                        subscriptDepth: subscriptDepth + 1,
+                    )
                 case .link(let url, let children):
                     var newAttributes = attributes
                     newAttributes.link = url
-                    recurse(children, attributes: newAttributes, subscriptDepth: subscriptDepth)
+                    recurse(
+                        children,
+                        attributes: newAttributes,
+                        subscriptDepth: subscriptDepth,
+                    )
                 }
             }
         }
@@ -168,54 +198,58 @@ extension AttributedString {
 
 @available(iOS 17.0, *)
 #Preview("Basic", traits: .sizeThatFitsLayout) {
-    PostTextView(try! PostText(html: """
-    <p>
-        First paragraph, with <b>bold</b>, <i>italic</i>, <u>underlined</u>,
-        <s>strikethrough</s> and <code>monospace</code> text.
-        <br>
-        Subscripts and superscripts are also supported:
-        C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>, χ<sup>2</sup>.
-        <br>
-        ps<sub>ps<sub>ps<sub>ps<sub>ps<sub>ps<sub>ps<sub>ps
-        <sub>ps<sub>ps<sub>ps<sub>ps<sub>ps<sub>ps
-        </sub></sub></sub></sub></sub></sub></sub></sub></sub></sub></sub></sub></sub>
-        <br>
-        ps<sup>ps<sup>ps<sup>ps<sup>ps<sup>ps<sup>ps<sup>ps
-        <sup>ps<sup>ps<sup>ps<sup>ps<sup>ps<sup>ps
-        </sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup>
-        <br>
-        ps<sub>ps<sup>ps<sub>ps<sup>ps<sub>ps<sup>ps<sub>ps
-        <sup>ps<sub>ps<sup>ps<sub>ps<sup>ps<sub>ps<sup>ps</sup></sub>
-        </sup></sub></sup></sub></sup></sub></sup></sub></sup></sub></sup></sub>
-        <br>
-        <a href="http://example.com">Links</a> are supported too.
-    </p>
-    <p>
-        Second paragraph. <b><i>Bold italic</i></b>,
-        <u><s>underlined strikethrogh</s></u>.
-    </p>
-    <blockquote>
-        <p>
-            First paragraph of a quote.
-        </p>
-        <p>
-            Second paragraph of a quote.
-        </p>
-        <blockquote>
+    PostTextView(
+        try! PostText(
+            html: """
             <p>
-                Nested quote
+                First paragraph, with <b>bold</b>, <i>italic</i>, <u>underlined</u>,
+                <s>strikethrough</s> and <code>monospace</code> text.
+                <br>
+                Subscripts and superscripts are also supported:
+                C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>, χ<sup>2</sup>.
+                <br>
+                ps<sub>ps<sub>ps<sub>ps<sub>ps<sub>ps<sub>ps<sub>ps
+                <sub>ps<sub>ps<sub>ps<sub>ps<sub>ps<sub>ps
+                </sub></sub></sub></sub></sub></sub></sub></sub></sub></sub></sub></sub></sub>
+                <br>
+                ps<sup>ps<sup>ps<sup>ps<sup>ps<sup>ps<sup>ps<sup>ps
+                <sup>ps<sup>ps<sup>ps<sup>ps<sup>ps<sup>ps
+                </sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup>
+                <br>
+                ps<sub>ps<sup>ps<sub>ps<sup>ps<sub>ps<sup>ps<sub>ps
+                <sup>ps<sub>ps<sup>ps<sub>ps<sup>ps<sub>ps<sup>ps</sup></sub>
+                </sup></sub></sup></sub></sup></sub></sup></sub></sup></sub></sup></sub>
+                <br>
+                <a href="http://example.com">Links</a> are supported too.
             </p>
-        </blockquote>
-        <p>
-            The rest of the quote.
-        </p>
-    </blockquote>
-    <pre>Some code block. Words are wrapped if it's very loooooooooooooong.
-    <pre>
-    Nested code blocks are not allowed.</pre></pre>
-    <pre>func main() {
-        print("Hello, world!")
-    }</pre>
-    """))
+            <p>
+                Second paragraph. <b><i>Bold italic</i></b>,
+                <u><s>underlined strikethrogh</s></u>.
+            </p>
+            <blockquote>
+                <p>
+                    First paragraph of a quote.
+                </p>
+                <p>
+                    Second paragraph of a quote.
+                </p>
+                <blockquote>
+                    <p>
+                        Nested quote
+                    </p>
+                </blockquote>
+                <p>
+                    The rest of the quote.
+                </p>
+            </blockquote>
+            <pre>Some code block. Words are wrapped if it's very loooooooooooooong.
+            <pre>
+            Nested code blocks are not allowed.</pre></pre>
+            <pre>func main() {
+                print("Hello, world!")
+            }</pre>
+            """
+        )
+    )
     .padding(8)
 }

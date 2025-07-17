@@ -24,16 +24,17 @@ struct PostHeaderView: View {
     ) {
         self.postHeader = postHeader
         self.kind = kind
-        let imageSize: CGFloat = switch (kind, horizontalSizeClass) {
-        case (.regular, .regular):
-            55
-        case (.regular, _):
-            40
-        case (_, .regular):
-            50
-        case (_, _):
-            32
-        }
+        let imageSize: CGFloat =
+            switch (kind, horizontalSizeClass) {
+            case (.regular, .regular):
+                55
+            case (.regular, _):
+                40
+            case (_, .regular):
+                50
+            case (_, _):
+                32
+            }
         self._imageSize = ScaledMetric(wrappedValue: imageSize, relativeTo: .body)
     }
 

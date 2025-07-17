@@ -51,7 +51,8 @@ struct FeedRequest: DecodableRequestProtocol {
         postLinkSelector: String,
     ) throws -> PostHeader? {
         guard let authorNameLink = try container.select(authorNameLinkSelector).first(),
-              let authorURL = try URL(string: authorNameLink.attr("href")) else {
+              let authorURL = try URL(string: authorNameLink.attr("href"))
+        else {
             return nil
         }
 
@@ -59,10 +60,10 @@ struct FeedRequest: DecodableRequestProtocol {
 
         guard let postLink = try container.select(postLinkSelector).first(),
               let postID = try? postLink
-                .attr("href")
-                .components(separatedBy: "posts/")
-                .last
-                .flatMap(Int.init)
+                  .attr("href")
+                  .components(separatedBy: "posts/")
+                  .last
+                  .flatMap(Int.init)
         else {
             return nil
         }
@@ -113,44 +114,53 @@ struct FeedRequest: DecodableRequestProtocol {
         var posts: [Post] = []
         for postElement in try document.select(".post") {
             do {
-                guard let postHeader = try parseSinglePost(
-                    postElement,
-                    authorNameLinkSelector: "a.authorName",
-                    postLinkSelector: "a.postLink",
-                ) else { continue }
+                guard
+                    let postHeader = try parseSinglePost(
+                        postElement,
+                        authorNameLinkSelector: "a.authorName",
+                        postLinkSelector: "a.postLink",
+                    )
+                else { continue }
 
                 let postContent = try postElement.select(".postContent").first()
-                let text = (try? postContent?.select(".expandableText .full").first()) ?? postContent
+                let text = (try? postContent?.select(".expandableText .full").first())
+                    ?? postContent
 
                 let attachments =
                     try parsePostAttachments(postContent?.nextElementSibling())
 
                 func actionCount(_ actionName: String) throws -> Int {
-                    try (
-                        postElement
-                            .select(".postActions .action.\(actionName) .counter")
-                            .first()?
-                            .text(trimAndNormaliseWhitespace: true)
-                    ).flatMap(Int.init) ?? 0
+                    try
+                        (postElement
+                        .select(".postActions .action.\(actionName) .counter")
+                        .first()?
+                        .text(trimAndNormaliseWhitespace: true)).flatMap(Int.init) ?? 0
                 }
 
                 let likeCount = try actionCount("like")
                 let repostCount = try actionCount("share")
                 let replyCount = try actionCount("comment")
-                let liked = try !postElement.select(".postActions .action.like.liked").isEmpty()
+                let liked = try !postElement.select(".postActions .action.like.liked")
+                    .isEmpty()
 
-                let reposts = try postElement
+                let reposts =
+                    try postElement
                     .select(".repostHeader")
                     .compactMap { repostHeaderElement -> Repost? in
-                        guard let repostHeader = try parseSinglePost(
-                            repostHeaderElement,
-                            authorNameLinkSelector: "a.name",
-                            postLinkSelector: "a.grayText"
-                        ) else { return nil }
+                        guard
+                            let repostHeader = try parseSinglePost(
+                                repostHeaderElement,
+                                authorNameLinkSelector: "a.name",
+                                postLinkSelector: "a.grayText",
+                            )
+                        else { return nil }
 
                         let postContent = try repostHeaderElement.nextElementSibling()
-                        let text = (try? postContent?.select(".expandableText .full").first()) ?? postContent
-                        let isMastodonStyle = try !repostHeaderElement
+                        let text =
+                            (try? postContent?.select(".expandableText .full").first())
+                            ?? postContent
+                        let isMastodonStyle = try
+                            !repostHeaderElement
                             .select(".repostIcon.mastodonStyle").isEmpty()
 
                         let attachments =

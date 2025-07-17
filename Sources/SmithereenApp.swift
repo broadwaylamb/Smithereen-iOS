@@ -22,7 +22,7 @@ struct SmithereenApp: App {
     private var window: some View {
         // TODO: Animate the transitions
         if let authenticatedInstance = authenticationState.authenticatedInstance {
-            RootView(api: api, feedViewModel: feedViewModel,)
+            RootView(api: api, feedViewModel: feedViewModel)
                 .environment(\.instanceURL, authenticatedInstance)
         } else {
             AuthView(api: api)

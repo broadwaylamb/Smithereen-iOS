@@ -32,11 +32,12 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
         @ViewBuilder content: @escaping (Image) -> Content,
         @ViewBuilder placeholder: @escaping () -> Placeholder,
     ) {
-        let url: URL? = if case .remote(let url) = location {
-            url
-        } else {
-            nil
-        }
+        let url: URL? =
+            if case .remote(let url) = location {
+                url
+            } else {
+                nil
+            }
         self.init(url: url, scale: scale, content: content, placeholder: placeholder)
         if case .bundled(let resource) = location {
             phaseHolder.phase = .success(Image(resource))
@@ -56,8 +57,8 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
         let urlRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad)
         self.urlRequest = urlRequest
         if let cachedResponse = URLCache
-            .smithereenMediaCache
-            .cachedResponse(for: urlRequest),
+               .smithereenMediaCache
+               .cachedResponse(for: urlRequest),
            let image = imageFromData(cachedResponse.data, scale: scale)
         {
             phaseHolder.phase = .success(image)
@@ -72,7 +73,7 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
             if response.statusCode.category == .success {
                 phaseHolder.phase = imageFromData(data, scale: scale)
                     .map(CacheableAsyncImagePhase.success)
-                        ?? .failure(CacheableAsyncImageError.invalidData)
+                    ?? .failure(CacheableAsyncImageError.invalidData)
             } else {
                 phaseHolder.phase = .failure(CacheableAsyncImageError.invalidResponse)
             }

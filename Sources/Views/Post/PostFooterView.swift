@@ -33,15 +33,21 @@ private struct CompactPostFooterButton<Image: View>: View {
             HStack(alignment: alignment, spacing: 6) {
                 image
                 if count != 0 {
-                    Text("\(count)", comment: "The number of comments/likes/reposts of a post")
-                        .fontWeight(.bold)
+                    Text(
+                        "\(count)",
+                        comment: "The number of comments/likes/reposts of a post"
+                    )
+                    .fontWeight(.bold)
                 }
             }
         }
         .padding(0)
         .buttonStyle(.bordered)
         .buttonBorderShape(.roundedRectangle(radius: 4))
-        .tint(highlighted ? palette.compactPostButtonHighlightedTint : palette.compactPostButtonTint)
+        .tint(
+            highlighted
+                ? palette.compactPostButtonHighlightedTint : palette.compactPostButtonTint
+        )
         .frame(minWidth: 40, minHeight: 26, maxHeight: 26)
     }
 }
@@ -63,9 +69,15 @@ private struct CommentButton: View {
                     Image(.commentOutline)
                         .alignmentGuide(.firstTextBaseline) { $0.height - 4 }
                     if count == 0 {
-                        Text("Comment", comment: "A button when there are no comments in a post; imperative.")
+                        Text(
+                            "Comment",
+                            comment: "A button when there are no comments in a post; imperative.",
+                        )
                     } else {
-                        Text("\(count) comments", comment: "The number of comments of a post")
+                        Text(
+                            "\(count) comments",
+                            comment: "The number of comments of a post",
+                        )
                     }
                 }
                 .padding(.horizontal, 15)
@@ -188,9 +200,9 @@ private let impactFBG = UIImpactFeedbackGenerator()
 @MainActor
 private let notificationFBG = UINotificationFeedbackGenerator()
 
-private extension View {
+extension View {
 
-    func likeButtonFeedback(liked: Bool) -> some View {
+    fileprivate func likeButtonFeedback(liked: Bool) -> some View {
         if #available(iOS 17.0, *) {
             // NOTE: The condition here is inverted because SwiftUI.
             // We want .success when the user likes a post

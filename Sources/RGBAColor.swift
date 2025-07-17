@@ -18,7 +18,12 @@ struct RGBAColor: Hashable {
 
 extension RGBAColor: _ExpressibleByColorLiteral {
     init(_colorLiteralRed red: Float, green: Float, blue: Float, alpha: Float) {
-        self.init(red: Double(red), green: Double(green), blue: Double(blue), alpha: Double(alpha))
+        self.init(
+            red: Double(red),
+            green: Double(green),
+            blue: Double(blue),
+            alpha: Double(alpha),
+        )
     }
 }
 
@@ -31,7 +36,7 @@ extension RGBAColor {
             }
             return Double(bits & 0xFF) / 255.0
         }
-        if bits & 0xFF000000 == 0 {
+        if bits & 0xFF00_0000 == 0 {
             self.alpha = 1
         } else {
             self.alpha = component()
@@ -59,8 +64,8 @@ extension RGBAColor {
         func gammaExpansion(_ v: Double) -> Double {
             let absV = abs(v)
             let out = absV > 0.04045
-            ? pow((absV + 0.055) / 1.055, 2.4)
-            : absV / 12.92
+                ? pow((absV + 0.055) / 1.055, 2.4)
+                : absV / 12.92
             return v > 0 ? out : -out
         }
 
@@ -68,9 +73,10 @@ extension RGBAColor {
         let g = gammaExpansion(green)
         let b = gammaExpansion(blue)
         return XYZColor(
-            x: r * 0.4124108464885388   + g * 0.3575845678529519  + b * 0.18045380393360833,
-            y: r * 0.21264934272065283  + g * 0.7151691357059038  + b * 0.07218152157344333,
-            z: r * 0.019331758429150258 + g * 0.11919485595098397 + b * 0.9503900340503373,
+            x: r * 0.4124108464885388 + g * 0.3575845678529519 + b * 0.18045380393360833,
+            y: r * 0.21264934272065283 + g * 0.7151691357059038 + b * 0.07218152157344333,
+            z: r * 0.019331758429150258 + g * 0.11919485595098397 + b
+                * 0.9503900340503373,
             alpha: alpha,
         )
     }
@@ -90,14 +96,15 @@ private struct XYZColor {
         func gammaCompression(_ v: Double) -> Double {
             let absV = abs(v)
             let out = absV > 0.0031308
-            ? 1.055 * pow(absV, 1 / 2.4) - 0.055
-            : absV * 12.92
+                ? 1.055 * pow(absV, 1 / 2.4) - 0.055
+                : absV * 12.92
             return v > 0 ? out : -out
         }
 
-        let r = x *  3.240812398895283    + y * -1.5373084456298136  + z * -0.4985865229069666
-        let g = x * -0.9692430170086407   + y *  1.8759663029085742  + z *  0.04155503085668564
-        let b = x *  0.055638398436112804 + y * -0.20400746093241362 + z *  1.0571295702861434
+        let r = x * 3.240812398895283 + y * -1.5373084456298136 + z * -0.4985865229069666
+        let g = x * -0.9692430170086407 + y * 1.8759663029085742 + z * 0.04155503085668564
+        let b =
+            x * 0.055638398436112804 + y * -0.20400746093241362 + z * 1.0571295702861434
         let R = gammaCompression(r)
         let G = gammaCompression(g)
         let B = gammaCompression(b)
@@ -160,7 +167,7 @@ private struct LABColor {
         LCHColor(
             l: l,
             c: sqrt(a * a + b * b),
-            h: atan2(b, a) * 180 / .pi ,
+            h: atan2(b, a) * 180 / .pi,
             alpha: alpha,
         )
     }
@@ -206,4 +213,3 @@ private func sanitizeAngle(_ degrees: Double) -> Double {
         return rem
     }
 }
-

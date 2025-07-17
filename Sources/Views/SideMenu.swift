@@ -82,7 +82,6 @@ struct SideMenu: View {
     }
 }
 
-
 @available(iOS 17.0, *)
 #Preview("Interactive side menu") {
     @Previewable @State var selectedItem: SideMenuItem = .news
@@ -100,5 +99,5 @@ struct SideMenu: View {
         userProfilePicture: Image(.boromirProfilePicture),
         selectedItem: .constant(.news)
     )
-	.snapshot(perceptualPrecision: 0.96)
+    .snapshot(perceptualPrecision: 0.96)
 }

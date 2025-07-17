@@ -8,22 +8,22 @@ struct RootView: View {
 
     @StateObject private var errorObserver = ErrorObserver()
 
-	@State private var menuShown: Bool = false
-	@State private var selectedItem: SideMenuItem = .news
+    @State private var menuShown: Bool = false
+    @State private var selectedItem: SideMenuItem = .news
 
     @ViewBuilder
-	private var mainView: some View {
-		switch selectedItem {
-		case .news:
-			FeedView(viewModel: feedViewModel)
+    private var mainView: some View {
+        switch selectedItem {
+        case .news:
+            FeedView(viewModel: feedViewModel)
         case .settings:
             SettingsView(api: api)
-		default:
+        default:
             Text("Coming soon!").font(.largeTitle)
-		}
-	}
+        }
+    }
 
-	var body: some View {
+    var body: some View {
         SlideableMenuView(isMenuShown: $menuShown) {
             SideMenu(
                 userFullName: "Boromir",
@@ -61,7 +61,7 @@ struct RootView: View {
         }
         .environmentObject(errorObserver)
         .alert(errorObserver)
-	}
+    }
 }
 
 #Preview {

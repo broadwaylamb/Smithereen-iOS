@@ -1,5 +1,5 @@
-import SwiftUI
 import Prefire
+import SwiftUI
 
 struct FeedView: View {
     @ObservedObject var viewModel: FeedViewModel
@@ -29,7 +29,19 @@ struct FeedView: View {
                         .listSectionSeparator(.hidden)
                         .listRowBackground(Color.clear)
                         .clipShape(RoundedRectangle(cornerRadius: 4))
-                        .shadow(color: Color(#colorLiteral(red: 0.8445754647, green: 0.8591627479, blue: 0.8676676154, alpha: 1)), radius: 0, x: 0, y: 1)
+                        .shadow(
+                            color: Color(
+                                #colorLiteral(
+                                    red: 0.8445754647,
+                                    reen: 0.8591627479,
+                                    blue: 0.8676676154,
+                                    alpha: 1
+                                )
+                            ),
+                            radius: 0,
+                            x: 0,
+                            y: 1,
+                        )
                         .listRowInsets(
                             EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24)
                         )
@@ -38,7 +50,16 @@ struct FeedView: View {
                         .listRowInsets(
                             EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
                         )
-                        .listSectionSeparatorTint(Color(#colorLiteral(red: 0.7843137383, green: 0.7843137383, blue: 0.7843137383, alpha: 1)))
+                        .listSectionSeparatorTint(
+                            Color(
+                                #colorLiteral(
+                                    red: 0.7843137383,
+                                    green: 0.7843137383,
+                                    blue: 0.7843137383,
+                                    alpha: 1
+                                )
+                            )
+                        )
                 }
             } header: {
                 // Removing the top blank space
@@ -46,21 +67,21 @@ struct FeedView: View {
                 Spacer(minLength: 0)
                     .listRowInsets(EdgeInsets())
             }
-		}
+        }
         .listStyle(.grouped)
         .contentMarginsPolyfill(.top, horizontalSizeClass == .regular ? 16 : 0)
         .listSectionSpacingPolyfill(horizontalSizeClass == .regular ? 13 : 0)
         .environment(\.defaultMinListHeaderHeight, 0)
-		.toolbar {
+        .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     composePostShown = true
                 } label: {
                     Image(.composePost)
-				}
+                }
                 .tint(Color.white)
             }
-		}
+        }
         .sheet(isPresented: $composePostShown) {
             ComposePostView(
                 "New Post",

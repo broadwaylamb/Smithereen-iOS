@@ -1,6 +1,6 @@
 struct Indexed<Element> {
-  let index: Int
-  let value: Element
+    let index: Int
+    let value: Element
 }
 
 extension Indexed: Equatable where Element: Equatable {}
@@ -11,7 +11,7 @@ extension Indexed: Identifiable {
 }
 
 extension Sequence {
-  func indexed() -> [Indexed<Element>] {
-      return enumerated().map(Indexed.init)
-  }
+    func indexed() -> [Indexed<Element>] {
+        return enumerated().map(Indexed.init)
+    }
 }

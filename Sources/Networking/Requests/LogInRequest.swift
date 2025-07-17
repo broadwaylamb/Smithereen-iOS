@@ -8,7 +8,7 @@ struct LogInRequest: DecodableRequestProtocol {
 
     static func extractResult(
         from response: some ResponseProtocol<ResponseBody>
-    ) throws -> Void {
+    ) throws {
         if response.statusCode != .found {
             throw AuthenticationError.invalidCredentials
         }

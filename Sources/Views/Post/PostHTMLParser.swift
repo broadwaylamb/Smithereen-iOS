@@ -168,7 +168,9 @@ private final class Parser: NodeVisitor {
         blocks[blocks.endIndex - 1].append(block)
     }
 
-    private func finalizeInlineNode(_ createNode: ([PostTextInlineNode]) -> PostTextInlineNode) {
+    private func finalizeInlineNode(
+        _ createNode: ([PostTextInlineNode]) -> PostTextInlineNode,
+    ) {
         if let children = inlineNodes.pop() {
             appendInlineNode(createNode(children))
         }
@@ -186,7 +188,7 @@ private final class Parser: NodeVisitor {
         var reachedNonWhite: Bool = false
 
         for c in string {
-            if (c == " " || c == "\n" || c == "\r" || c == "\t" || c == "\u{000C}") {
+            if c == " " || c == "\n" || c == "\r" || c == "\t" || c == "\u{000C}" {
                 if stripLeadingWhitespace && !reachedNonWhite || lastWasWhite {
                     continue
                 }
@@ -203,8 +205,8 @@ private final class Parser: NodeVisitor {
     }
 }
 
-private extension Array {
-    mutating func pop() -> Element? {
+extension Array {
+    fileprivate mutating func pop() -> Element? {
         return isEmpty ? nil : removeLast()
     }
 }

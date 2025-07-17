@@ -1,5 +1,5 @@
-import SwiftUI
 import Prefire
+import SwiftUI
 
 private struct InputFields: View {
     @Binding var instanceAddress: String
@@ -32,12 +32,16 @@ struct AuthView: View {
             return nil
         }
         var urlComponents: URLComponents
-        if instanceAddress.starts(with: "http://") || instanceAddress.starts(with: "https://") {
+        if instanceAddress.starts(with: "http://")
+            || instanceAddress.starts(with: "https://")
+        {
             guard let c = URLComponents(string: instanceAddress) else {
                 return nil
             }
             urlComponents = c
-        } else if let components = URLComponents(string: instanceAddress), components.scheme != nil {
+        } else if let components = URLComponents(string: instanceAddress),
+            components.scheme != nil
+        {
             return nil
         } else {
             guard let c = URLComponents(string: "https://" + instanceAddress) else {
@@ -136,7 +140,7 @@ struct AuthView: View {
 }
 
 #Preview("Authentication") {
-	AuthView(api: MockApi())
-		.defaultAppStorage(UserDefaults())
-		.snapshot(perceptualPrecision: 0.98)
+    AuthView(api: MockApi())
+        .defaultAppStorage(UserDefaults())
+        .snapshot(perceptualPrecision: 0.98)
 }
