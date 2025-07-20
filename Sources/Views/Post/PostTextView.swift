@@ -57,8 +57,8 @@ struct PostTextView: View {
             renderBlock(blocks[0])
         default:
             VStack(alignment: .leading, spacing: paragraphSpacing) {
-                ForEach(blocks.indexed()) {
-                    renderBlock($0.value)
+                ForEach(blocks.indexed(), id: \.offset) {
+                    renderBlock($0.element)
                 }
             }
         }
