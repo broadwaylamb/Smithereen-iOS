@@ -14,6 +14,7 @@
 		8755183A2E11B03B006EDF63 /* Hammond in Frameworks */ = {isa = PBXBuildFile; productRef = 875518392E11B03B006EDF63 /* Hammond */; };
 		876659422DC8E76E00D62CCA /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 876659412DC8E76E00D62CCA /* SwiftUIIntrospect */; };
 		876659742DC920E200D62CCA /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 876659732DC920E200D62CCA /* SwiftSoup */; };
+		87864EDF2E28520600D8ACE0 /* MediaGridLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 87864EDE2E28520600D8ACE0 /* MediaGridLayout */; };
 		8792C5C62DCA9F1200C58B79 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 8792C5C52DCA9F1200C58B79 /* Prefire */; };
 		87B0C99B2DC41A4200D5DB87 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 87B0C99A2DC41A4200D5DB87 /* Prefire */; };
 		87B5CEE82E1732C900ADFA70 /* Hammond in Frameworks */ = {isa = PBXBuildFile; productRef = 87B5CEE72E1732C900ADFA70 /* Hammond */; };
@@ -79,6 +80,7 @@
 				876659742DC920E200D62CCA /* SwiftSoup in Frameworks */,
 				87B5CEE82E1732C900ADFA70 /* Hammond in Frameworks */,
 				8755183A2E11B03B006EDF63 /* Hammond in Frameworks */,
+				87864EDF2E28520600D8ACE0 /* MediaGridLayout in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,6 +151,7 @@
 				8792C5C52DCA9F1200C58B79 /* Prefire */,
 				875518392E11B03B006EDF63 /* Hammond */,
 				87B5CEE72E1732C900ADFA70 /* Hammond */,
+				87864EDE2E28520600D8ACE0 /* MediaGridLayout */,
 			);
 			productName = Smithereen;
 			productReference = 01E20ABA2DB7926D00CC0EBE /* Smithereen.app */;
@@ -217,6 +220,7 @@
 				876659402DC8E76E00D62CCA /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
 				876659722DC920E200D62CCA /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 				87B5CEE62E1732C900ADFA70 /* XCRemoteSwiftPackageReference "Hammond" */,
+				87864EDD2E28520600D8ACE0 /* XCRemoteSwiftPackageReference "MediaGridLayout" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 01E20ABB2DB7926D00CC0EBE /* Products */;
@@ -584,6 +588,14 @@
 				minimumVersion = 2.8.7;
 			};
 		};
+		87864EDD2E28520600D8ACE0 /* XCRemoteSwiftPackageReference "MediaGridLayout" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/broadwaylamb/MediaGridLayout.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/broadwaylamb/Prefire.git";
@@ -621,6 +633,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 876659722DC920E200D62CCA /* XCRemoteSwiftPackageReference "SwiftSoup" */;
 			productName = SwiftSoup;
+		};
+		87864EDE2E28520600D8ACE0 /* MediaGridLayout */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 87864EDD2E28520600D8ACE0 /* XCRemoteSwiftPackageReference "MediaGridLayout" */;
+			productName = MediaGridLayout;
 		};
 		8792C5C52DCA9F1200C58B79 /* Prefire */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -1,4 +1,5 @@
 import SwiftUI
+import MediaGridLayout
 
 struct PostAttachmentsView: View {
     var attachments: [PostAttachment]
@@ -17,33 +18,36 @@ struct PostAttachmentsView: View {
         }
     }
 
-    private func photo(_ photo: PhotoAttachment, url: URL) -> some View {
-        let placeholder = photo.blurHash?.wrappedValue ?? palette.loadingImagePlaceholder
-        let aspectRatio = photo
-            .sizes
-            .first
-            .map { CGFloat($0.width) / CGFloat($0.height) }
-        let cornerRadius = horizontalSizeClass == .regular ? 2.5 : 0
-        return CacheableAsyncImage(.remote(url)) { image in
-            image.resizable()
-        } placeholder: {
-            placeholder
-        }
-        .aspectRatio(aspectRatio, contentMode: .fit)
-        .cornerRadius(cornerRadius)
-    }
-
     var body: some View {
-        if let photo = photos.first, let url = photo.thumbnailURL {
-            // TODO: Support more photos
-            HStack(spacing: 0) {
-                Spacer(minLength: 0)
-                self.photo(photo, url: url)
-                    .frame(maxHeight: 510)
-                Spacer(minLength: 0)
+        HStack(spacing: 0) {
+            Spacer(minLength: 0)
+            MediaGridView(
+                elements: photos,
+                maxWidth: 320,
+                maxHeight: 510,
+                minHeight: 255,
+                gap: 2,
+            ) { photo in
+                let placeholder = photo.blurHash?.wrappedValue ?? palette.loadingImagePlaceholder
+                let cornerRadius = horizontalSizeClass == .regular ? 2.5 : 0
+                // TODO: Use the correct URL based on the size
+                CacheableAsyncImage(.remote(url)) { image in
+                    image.resizable()
+                } placeholder: {
+                    placeholder
+                }
+                .aspectRatio(photo.aspectRatio, contentMode: .fit)
+                .cornerRadius(cornerRadius)
+                .debugBorder()
             }
-        } else {
-            EmptyView()
+            .debugBorder()
+            Spacer(minLength: 0)
         }
+    }
+}
+
+extension PhotoAttachment: HasAspectRatio {
+    var aspectRatio: Double {
+        sizes.first.map { Double($0.width) / Double($0.height) } ?? 1
     }
 }

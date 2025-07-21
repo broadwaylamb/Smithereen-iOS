@@ -1,5 +1,5 @@
 {
-  "originHash" : "fc0aa4efe7da4bf0ec26aa1b69da178cbd3b96616869dde89eee65cb16eee7ba",
+  "originHash" : "2a920d45f7a6c7aa9c0a8ad851b5611b1602b433c6fd3855d9411f29095586ec",
   "pins" : [
     {
       "identity" : "hammond",
@@ -8,6 +8,15 @@
       "state" : {
         "branch" : "master",
         "revision" : "774cd9fc6e88604d3a1b0e6dc92822691b324a52"
+      }
+    },
+    {
+      "identity" : "mediagridlayout",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/broadwaylamb/MediaGridLayout.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c6f0a8dae18947ae6360e8f928892fda75a6732d"
       }
     },
     {
