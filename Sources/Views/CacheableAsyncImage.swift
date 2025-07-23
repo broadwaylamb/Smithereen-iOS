@@ -8,12 +8,17 @@ enum CacheableAsyncImageError: Error {
 private enum CacheableAsyncImagePhase {
     case success(Image)
     case failure(any Error)
+    case pending(URLRequest)
     case empty
 }
 
 @MainActor
 private final class PhaseHolder: ObservableObject {
-    @Published var phase: CacheableAsyncImagePhase = .empty
+    @Published var phase: CacheableAsyncImagePhase
+
+    init(phase: CacheableAsyncImagePhase) {
+        self.phase = phase
+    }
 }
 
 struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
@@ -24,7 +29,7 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
 
     private var placeholder: () -> Placeholder
 
-    @StateObject private var phaseHolder = PhaseHolder()
+    @StateObject private var phaseHolder: PhaseHolder
 
     init(
         _ location: ImageLocation?,
@@ -32,44 +37,35 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
         @ViewBuilder content: @escaping (Image) -> Content,
         @ViewBuilder placeholder: @escaping () -> Placeholder,
     ) {
-        let url: URL? =
-            if case .remote(let url) = location {
-                url
-            } else {
-                nil
-            }
-        self.init(url: url, scale: scale, content: content, placeholder: placeholder)
-        if case .bundled(let resource) = location {
-            phaseHolder.phase = .success(Image(resource))
-        }
-    }
-
-    init(
-        url: URL?,
-        scale: CGFloat = 2,
-        @ViewBuilder content: @escaping (Image) -> Content,
-        @ViewBuilder placeholder: @escaping () -> Placeholder,
-    ) {
         self.scale = scale
         self.content = content
         self.placeholder = placeholder
-        guard let url = url else { return }
-        let urlRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad)
-        self.urlRequest = urlRequest
-        if let cachedResponse = URLCache
-               .smithereenMediaCache
-               .cachedResponse(for: urlRequest),
-           let image = imageFromData(cachedResponse.data, scale: scale)
-        {
-            phaseHolder.phase = .success(image)
+        let phase: CacheableAsyncImagePhase
+        switch location {
+        case .remote(let url):
+            let urlRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad)
+            if let cachedResponse = URLCache
+                .smithereenMediaCache
+                .cachedResponse(for: urlRequest),
+               let image = imageFromData(cachedResponse.data, scale: scale)
+            {
+                phase = .success(image)
+            } else {
+                phase = .pending(urlRequest)
+            }
+        case .bundled(let resource):
+            phase = .success(Image(resource))
+        case nil:
+            phase = .empty
         }
+        _phaseHolder = StateObject(wrappedValue: PhaseHolder(phase: phase))
     }
 
-    private func loadImage() async {
+    private func loadImage(_ urlRequest: URLRequest) async {
         do {
             let (data, response) = try await URLSession
                 .cacheableMediaURLSession
-                .data(for: urlRequest!)
+                .data(for: urlRequest)
             if response.statusCode.category == .success {
                 phaseHolder.phase = imageFromData(data, scale: scale)
                     .map(CacheableAsyncImagePhase.success)
@@ -86,9 +82,11 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
         switch phaseHolder.phase {
         case .success(let image):
             content(image)
-        case .empty:
-            placeholder().task(loadImage)
         case .failure(_):
+            placeholder()
+        case .pending(let urlRequest):
+            placeholder().task { await loadImage(urlRequest) }
+        case .empty:
             placeholder()
         }
     }

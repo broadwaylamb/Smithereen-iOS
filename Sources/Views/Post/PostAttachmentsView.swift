@@ -24,7 +24,7 @@ struct PostAttachmentsView: View {
             .first
             .map { CGFloat($0.width) / CGFloat($0.height) }
         let cornerRadius = horizontalSizeClass == .regular ? 2.5 : 0
-        return CacheableAsyncImage(url: url, scale: 2) { image in
+        return CacheableAsyncImage(.remote(url)) { image in
             image.resizable()
         } placeholder: {
             placeholder
