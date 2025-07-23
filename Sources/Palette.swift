@@ -114,7 +114,7 @@ final class PaletteHolder: ObservableObject {
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
         if let paletteName = userDefaults.value(forKey: Self.userDefaultsKey) as? String,
-           let preferredPalette = Palette(paletteName)
+           let preferredPalette = Palette(rawValue: paletteName)
         {
             self.palette = preferredPalette
         }

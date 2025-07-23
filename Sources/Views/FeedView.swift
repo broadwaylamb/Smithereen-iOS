@@ -30,14 +30,7 @@ struct FeedView: View {
                         .listRowBackground(Color.clear)
                         .clipShape(RoundedRectangle(cornerRadius: 4))
                         .shadow(
-                            color: Color(
-                                #colorLiteral(
-                                    red: 0.8445754647,
-                                    reen: 0.8591627479,
-                                    blue: 0.8676676154,
-                                    alpha: 1
-                                )
-                            ),
+                            color: Color(#colorLiteral(red: 0.8445754647, green: 0.8591627479, blue: 0.8676676154, alpha: 1)),
                             radius: 0,
                             x: 0,
                             y: 1,
@@ -50,16 +43,7 @@ struct FeedView: View {
                         .listRowInsets(
                             EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
                         )
-                        .listSectionSeparatorTint(
-                            Color(
-                                #colorLiteral(
-                                    red: 0.7843137383,
-                                    green: 0.7843137383,
-                                    blue: 0.7843137383,
-                                    alpha: 1
-                                )
-                            )
-                        )
+                        .listSectionSeparatorTint(Color(#colorLiteral(red: 0.7843137383, green: 0.7843137383, blue: 0.7843137383, alpha: 1)))
                 }
             } header: {
                 // Removing the top blank space
