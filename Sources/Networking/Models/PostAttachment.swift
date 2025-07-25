@@ -26,3 +26,9 @@ struct PhotoSizeVariant: Equatable, Codable {
 struct VideoAttachment: Equatable {
 
 }
+
+extension PhotoAttachment {
+    var aspectRatio: Double {
+        sizes.first.map { Double($0.width) / Double($0.height) } ?? 1
+    }
+}

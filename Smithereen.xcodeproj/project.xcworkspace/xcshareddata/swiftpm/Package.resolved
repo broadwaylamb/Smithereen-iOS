@@ -1,5 +1,5 @@
 {
-  "originHash" : "2a920d45f7a6c7aa9c0a8ad851b5611b1602b433c6fd3855d9411f29095586ec",
+  "originHash" : "0540ac694f15c3366163833600a190bcce35f8ef1eec99820a38b1febe35b1c0",
   "pins" : [
     {
       "identity" : "hammond",
@@ -16,16 +16,25 @@
       "location" : "https://github.com/broadwaylamb/MediaGridLayout.git",
       "state" : {
         "branch" : "main",
-        "revision" : "c6f0a8dae18947ae6360e8f928892fda75a6732d"
+        "revision" : "b5b5540c85ab4b3bb1c3300e1da3cdc2d2b929b4"
+      }
+    },
+    {
+      "identity" : "placement",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sampettersson/Placement.git",
+      "state" : {
+        "revision" : "792ec6847951f991486cd5d8c5a203666abea334",
+        "version" : "1.8.0"
       }
     },
     {
       "identity" : "prefire",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/broadwaylamb/Prefire.git",
+      "location" : "https://github.com/BarredEwe/Prefire.git",
       "state" : {
-        "branch" : "swift-testing",
-        "revision" : "b7de606e428bfe47dbc98c4132d5399b3b9cd269"
+        "revision" : "534d68fcf09111aa41c633645a02712193d6a721",
+        "version" : "5.0.1"
       }
     },
     {

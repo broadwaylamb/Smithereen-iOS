@@ -194,7 +194,7 @@ extension View {
 }
 
 extension View {
-    func debugBorder() -> some View {
-        border(Color.red)
+    func debugBorder(_ color: Color = .red) -> some View {
+        border(color)
     }
 }

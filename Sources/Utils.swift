@@ -51,3 +51,9 @@ extension URLResponse {
         HTTPStatusCode(rawValue: (self as! HTTPURLResponse).statusCode)
     }
 }
+
+extension CGSize {
+    var aspectRatio: CGFloat {
+        width / height
+    }
+}

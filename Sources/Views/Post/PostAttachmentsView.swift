@@ -21,33 +21,32 @@ struct PostAttachmentsView: View {
     var body: some View {
         HStack(spacing: 0) {
             Spacer(minLength: 0)
-            MediaGridView(
-                elements: photos,
-                maxWidth: 320,
-                maxHeight: 510,
-                minHeight: 255,
-                gap: 2,
-            ) { photo in
-                let placeholder = photo.blurHash?.wrappedValue ?? palette.loadingImagePlaceholder
-                let cornerRadius = horizontalSizeClass == .regular ? 2.5 : 0
-                // TODO: Use the correct URL based on the size
-                CacheableAsyncImage(.remote(url)) { image in
-                    image.resizable()
-                } placeholder: {
-                    placeholder
+            MediaGridLayout(spacing: 2) {
+                ForEach(photos.indexed(), id: \.offset) { (_, photo) in
+                    let placeholder = photo.blurHash?.wrappedValue
+                        ?? palette.loadingImagePlaceholder
+                    let cornerRadius = horizontalSizeClass == .regular ? 2.5 : 0
+
+                    // We put the image into an overlay because otherwise it won't be
+                    // clipped inside the grid.
+                    Color.clear
+                        .overlay {
+                            // TODO: Use the correct URL based on the size
+                            CacheableAsyncImage(.remote(photo.thumbnailURL!)) { image in
+                                image.resizable()
+                            } placeholder: {
+                                placeholder
+                            }
+                            .aspectRatio(photo.aspectRatio, contentMode: .fill)
+                        }
+                        .aspectRatioForGridLayout(photo.aspectRatio)
+                        .cornerRadius(cornerRadius)
+                        .clipped()
                 }
-                .aspectRatio(photo.aspectRatio, contentMode: .fit)
-                .cornerRadius(cornerRadius)
-                .debugBorder()
             }
-            .debugBorder()
             Spacer(minLength: 0)
         }
-    }
-}
-
-extension PhotoAttachment: HasAspectRatio {
-    var aspectRatio: Double {
-        sizes.first.map { Double($0.width) / Double($0.height) } ?? 1
+        .debugBorder(.blue)
+        .frame(maxHeight: 510)
     }
 }

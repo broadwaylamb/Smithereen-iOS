@@ -15,6 +15,7 @@
 		876659422DC8E76E00D62CCA /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 876659412DC8E76E00D62CCA /* SwiftUIIntrospect */; };
 		876659742DC920E200D62CCA /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 876659732DC920E200D62CCA /* SwiftSoup */; };
 		87864EDF2E28520600D8ACE0 /* MediaGridLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 87864EDE2E28520600D8ACE0 /* MediaGridLayout */; };
+		8787F0532E32B89600D2715A /* Placement in Frameworks */ = {isa = PBXBuildFile; productRef = 8787F0522E32B89600D2715A /* Placement */; };
 		8792C5C62DCA9F1200C58B79 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 8792C5C52DCA9F1200C58B79 /* Prefire */; };
 		87B0C99B2DC41A4200D5DB87 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 87B0C99A2DC41A4200D5DB87 /* Prefire */; };
 		87B5CEE82E1732C900ADFA70 /* Hammond in Frameworks */ = {isa = PBXBuildFile; productRef = 87B5CEE72E1732C900ADFA70 /* Hammond */; };
@@ -80,6 +81,7 @@
 				876659742DC920E200D62CCA /* SwiftSoup in Frameworks */,
 				87B5CEE82E1732C900ADFA70 /* Hammond in Frameworks */,
 				8755183A2E11B03B006EDF63 /* Hammond in Frameworks */,
+				8787F0532E32B89600D2715A /* Placement in Frameworks */,
 				87864EDF2E28520600D8ACE0 /* MediaGridLayout in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -152,6 +154,7 @@
 				875518392E11B03B006EDF63 /* Hammond */,
 				87B5CEE72E1732C900ADFA70 /* Hammond */,
 				87864EDE2E28520600D8ACE0 /* MediaGridLayout */,
+				8787F0522E32B89600D2715A /* Placement */,
 			);
 			productName = Smithereen;
 			productReference = 01E20ABA2DB7926D00CC0EBE /* Smithereen.app */;
@@ -168,7 +171,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				87B0C98A2DC40CE800D5DB87 /* PBXTargetDependency */,
+				8787F0552E32FC4E00D2715A /* PBXTargetDependency */,
 				01E20ACC2DB7926F00CC0EBE /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
@@ -221,6 +224,7 @@
 				876659722DC920E200D62CCA /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 				87B5CEE62E1732C900ADFA70 /* XCRemoteSwiftPackageReference "Hammond" */,
 				87864EDD2E28520600D8ACE0 /* XCRemoteSwiftPackageReference "MediaGridLayout" */,
+				8787F0512E32B89600D2715A /* XCRemoteSwiftPackageReference "Placement" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 01E20ABB2DB7926D00CC0EBE /* Products */;
@@ -276,9 +280,9 @@
 			target = 01E20AB92DB7926D00CC0EBE /* Smithereen */;
 			targetProxy = 01E20ACB2DB7926F00CC0EBE /* PBXContainerItemProxy */;
 		};
-		87B0C98A2DC40CE800D5DB87 /* PBXTargetDependency */ = {
+		8787F0552E32FC4E00D2715A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 87B0C9892DC40CE800D5DB87 /* PrefireTestsPlugin */;
+			productRef = 8787F0542E32FC4E00D2715A /* PrefireTestsPlugin */;
 		};
 /* End PBXTargetDependency section */
 
@@ -596,12 +600,20 @@
 				kind = branch;
 			};
 		};
+		8787F0512E32B89600D2715A /* XCRemoteSwiftPackageReference "Placement" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sampettersson/Placement.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.8.0;
+			};
+		};
 		87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/broadwaylamb/Prefire.git";
+			repositoryURL = "https://github.com/BarredEwe/Prefire.git";
 			requirement = {
-				branch = "swift-testing";
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.1;
 			};
 		};
 		87B5CEE62E1732C900ADFA70 /* XCRemoteSwiftPackageReference "Hammond" */ = {
@@ -639,15 +651,20 @@
 			package = 87864EDD2E28520600D8ACE0 /* XCRemoteSwiftPackageReference "MediaGridLayout" */;
 			productName = MediaGridLayout;
 		};
+		8787F0522E32B89600D2715A /* Placement */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8787F0512E32B89600D2715A /* XCRemoteSwiftPackageReference "Placement" */;
+			productName = Placement;
+		};
+		8787F0542E32FC4E00D2715A /* PrefireTestsPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */;
+			productName = "plugin:PrefireTestsPlugin";
+		};
 		8792C5C52DCA9F1200C58B79 /* Prefire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */;
 			productName = Prefire;
-		};
-		87B0C9892DC40CE800D5DB87 /* PrefireTestsPlugin */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */;
-			productName = "plugin:PrefireTestsPlugin";
 		};
 		87B0C99A2DC41A4200D5DB87 /* Prefire */ = {
 			isa = XCSwiftPackageProductDependency;
