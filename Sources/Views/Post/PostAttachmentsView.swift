@@ -32,7 +32,7 @@ struct PostAttachmentsView: View {
                     Color.clear
                         .overlay {
                             // TODO: Use the correct URL based on the size
-                            CacheableAsyncImage(.remote(photo.thumbnailURL!)) { image in
+                            CacheableAsyncImage(photo.thumbnail!) { image in
                                 image.resizable()
                             } placeholder: {
                                 placeholder
@@ -46,7 +46,6 @@ struct PostAttachmentsView: View {
             }
             Spacer(minLength: 0)
         }
-        .debugBorder(.blue)
         .frame(maxHeight: 510)
     }
 }

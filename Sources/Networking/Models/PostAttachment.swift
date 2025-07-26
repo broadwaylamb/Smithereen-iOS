@@ -7,7 +7,7 @@ enum PostAttachment: Equatable {
 
 struct PhotoAttachment: Equatable {
     var blurHash: RGBAColor?
-    var thumbnailURL: URL?
+    var thumbnail: ImageLocation?
     var sizes: [PhotoSizeVariant]
     var altText: String?
 }
@@ -18,7 +18,7 @@ struct PhotoViewerInlineData: Codable {
 }
 
 struct PhotoSizeVariant: Equatable, Codable {
-    var webp: URL
+    var webp: ImageLocation
     var width: Int
     var height: Int
 }

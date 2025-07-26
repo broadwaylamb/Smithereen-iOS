@@ -92,7 +92,7 @@ struct FeedRequest: DecodableRequestProtocol {
         }
         return PhotoAttachment(
             blurHash: picture.blurHash,
-            thumbnailURL: picture.url,
+            thumbnail: picture.url.map(ImageLocation.remote),
             sizes: sizes?.urls ?? [],
             altText: picture.altText,
         )

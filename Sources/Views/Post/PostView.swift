@@ -33,13 +33,15 @@ struct PostView: View {
                 PostTextView(repost.text)
                     .padding(.horizontal, horizontalSizeClass == .regular ? 0 : 4)
 
-                PostAttachmentsView(attachments: repost.attachments)
-                    .padding(
-                        .top,
-                        repost.text.isEmpty
+                if !repost.attachments.isEmpty {
+                    PostAttachmentsView(attachments: repost.attachments)
+                        .padding(
+                            .top,
+                            repost.text.isEmpty
                             ? 0
                             : (horizontalSizeClass == .regular ? 10 : 6)
-                    )
+                        )
+                }
             }
         }
     }
@@ -102,14 +104,16 @@ struct PostView: View {
             PostTextView(post.text)
                 .padding(.horizontal, horizontalPadding)
 
-            PostAttachmentsView(attachments: post.attachments)
-                .padding(.horizontal, horizontalSizeClass == .regular ? 13 : 0)
-                .padding(
-                    .top,
-                    post.text.isEmpty
+            if !post.attachments.isEmpty {
+                PostAttachmentsView(attachments: post.attachments)
+                    .padding(.horizontal, horizontalSizeClass == .regular ? 13 : 0)
+                    .padding(
+                        .top,
+                        post.text.isEmpty
                         ? 0
                         : (horizontalSizeClass == .regular ? 10 : 6)
-                )
+                    )
+            }
 
             repostChain(
                 post.reposted.prefix(PostView.maxRepostChainDepth),
@@ -163,6 +167,7 @@ struct PostView: View {
         alwaysShowFullText: true,
     )
     .background { Color.white }
+    .environmentObject(PaletteHolder())
     .snapshot(precision: 0.98)
 }
 
@@ -232,6 +237,7 @@ struct PostView: View {
         alwaysShowFullText: true,
     )
     .background { Color.white }
+    .environmentObject(PaletteHolder())
     .snapshot(precision: 0.98)
 }
 
@@ -280,6 +286,7 @@ struct PostView: View {
         alwaysShowFullText: false,
     )
     .background { Color.white }
+    .environmentObject(PaletteHolder())
     .snapshot(precision: 0.98)
 }
 
@@ -312,6 +319,7 @@ struct PostView: View {
         ),
         alwaysShowFullText: true,
     )
+    .environmentObject(PaletteHolder())
 }
 
 @available(iOS 17.0, *)
@@ -343,4 +351,51 @@ struct PostView: View {
         ),
         alwaysShowFullText: true,
     )
+    .environmentObject(PaletteHolder())
+}
+
+@available(iOS 17.0, *)
+#Preview("Repost of post with image", traits: .sizeThatFitsLayout) {
+    PostView(
+        post: Post(
+            id: PostID(rawValue: 4),
+            remoteInstanceLink: URL(string: "https://example.com/posts/123")!,
+            localAuthorID: URL(string: "/users/1")!,
+            authorName: "Boromir",
+            date: "five minues ago",
+            authorProfilePicture: .bundled(.boromirProfilePicture),
+            text: PostText(),
+            likeCount: 0,
+            replyCount: 122,
+            repostCount: 13,
+            liked: false,
+            reposted: [
+                Repost(
+                    id: PostID(rawValue: 4),
+                    localAuthorID: URL(string: "/users/1")!,
+                    authorName: "Boromir",
+                    date: "seven minues ago",
+                    authorProfilePicture: .bundled(.boromirProfilePicture),
+                    text: "One does not simply walk into Mordor.",
+                    isMastodonStyleRepost: true,
+                    attachments: [
+                        .photo(PhotoAttachment(
+                            blurHash: nil,
+                            thumbnail: .bundled(.birdPhoto),
+                            sizes: [
+                                .init(
+                                    webp: .bundled(.birdPhoto),
+                                    width: 2047,
+                                    height: 1484,
+                                )
+                            ],
+                            altText: nil
+                        ))
+                    ],
+                )
+            ]
+        ),
+        alwaysShowFullText: true,
+    )
+    .environmentObject(PaletteHolder())
 }
