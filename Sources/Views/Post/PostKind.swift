@@ -2,18 +2,36 @@ import SwiftUI
 
 enum PostKind: Equatable {
     case regular
-    case repost(isMastodonStyle: Bool)
-    case commentRepost(inReplyTo: String, isMastodonStyle: Bool)
-    case commentToDeletedPostRepost(isMastodonStyle: Bool)
+    case repost(RepostInfo)
 
     func grayText(_ date: String) -> LocalizedStringKey {
         switch self {
-        case .regular, .repost:
+        case .regular:
             "\(date)"
-        case .commentRepost(let inReplyTo, _):
+        case .repost(let repostInfo):
+            repostInfo.entity.grayText(date)
+        }
+    }
+}
+
+enum RepostedEntity: Equatable {
+    case post
+    case comment(inReplyTo: String)
+    case commentToDeletedPost
+
+    func grayText(_ date: String) -> LocalizedStringKey {
+        switch self {
+        case .post:
+            "\(date)"
+        case .comment(let inReplyTo):
             "\(date) on post \(inReplyTo)"
-        case .commentToDeletedPostRepost:
+        case .commentToDeletedPost:
             "\(date) on a deleted post"
         }
     }
+}
+
+struct RepostInfo: Equatable {
+    var isMastodonStyle: Bool
+    var entity: RepostedEntity
 }

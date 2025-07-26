@@ -2,11 +2,69 @@ import SwiftUI
 
 struct PostHeaderView: View {
     var postHeader: PostHeader
-    var kind: PostKind
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    var body: some View {
+        GenericPostHeaderView(
+            postHeader: postHeader,
+            kind: .regular,
+            horizontalSizeClass: horizontalSizeClass,
+            repostIcon: {
+                EmptyView()
+            },
+            detailsButton: {
+                Button(action: { /* TODO */ }) {
+                    Image(.ellipsis)
+                }
+                .buttonStyle(.borderless)
+                .accessibilityLabel("Post settings")
+            },
+        )
+    }
+}
+
+struct RepostedPostHeaderView: View {
+    var postHeader: PostHeader
+    var repostInfo: RepostInfo
 
     @EnvironmentObject private var palette: PaletteHolder
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    @ScaledMetric(relativeTo: .body)
+    private var repostIconSize = 13
+
+    private var image: Image {
+        repostInfo.isMastodonStyle
+            ? Image(.repostHeaderMastodonStyle)
+            : Image(.repostHeaderQuote)
+    }
+
+    var body: some View {
+        GenericPostHeaderView(
+            postHeader: postHeader,
+            kind: .repost(repostInfo),
+            horizontalSizeClass: horizontalSizeClass,
+            repostIcon: {
+                image
+                    .resizable()
+                    .frame(width: repostIconSize, height: repostIconSize)
+                    .foregroundStyle(palette.repostIcon)
+            },
+            detailsButton: {
+                EmptyView()
+            },
+        )
+    }
+}
+
+private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: View {
+    var postHeader: PostHeader
+    var kind: PostKind
+    var repostIcon: () -> RepostIcon
+    var detailsButton: () -> DetailsButton
+
+    @EnvironmentObject private var palette: PaletteHolder
 
     @ScaledMetric private var imageSize: CGFloat
 
@@ -14,6 +72,8 @@ struct PostHeaderView: View {
         postHeader: PostHeader,
         kind: PostKind,
         horizontalSizeClass: UserInterfaceSizeClass?,
+        @ViewBuilder repostIcon: @escaping () -> RepostIcon,
+        @ViewBuilder detailsButton: @escaping () -> DetailsButton,
     ) {
         self.postHeader = postHeader
         self.kind = kind
@@ -29,68 +89,30 @@ struct PostHeaderView: View {
                 32
             }
         self._imageSize = ScaledMetric(wrappedValue: imageSize, relativeTo: .body)
-    }
-
-    private var grayText: LocalizedStringKey {
-        switch kind {
-        case .regular, .repost:
-            "\(postHeader.date)"
-        case .commentRepost(let inReplyTo, _):
-            "\(postHeader.date) on post \(inReplyTo)"
-        case .commentToDeletedPostRepost:
-            "\(postHeader.date) on a deleted post"
-        }
-    }
-
-    @ScaledMetric(relativeTo: .body)
-    private var repostIconSize = 13
-
-    private var repostIcon: Image? {
-        switch kind {
-        case .regular:
-            nil
-        case .repost(isMastodonStyle: false),
-             .commentRepost(_, isMastodonStyle: false),
-             .commentToDeletedPostRepost(isMastodonStyle: false):
-            Image(.repostHeaderQuote)
-        case .repost(isMastodonStyle: true),
-             .commentRepost(_, isMastodonStyle: true),
-             .commentToDeletedPostRepost(isMastodonStyle: true):
-            Image(.repostHeaderMastodonStyle)
-        }
+        self.repostIcon = repostIcon
+        self.detailsButton = detailsButton
     }
 
     var body: some View {
         HStack(spacing: 8) {
-            CacheableAsyncImage(
-                postHeader.authorProfilePicture,
-                content: { $0.resizable() },
-                placeholder: { palette.loadingImagePlaceholder },
-            )
-            .frame(width: imageSize, height: imageSize)
-            .cornerRadius(2.5)
+            UserProfilePictureView(location: postHeader.authorProfilePicture)
+                .frame(width: imageSize, height: imageSize)
             VStack(alignment: .leading, spacing: 2) {
                 HStack(alignment: .center, spacing: 6) {
-                    RepostIconView(kind: kind)
+                    repostIcon()
                     Text(postHeader.authorName)
                         .bold()
                         .foregroundStyle(palette.accent)
                 }
-                Button(grayText) {
+                Button(kind.grayText(postHeader.date)) {
                     // TODO: Navigate to the post
                 }
                 .buttonStyle(.borderless)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             }
-            if case .regular = kind {
-                Spacer()
-                Button(action: { /* TODO */ }) {
-                    Image(.ellipsis)
-                }
-                .buttonStyle(.borderless)
-                .accessibilityLabel("Post settings")
-            }
+            Spacer()
+            detailsButton()
         }
     }
 }

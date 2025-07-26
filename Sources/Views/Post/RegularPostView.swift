@@ -16,10 +16,12 @@ struct RegularPostView: View {
 
     private func singleRepost(_ repost: Repost, headerOnly: Bool) -> some View {
         VStack(alignment: .leading, spacing: 13) {
-            PostHeaderView(
+            RepostedPostHeaderView(
                 postHeader: repost.header,
-                kind: .repost(isMastodonStyle: repost.isMastodonStyleRepost),
-                horizontalSizeClass: .regular,
+                repostInfo: RepostInfo(
+                    isMastodonStyle: repost.isMastodonStyleRepost,
+                    entity: .post, // TODO: Use the actual entity
+                ),
             )
 
             if !headerOnly {
@@ -70,13 +72,9 @@ struct RegularPostView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            PostHeaderView(
-                postHeader: post.header,
-                kind: .regular,
-                horizontalSizeClass: .regular,
-            )
-            .padding(.horizontal, horizontalContentPadding)
-            .padding(.vertical, 13)
+            PostHeaderView(postHeader: post.header)
+                .padding(.horizontal, horizontalContentPadding)
+                .padding(.vertical, 13)
 
             PostTextView(post.text)
                 .padding(.horizontal, horizontalContentPadding)
