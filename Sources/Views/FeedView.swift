@@ -20,12 +20,8 @@ struct FeedView: View {
     var body: some View {
         List(viewModel.posts) { post in
             Section {
-                let postView = PostView(
-                    post: post,
-                    alwaysShowFullText: false,
-                )
                 if horizontalSizeClass == .regular {
-                    postView
+                    RegularPostView(post: post)
                         .listSectionSeparator(.hidden)
                         .listRowBackground(Color.clear)
                         .clipShape(RoundedRectangle(cornerRadius: 4))
@@ -39,7 +35,7 @@ struct FeedView: View {
                             EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24)
                         )
                 } else {
-                    postView
+                    CompactPostView(post: post)
                         .listRowInsets(
                             EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
                         )

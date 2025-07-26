@@ -2,14 +2,7 @@ import SwiftUI
 
 struct PostHeaderView: View {
     var postHeader: PostHeader
-    var kind: Kind
-
-    enum Kind {
-        case regular
-        case repost(isMastodonStyle: Bool)
-        case commentRepost(inReplyTo: String, isMastodonStyle: Bool)
-        case commentToDeletedPostRepost(isMastodonStyle: Bool)
-    }
+    var kind: PostKind
 
     @EnvironmentObject private var palette: PaletteHolder
 
@@ -19,7 +12,7 @@ struct PostHeaderView: View {
 
     init(
         postHeader: PostHeader,
-        kind: Kind,
+        kind: PostKind,
         horizontalSizeClass: UserInterfaceSizeClass?,
     ) {
         self.postHeader = postHeader
@@ -78,12 +71,7 @@ struct PostHeaderView: View {
             .cornerRadius(2.5)
             VStack(alignment: .leading, spacing: 2) {
                 HStack(alignment: .center, spacing: 6) {
-                    if let repostIcon {
-                        repostIcon
-                            .resizable()
-                            .frame(width: repostIconSize, height: repostIconSize)
-                            .foregroundStyle(palette.repostIcon)
-                    }
+                    RepostIconView(kind: kind)
                     Text(postHeader.authorName)
                         .bold()
                         .foregroundStyle(palette.accent)
