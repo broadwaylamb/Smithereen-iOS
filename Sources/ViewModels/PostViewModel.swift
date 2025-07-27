@@ -1,6 +1,7 @@
 import SwiftUI
 
 final class PostViewModel: ObservableObject {
+    let api: any APIService
     private var post: Post
 
     @Published var commentCount: Int = 0
@@ -9,7 +10,8 @@ final class PostViewModel: ObservableObject {
     @Published var liked: Bool = false
 
     @MainActor
-    init(post: Post) {
+    init(api: any APIService, post: Post) {
+        self.api = api
         self.post = post
         update(from: post)
     }

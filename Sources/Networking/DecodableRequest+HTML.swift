@@ -1,8 +1,9 @@
 import Hammond
 import SwiftSoup
 
-protocol DecodableRequestProtocol: Hammond.DecodableRequestProtocol
-    where ServerError == Smithereen.ServerError
+protocol DecodableRequestProtocol: Hammond.DecodableRequestProtocol, Sendable
+    where ServerError == Smithereen.ServerError,
+          Result: Sendable
 {
     associatedtype ResponseBody = Document
 }
