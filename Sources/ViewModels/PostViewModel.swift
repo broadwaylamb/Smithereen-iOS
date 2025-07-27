@@ -26,8 +26,7 @@ final class PostViewModel: ObservableObject {
     }
 
     var originalPostURL: URL {
-        // TODO
-        fatalError()
+        post.header.remoteInstanceLink ?? post.header.localURL
     }
 
     var header: PostHeader {

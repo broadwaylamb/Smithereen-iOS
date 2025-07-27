@@ -3,6 +3,7 @@ import SwiftSoup
 
 struct PostHeader: Equatable {
     var id: PostID
+    var localURL: URL
     var remoteInstanceLink: URL?
     var localAuthorID: URL
     var authorName: String
@@ -19,15 +20,12 @@ struct Post: Equatable, Sendable {
     var liked: Bool
     var reposted: [Repost] = []
     var attachments: [PostAttachment] = []
-
-    func originalPostURL(base: URL) -> URL {
-        header.remoteInstanceLink ?? base.appendingPathComponent("/posts/\(header.id)")
-    }
 }
 
 extension Post {
     init(
         id: PostID,
+        localURL: URL,
         remoteInstanceLink: URL? = nil,
         localAuthorID: URL,
         authorName: String,
@@ -43,6 +41,7 @@ extension Post {
     ) {
         header = PostHeader(
             id: id,
+            localURL: localURL,
             remoteInstanceLink: remoteInstanceLink,
             localAuthorID: localAuthorID,
             authorName: authorName,
@@ -75,6 +74,7 @@ struct Repost: Identifiable, Equatable {
 extension Repost {
     init(
         id: PostID,
+        localURL: URL,
         remoteInstanceLink: URL? = nil,
         localAuthorID: URL,
         authorName: String,
@@ -86,6 +86,7 @@ extension Repost {
     ) {
         header = PostHeader(
             id: id,
+            localURL: localURL,
             remoteInstanceLink: remoteInstanceLink,
             localAuthorID: localAuthorID,
             authorName: authorName,

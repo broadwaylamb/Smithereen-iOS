@@ -63,6 +63,7 @@ struct MockApi: AuthenticationService, APIService {
             return [
                 Post(
                     id: PostID(rawValue: 1),
+                    localURL: URL(string: "https://smithereen.local/posts/1")!,
                     localAuthorID: URL(string: "htts://smithereen.local/boromir")!,
                     authorName: "Boromir",
                     date: "five minutes ago",
@@ -75,6 +76,7 @@ struct MockApi: AuthenticationService, APIService {
                 ),
                 Post(
                     id: PostID(rawValue: 2),
+                    localURL: URL(string: "https://smithereen.local/posts/2")!,
                     localAuthorID: URL(string: "htts://smithereen.local/rms")!,
                     authorName: "Richard Stallman",
                     date: "17 June 2009 at 13:12",

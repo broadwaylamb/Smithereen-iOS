@@ -59,11 +59,13 @@ struct FeedRequest: DecodableRequestProtocol {
         let authorName = try authorNameLink.text(trimAndNormaliseWhitespace: true)
 
         guard let postLink = try container.select(postLinkSelector).first(),
-              let postID = try? postLink
-                  .attr("href")
+              let localPostURL = (try? postLink.attr("href")).flatMap(URL.init(string:)),
+              let postID = localPostURL
+                  .absoluteString
                   .components(separatedBy: "posts/")
                   .last
                   .flatMap(Int.init)
+                  .map(PostID.init)
         else {
             return nil
         }
@@ -73,7 +75,8 @@ struct FeedRequest: DecodableRequestProtocol {
             .flatMap(parsePicture)
 
         return PostHeader(
-            id: PostID(rawValue: postID),
+            id: postID,
+            localURL: localPostURL,
             remoteInstanceLink: nil, // FIXME: the HTML from the mobile version that we use as data source doesn't contain the link to a remote server.
             localAuthorID: authorURL,
             authorName: authorName,
