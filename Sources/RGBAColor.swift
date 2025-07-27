@@ -49,15 +49,6 @@ extension RGBAColor {
 
 // https://mina86.com/2021/srgb-lab-lchab-conversions/
 
-private let RAD_TO_DEG: Double = 180 / .pi
-
-private let LAB_E: Double = 0.008856
-private let LAB_16_116: Double = 0.1379310
-private let LAB_K_116: Double = 7.787036
-private let LAB_X: Double = 0.95047
-private let LAB_Y: Double = 1
-private let LAB_Z: Double = 1.08883
-
 extension RGBAColor {
 
     private func toXYZ() -> XYZColor {

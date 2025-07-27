@@ -2,7 +2,6 @@ import SwiftUI
 
 private let collapsibleMenuWidth: CGFloat = 276
 private let alwaysShownMenuWidth: CGFloat = 256
-private let dragThreshold: CGFloat = 138
 
 struct SlideableMenuView<Menu: View, Content: View>: View {
 

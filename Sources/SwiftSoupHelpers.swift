@@ -4,9 +4,9 @@ import SwiftSoup
 protocol NodeVisitor {
     associatedtype Error: Swift.Error
 
-    func head(_ node: Node, _ depth: Int) throws(Error)
+    func head(_ node: Node) throws(Error)
 
-    func tail(_ node: Node, _ depth: Int) throws(Error)
+    func tail(_ node: Node) throws(Error)
 }
 
 extension Node {
@@ -15,7 +15,7 @@ extension Node {
         var depth: Int = 0
 
         while let currentNode = node {
-            try visitor.head(currentNode, depth)
+            try visitor.head(currentNode)
             if currentNode.hasChildNodes() {
                 node = currentNode.childNode(0)
                 depth += 1
@@ -25,13 +25,13 @@ extension Node {
                     !currentNode.hasNextSibling() && depth > 0
                 {
                     let parent = currentNode.parent()
-                    try visitor.tail(currentNode, depth)
+                    try visitor.tail(currentNode)
                     node2 = parent
                     depth -= 1
                 }
                 if let currentNode = node2 {
                     let nextSib = currentNode.nextSibling()
-                    try visitor.tail(currentNode, depth)
+                    try visitor.tail(currentNode)
                     if currentNode === self {
                         break
                     }

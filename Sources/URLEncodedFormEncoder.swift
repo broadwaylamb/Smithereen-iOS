@@ -16,11 +16,11 @@ import Foundation
 /// See [Mozilla's](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) docs for more information about
 /// url-encoded forms.
 /// NOTE: This implementation of the encoder does not support encoding booleans to "flags".
-public struct URLEncodedFormEncoder: Sendable {
+struct URLEncodedFormEncoder: Sendable {
     /// Used to capture URLForm Coding Configuration used for encoding.
-    public struct Configuration: Sendable {
+    struct Configuration: Sendable {
         /// Supported array encodings.
-        public enum ArrayEncoding: Sendable {
+        enum ArrayEncoding: Sendable {
             /// Arrays are serialized as separate values with bracket suffixed keys.
             /// For example, `foo = [1,2,3]` would be serialized as `foo[]=1&foo[]=2&foo[]=3`.
             case bracket
@@ -33,7 +33,7 @@ public struct URLEncodedFormEncoder: Sendable {
         }
 
         /// Supported date formats
-        public enum DateEncodingStrategy: Sendable {
+        enum DateEncodingStrategy: Sendable {
             /// Seconds since 1 January 1970 00:00:00 UTC (Unix Timestamp)
             case secondsSince1970
             /// ISO 8601 formatted date
@@ -42,16 +42,16 @@ public struct URLEncodedFormEncoder: Sendable {
             case custom(@Sendable (Date, Encoder) throws -> Void)
         }
         /// Specified array encoding.
-        public var arrayEncoding: ArrayEncoding
-        public var dateEncodingStrategy: DateEncodingStrategy
-        public var userInfo: [CodingUserInfoKey: Sendable]
+        var arrayEncoding: ArrayEncoding
+        var dateEncodingStrategy: DateEncodingStrategy
+        var userInfo: [CodingUserInfoKey: Sendable]
 
         /// Creates a new `Configuration`.
         ///
         ///  - parameters:
         ///     - arrayEncoding: Specified array encoding. Defaults to `.bracket`.
         ///     - dateFormat: Format to encode date format too. Defaults to `secondsSince1970`
-        public init(
+        init(
             arrayEncoding: ArrayEncoding = .bracket,
             dateEncodingStrategy: DateEncodingStrategy = .secondsSince1970,
             userInfo: [CodingUserInfoKey: Sendable] = [:]
@@ -68,7 +68,7 @@ public struct URLEncodedFormEncoder: Sendable {
     ///
     /// - Parameters:
     ///  - configuration: Defines how encoding is done; see ``URLEncodedFormEncoder/Configuration`` for more information
-    public init(configuration: Configuration = .init()) {
+    init(configuration: Configuration = .init()) {
         self.configuration = configuration
     }
 
@@ -83,7 +83,7 @@ public struct URLEncodedFormEncoder: Sendable {
     ///   - userInfo: Overrides the default coder user info.
     /// - Returns: Encoded ``String``
     /// - Throws: Any error that may occur while attempting to encode the specified type.
-    public func encode(
+    func encode(
         _ encodable: any Encodable,
         userInfo: [CodingUserInfoKey: Sendable] = [:]
     ) throws -> String {
@@ -92,7 +92,7 @@ public struct URLEncodedFormEncoder: Sendable {
         }
     }
 
-    public func encode(
+    func encode(
         _ encodable: any Encodable,
         into queryItems: inout [URLQueryItem],
         userInfo: [CodingUserInfoKey: Sendable] = [:]
@@ -463,39 +463,15 @@ extension URLEncodedFormEncoder.Configuration {
     }
 }
 
-extension EncodingError {
-    fileprivate static func invalidValue(
-        _ value: Any,
-        at path: [CodingKey],
-    ) -> EncodingError {
-        let pathString = path.map { $0.stringValue }.joined(separator: ".")
-        let context = EncodingError.Context(
-            codingPath: path,
-            debugDescription: "Invalid value at '\(pathString)': \(value)"
-        )
-        return Swift.EncodingError.invalidValue(value, context)
-    }
-}
-
 /// Represents application/x-www-form-urlencoded encoded data.
 private struct URLEncodedFormData: ExpressibleByArrayLiteral, ExpressibleByStringLiteral,
     ExpressibleByDictionaryLiteral, Equatable
 {
     var values: [URLQueryFragment]
     var children: [String: URLEncodedFormData]
-    let maxRecursionDepth = 100
 
     var hasOnlyValues: Bool {
         return children.count == 0
-    }
-
-    var allChildKeysAreSequentialIntegers: Bool {
-        for i in 0...children.count - 1 {
-            if !children.keys.contains(String(i)) {
-                return false
-            }
-        }
-        return true
     }
 
     init(values: [URLQueryFragment] = [], children: [String: URLEncodedFormData] = [:]) {
@@ -516,32 +492,6 @@ private struct URLEncodedFormData: ExpressibleByArrayLiteral, ExpressibleByStrin
     init(dictionaryLiteral: (String, URLEncodedFormData)...) {
         self.values = []
         self.children = Dictionary(uniqueKeysWithValues: dictionaryLiteral)
-    }
-
-    mutating func set(
-        value: URLQueryFragment,
-        forPath path: [String],
-        recursionDepth: Int,
-    ) throws {
-        guard recursionDepth <= maxRecursionDepth else {
-            throw URLEncodedFormError.reachedNestingLimit
-        }
-        guard let firstElement = path.first else {
-            self.values.append(value)
-            return
-        }
-        var child: URLEncodedFormData
-        if let existingChild = self.children[firstElement] {
-            child = existingChild
-        } else {
-            child = []
-        }
-        try child.set(
-            value: value,
-            forPath: Array(path[1...]),
-            recursionDepth: recursionDepth + 1,
-        )
-        self.children[firstElement] = child
     }
 }
 
@@ -620,12 +570,6 @@ extension Array where Element == CodingKey {
     }
 }
 
-/// Errors thrown while encoding/decoding `application/x-www-form-urlencoded` data.
-private enum URLEncodedFormError: Error {
-    case malformedKey(key: Substring)
-    case reachedNestingLimit
-}
-
 // MARK: Utilities
 
 /// A basic `CodingKey` implementation.
@@ -657,14 +601,6 @@ private enum BasicCodingKey: CodingKey, Hashable {
     /// See `CodingKey`.
     init?(intValue: Int) {
         self = .index(intValue)
-    }
-
-    init(_ codingKey: CodingKey) {
-        if let intValue = codingKey.intValue {
-            self = .index(intValue)
-        } else {
-            self = .key(codingKey.stringValue)
-        }
     }
 }
 

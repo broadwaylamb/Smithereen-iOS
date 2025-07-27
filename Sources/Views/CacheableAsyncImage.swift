@@ -22,7 +22,6 @@ private final class PhaseHolder: ObservableObject {
 }
 
 struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
-    private var urlRequest: URLRequest?
     private var scale: CGFloat
 
     private var content: (Image) -> Content

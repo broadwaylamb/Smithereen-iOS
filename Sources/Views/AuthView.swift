@@ -57,10 +57,6 @@ struct AuthView: View {
         return urlComponents.url
     }
 
-    private var areInputsValid: Bool {
-        instanceURL != nil && !email.isEmpty && !password.isEmpty
-    }
-
     private func logIn() {
         guard let instanceURL = self.instanceURL else { return }
         Task {

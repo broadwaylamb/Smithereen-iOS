@@ -1,18 +1,6 @@
 import SwiftUI
 import SwiftUIIntrospect
 
-private struct LeadingInsetListSeparatorViewModifier: ViewModifier {
-    var leadingInset: CGFloat
-    func body(content: Content) -> some View {
-        ZStack(alignment: .topLeading) {
-            // Separator is aligned at the first text block
-            Text(verbatim: "asd")
-                .offset(x: leadingInset)
-            content
-        }
-    }
-}
-
 private struct ContentMarginPolyfillViewModifier: ViewModifier {
     let edges: Edge.Set
     let length: CGFloat
@@ -194,6 +182,7 @@ extension View {
 }
 
 extension View {
+    // periphery:ignore
     func debugBorder(_ color: Color = .red) -> some View {
         border(color)
     }

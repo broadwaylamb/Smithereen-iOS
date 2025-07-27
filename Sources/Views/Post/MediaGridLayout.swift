@@ -201,7 +201,7 @@ internal func mediaGridPreviewHelper(
 ) -> some View {
     Color.clear
         .overlay {
-            Image(.birdPhoto)
+            Image(resource)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
         }

@@ -10,12 +10,6 @@ extension AppStorage where Value == String {
     }
 }
 
-extension AppStorage where Value: RawRepresentable, Value.RawValue == String {
-    init(wrappedValue: Value, _ key: AppStorageKey<Value>, store: UserDefaults? = nil) {
-        self.init(wrappedValue: wrappedValue, key.rawValue, store: store)
-    }
-}
-
 extension AppStorageKey<String> {
     static let smithereenInstance = Self(rawValue: "smithereenInstance")
 }

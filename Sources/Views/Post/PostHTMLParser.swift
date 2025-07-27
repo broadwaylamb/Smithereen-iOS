@@ -79,7 +79,7 @@ private final class Parser: NodeVisitor {
         return []
     }
 
-    func head(_ node: Node, _ depth: Int) {
+    func head(_ node: Node) {
         if let element = node as? Element {
             switch element.tagNameNormal() {
             case "pre":
@@ -101,7 +101,7 @@ private final class Parser: NodeVisitor {
         }
     }
 
-    func tail(_ node: Node, _ depth: Int) {
+    func tail(_ node: Node) {
         if let textNode = node as? TextNode {
             let text = textNode.getWholeText()
             if codeBlockDepth > 0 {

@@ -70,31 +70,3 @@ struct Repost: Identifiable, Equatable {
         !text.isEmpty && !attachments.isEmpty
     }
 }
-
-extension Repost {
-    init(
-        id: PostID,
-        localURL: URL,
-        remoteInstanceLink: URL? = nil,
-        localAuthorID: URL,
-        authorName: String,
-        date: String,
-        authorProfilePicture: ImageLocation? = nil,
-        text: PostText,
-        isMastodonStyleRepost: Bool,
-        attachments: [PostAttachment] = [],
-    ) {
-        header = PostHeader(
-            id: id,
-            localURL: localURL,
-            remoteInstanceLink: remoteInstanceLink,
-            localAuthorID: localAuthorID,
-            authorName: authorName,
-            date: date,
-            authorProfilePicture: authorProfilePicture,
-        )
-        self.text = text
-        self.isMastodonStyleRepost = isMastodonStyleRepost
-        self.attachments = attachments
-    }
-}
