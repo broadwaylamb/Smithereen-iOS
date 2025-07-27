@@ -1,10 +1,7 @@
 import SwiftUI
 
 struct CompactPostFooterView: View {
-    var replyCount: Int
-    var repostCount: Int
-    var likesCount: Int
-    var liked: Bool
+    @ObservedObject var viewModel: PostViewModel
 
     var body: some View {
         HStack(spacing: 8) {
@@ -15,7 +12,7 @@ struct CompactPostFooterView: View {
                         .resizable()
                         .frame(width: 15, height: 14)
                         .alignmentGuide(.firstTextBaseline) { $0.height - 3.5 },
-                count: replyCount,
+                count: viewModel.commentCount,
                 highlighted: false,
                 action: { /* TODO */ },
             )
@@ -26,7 +23,7 @@ struct CompactPostFooterView: View {
                     Image(.repostFilled)
                     .resizable()
                     .frame(width: 15, height: 14),
-                count: repostCount,
+                count: viewModel.repostCount,
                 highlighted: false,
                 action: { /* TODO */ },
             )
@@ -35,11 +32,11 @@ struct CompactPostFooterView: View {
                 image: Image(.likeFilled)
                     .resizable()
                     .frame(width: 15, height: 13),
-                count: likesCount,
-                highlighted: liked,
+                count: viewModel.likeCount,
+                highlighted: viewModel.liked,
                 action: { /* TODO */ },
             )
-            .likeButtonFeedback(liked: liked)
+            .likeButtonFeedback(liked: viewModel.liked)
         }
         .font(.caption)
     }

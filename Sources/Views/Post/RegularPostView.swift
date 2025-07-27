@@ -5,10 +5,7 @@ private let attachmentBlockTopPadding: CGFloat = 10
 private let maxRepostChainDepth = 3
 
 struct RegularPostView: View {
-    var post: Post
-
-    // TODO: Remove this when we add the view model
-    @Environment(\.instanceURL) private var instanceURL
+    @ObservedObject var viewModel: PostViewModel
 
     @EnvironmentObject private var palette: PaletteHolder
 
@@ -72,22 +69,22 @@ struct RegularPostView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            PostHeaderView(postHeader: post.header)
+            PostHeaderView(postHeader: viewModel.header)
                 .padding(.horizontal, horizontalContentPadding)
                 .padding(.vertical, 13)
 
-            PostTextView(post.text)
+            PostTextView(viewModel.text)
                 .padding(.horizontal, horizontalContentPadding)
 
-            if !post.attachments.isEmpty {
-                PostAttachmentsView(attachments: post.attachments)
+            if !viewModel.attachments.isEmpty {
+                PostAttachmentsView(attachments: viewModel.attachments)
                     .padding(.horizontal, horizontalContentPadding)
-                    .padding(.top, post.text.isEmpty ? 0 : attachmentBlockTopPadding)
+                    .padding(.top, viewModel.text.isEmpty ? 0 : attachmentBlockTopPadding)
             }
 
             repostChain(
-                post.reposted.prefix(maxRepostChainDepth),
-                hasContentAbove: post.hasContent,
+                viewModel.reposted.prefix(maxRepostChainDepth),
+                hasContentAbove: viewModel.hasContent,
             )
             .padding(.horizontal, horizontalContentPadding)
 
@@ -97,15 +94,15 @@ struct RegularPostView: View {
                 .padding(.top, 15)
 
             RegularPostFooterView(
-                replyCount: post.replyCount,
-                repostCount: post.repostCount,
-                likesCount: post.likeCount,
-                liked: post.liked,
+                replyCount: viewModel.commentCount,
+                repostCount: viewModel.repostCount,
+                likesCount: viewModel.likeCount,
+                liked: viewModel.liked,
             )
             .padding(.horizontal, horizontalContentPadding)
         }
         .background(Color.white)
         .colorScheme(.light)
-        .draggableAsURL(post.originalPostURL(base: instanceURL))
+        .draggableAsURL(viewModel.originalPostURL)
     }
 }

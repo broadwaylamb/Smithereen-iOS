@@ -10,7 +10,7 @@ struct PostHeader: Equatable {
     var authorProfilePicture: ImageLocation?
 }
 
-struct Post: Identifiable, Equatable, Sendable {
+struct Post: Equatable, Sendable {
     var header: PostHeader
     var text: PostText
     var likeCount: Int
@@ -20,14 +20,8 @@ struct Post: Identifiable, Equatable, Sendable {
     var reposted: [Repost] = []
     var attachments: [PostAttachment] = []
 
-    var id: PostID { header.id }
-
-    var hasContent: Bool {
-        !text.isEmpty && !attachments.isEmpty
-    }
-
     func originalPostURL(base: URL) -> URL {
-        header.remoteInstanceLink ?? base.appendingPathComponent("/posts/\(id)")
+        header.remoteInstanceLink ?? base.appendingPathComponent("/posts/\(header.id)")
     }
 }
 
