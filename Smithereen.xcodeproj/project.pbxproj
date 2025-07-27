@@ -6,6 +6,22 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		87ACAB202E36BB3F00C6C124 /* Periphery */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 87ACAB212E36BB3F00C6C124 /* Build configuration list for PBXAggregateTarget "Periphery" */;
+			buildPhases = (
+				87ACAB242E36BB4C00C6C124 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Periphery;
+			packageProductDependencies = (
+			);
+			productName = Periphery;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		870D40ED2DF8FFA80026AB8A /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 870D40EC2DF8FFA80026AB8A /* Localizable.xcstrings */; };
 		872205E32DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 872205E22DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig */; };
@@ -204,6 +220,9 @@
 						LastSwiftMigration = 1630;
 						TestTargetID = 01E20AB92DB7926D00CC0EBE;
 					};
+					87ACAB202E36BB3F00C6C124 = {
+						CreatedOnToolsVersion = 16.4;
+					};
 				};
 			};
 			buildConfigurationList = 01E20AB52DB7926D00CC0EBE /* Build configuration list for PBXProject "Smithereen" */;
@@ -233,6 +252,7 @@
 			targets = (
 				01E20AB92DB7926D00CC0EBE /* Smithereen */,
 				01E20AC92DB7926F00CC0EBE /* SmithereenTests */,
+				87ACAB202E36BB3F00C6C124 /* Periphery */,
 			);
 		};
 /* End PBXProject section */
@@ -256,6 +276,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		87ACAB242E36BB4C00C6C124 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "periphery scan --project-root \"$PROJECT_DIR\" --format xcode\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		01E20AB62DB7926D00CC0EBE /* Sources */ = {
@@ -535,6 +576,28 @@
 			};
 			name = Release;
 		};
+		87ACAB222E36BB3F00C6C124 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = N4X84VA3BB;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		87ACAB232E36BB3F00C6C124 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = N4X84VA3BB;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -561,6 +624,15 @@
 			buildConfigurations = (
 				01E20AE22DB7926F00CC0EBE /* Debug */,
 				01E20AE32DB7926F00CC0EBE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		87ACAB212E36BB3F00C6C124 /* Build configuration list for PBXAggregateTarget "Periphery" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				87ACAB222E36BB3F00C6C124 /* Debug */,
+				87ACAB232E36BB3F00C6C124 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
