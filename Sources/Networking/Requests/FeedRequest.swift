@@ -113,7 +113,20 @@ struct FeedRequest: DecodableRequestProtocol {
         return photos
     }
 
-    static func deserializeResult(from document: Document) throws -> [Post] {
+    static func deserializeResult(from document: Document) throws -> FeedResponse {
+        let createWallPostURL = try document
+            .select("#wallPostFormForm_feed")
+            .first()?
+            .attr("action")
+
+        let userID = createWallPostURL
+            .flatMap {
+                userIDRegex.firstMatch(in: $0, captureGroup: 1)
+            }
+            .flatMap { Int($0) }
+            .map(UserID.init)
+            ?? UserID(rawValue: -1)
+
         var posts: [Post] = []
         for postElement in try document.select(".post") {
             do {
@@ -193,9 +206,17 @@ struct FeedRequest: DecodableRequestProtocol {
                 continue
             }
         }
-        return posts
+        return FeedResponse(posts: posts, currentUserID: userID)
     }
+}
+
+struct FeedResponse {
+    var posts: [Post]
+    var currentUserID: UserID
 }
 
 private let blurHashRegex =
     try! NSRegularExpression(pattern: #"background-color: #([a-fA-F0-9]{6})"#)
+
+private let userIDRegex =
+    try! NSRegularExpression(pattern: "/users/([0-9]+)/createWallPost")

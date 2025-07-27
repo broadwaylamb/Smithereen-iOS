@@ -3,29 +3,26 @@ import SwiftUI
 struct ComposePostView: View {
     var titleKey: LocalizedStringKey
     var placeholder: LocalizedStringKey
-    @Binding var isShown: Bool
 
-    @State private var text: String
+    @ObservedObject private var viewModel: ComposePostViewModel
 
     @State private var isFocused: Bool = true
 
     init(
         _ titleKey: LocalizedStringKey,
         placeholder: LocalizedStringKey,
-        text: String = "",
-        isShown: Binding<Bool>
+        viewModel: ComposePostViewModel,
     ) {
         self.titleKey = titleKey
         self.placeholder = placeholder
-        self.text = text
-        self._isShown = isShown
+        self.viewModel = viewModel
     }
 
     var body: some View {
         NavigationView {
-            ComposePostAdapter(isFocused: $isFocused, text: $text)
+            ComposePostAdapter(isFocused: $isFocused, text: $viewModel.text)
                 .overlay(alignment: .topLeading) {
-                    if text.isEmpty {
+                    if viewModel.showPlaceholder {
                         Text(placeholder)
                             .font(.body)
                             .foregroundStyle(Color(UIColor.placeholderText))
@@ -38,16 +35,15 @@ struct ComposePostView: View {
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         Button("Cancel", role: .cancel) {
-                            isShown = false
+                            viewModel.isShown = false
                         }
                         .buttonStyle(.borderless)
                     }
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            // TODO: Submit the post
-                        } label: {
+                        Button(action: viewModel.submit) {
                             Text("Done").bold()
                         }
+                        .disabled(!viewModel.canSubmit)
                         .buttonStyle(.borderless)
                     }
                     ToolbarItem(placement: .keyboard) {
@@ -125,6 +121,12 @@ private struct ComposePostAdapter: UIViewRepresentable {
     ComposePostView(
         "New Post",
         placeholder: "What's new?",
-        isShown: .constant(true),
+        viewModel: ComposePostViewModel(
+            errorObserver: ErrorObserver(),
+            api: MockApi(),
+            userID: UserID(rawValue: 1),
+            isShown: .constant(true),
+            showNewPost: { _ in },
+        )
     )
 }

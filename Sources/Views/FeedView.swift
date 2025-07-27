@@ -59,6 +59,7 @@ struct FeedView: View {
                 } label: {
                     Image(.composePost)
                 }
+                .disabled(!viewModel.canComposePost)
                 .tint(Color.white)
             }
         }
@@ -66,7 +67,10 @@ struct FeedView: View {
             ComposePostView(
                 "New Post",
                 placeholder: "What's new?",
-                isShown: $composePostShown,
+                viewModel: viewModel.createComposePostViewModel(
+                    errorObserver: errorObserver,
+                    isShown: $composePostShown,
+                ),
             )
         }
         .task {
