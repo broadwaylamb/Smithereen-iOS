@@ -1,22 +1,19 @@
 import SwiftUI
 
 struct RegularPostFooterView: View {
-    var replyCount: Int
-    var repostCount: Int
-    var likesCount: Int
-    var liked: Bool
+    @ObservedObject var viewModel: PostViewModel
 
     @EnvironmentObject private var palette: PaletteHolder
 
     private var commentButtonText: Text {
-        if replyCount == 0 {
+        if viewModel.commentCount == 0 {
             Text(
                 "Comment",
                 comment: "A button when there are no comments in a post; imperative.",
             )
         } else {
             Text(
-                "\(replyCount) comments",
+                "\(viewModel.commentCount) comments",
                 comment: "The number of comments of a post",
             )
         }
@@ -42,9 +39,9 @@ struct RegularPostFooterView: View {
                 Button(action: { /* TODO */ }) {
                     HStack(spacing: 8) {
                         Image(.repostOutline)
-                        if repostCount != 0 {
+                        if viewModel.repostCount != 0 {
                             Text(
-                                "\(repostCount)",
+                                "\(viewModel.repostCount)",
                                 comment: "The number of reposts of a post"
                             )
                             .fontWeight(.semibold)
@@ -58,10 +55,10 @@ struct RegularPostFooterView: View {
                     HStack(spacing: 8) {
                         Text("Like")
                             .tint(palette.regularPostLikeText)
-                        Image(liked ? .likeFilled : .likeOutline)
-                        if likesCount != 0 {
+                        Image(viewModel.liked ? .likeFilled : .likeOutline)
+                        if viewModel.likeCount != 0 {
                             Text(
-                                "\(likesCount)",
+                                "\(viewModel.likeCount)",
                                 comment: "The number of likes of a post"
                             )
                             .fontWeight(.semibold)
@@ -72,7 +69,7 @@ struct RegularPostFooterView: View {
                 }
                 .buttonStyle(.borderless)
                 .tint(palette.regularPostLikeAndRepostButton)
-                .likeButtonFeedback(liked: liked)
+                .likeButtonFeedback(liked: viewModel.liked)
             }
             .buttonStyle(.borderless)
             .tint(palette.regularPostLikeAndRepostButton)

@@ -93,13 +93,8 @@ struct RegularPostView: View {
                 .padding(.leading, 16)
                 .padding(.top, 15)
 
-            RegularPostFooterView(
-                replyCount: viewModel.commentCount,
-                repostCount: viewModel.repostCount,
-                likesCount: viewModel.likeCount,
-                liked: viewModel.liked,
-            )
-            .padding(.horizontal, horizontalContentPadding)
+            RegularPostFooterView(viewModel: viewModel)
+                .padding(.horizontal, horizontalContentPadding)
         }
         .background(Color.white)
         .colorScheme(.light)
