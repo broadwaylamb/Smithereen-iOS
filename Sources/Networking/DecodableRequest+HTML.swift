@@ -7,6 +7,20 @@ protocol DecodableRequestProtocol: Hammond.DecodableRequestProtocol, Sendable
           Result: Sendable
 {
     associatedtype ResponseBody = Document
+
+    static var contentType: ContentType { get }
+
+    static var accept: ContentType { get }
+}
+
+extension DecodableRequestProtocol {
+    static var contentType: ContentType {
+        .application.formURLEncoded
+    }
+
+    static var accept: ContentType {
+        .text.html
+    }
 }
 
 extension DecodableRequestProtocol where ResponseBody == Document {

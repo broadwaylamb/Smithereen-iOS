@@ -7,6 +7,8 @@ struct LikeRequest: DecodableRequestProtocol, RequiresCSRF {
     typealias ResponseBody = Data
     typealias Result = LikeResponse
 
+    static let accept: ContentType = .application.json
+
     var postID: PostID
     @Query(key: "_ajax") private let ajax: Int = 1
 }
@@ -16,6 +18,8 @@ struct LikeRequest: DecodableRequestProtocol, RequiresCSRF {
 struct UnlikeRequest: DecodableRequestProtocol, RequiresCSRF {
     typealias ResponseBody = Data
     typealias Result = LikeResponse
+
+    static let accept: ContentType = .application.json
 
     var postID: PostID
     @Query(key: "_ajax") private let ajax: Int = 1
