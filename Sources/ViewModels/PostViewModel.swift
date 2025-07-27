@@ -1,6 +1,8 @@
 import SwiftUI
 
-final class PostViewModel: ObservableObject {
+@MainActor
+final class PostViewModel: ObservableObject, Identifiable {
+    let id: PostID
     let api: any APIService
     private var post: Post
 
@@ -9,14 +11,14 @@ final class PostViewModel: ObservableObject {
     @Published var likeCount: Int = 0
     @Published var liked: Bool = false
 
-    @MainActor
+
     init(api: any APIService, post: Post) {
+        self.id = post.header.id
         self.api = api
         self.post = post
         update(from: post)
     }
 
-    @MainActor
     func update(from post: Post) {
         self.post = post
         commentCount = post.replyCount
@@ -48,10 +50,43 @@ final class PostViewModel: ObservableObject {
     var hasContent: Bool {
         !text.isEmpty && !attachments.isEmpty
     }
-}
 
-extension PostViewModel: Identifiable {
-    var id: PostID {
-        post.header.id
+    func like() {
+        let previousLikeCount = likeCount
+        let previousState = liked
+        withLikeAnimation {
+            liked.toggle()
+            if liked {
+                likeCount += 1
+            } else {
+                likeCount -= 1
+            }
+        }
+
+        Task {
+            do {
+                let response = if liked {
+                    try await api.send(LikeRequest(postID: post.header.id))
+                } else {
+                    try await api.send(UnlikeRequest(postID: post.header.id))
+                }
+                if let newLikeCount = response.newLikeCount, newLikeCount != likeCount {
+                    withLikeAnimation {
+                        likeCount = newLikeCount
+                    }
+                }
+            } catch {
+                // Don't bombard the user with error messages if there was an error,
+                // just silently reset to the previous state.
+                withLikeAnimation {
+                    liked = previousState
+                    likeCount = previousLikeCount
+                }
+            }
+        }
+    }
+
+    private func withLikeAnimation(_ body: () -> Void) {
+        withAnimation(.easeInOut(duration: 0.2), body)
     }
 }

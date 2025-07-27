@@ -51,7 +51,7 @@ struct RegularPostFooterView: View {
                     .padding(.vertical, 14)
                 }
 
-                Button(action: { /* TODO */ }) {
+                Button(action: viewModel.like) {
                     HStack(spacing: 8) {
                         Text("Like")
                             .tint(palette.regularPostLikeText)

@@ -34,7 +34,7 @@ struct CompactPostFooterView: View {
                     .frame(width: 15, height: 13),
                 count: viewModel.likeCount,
                 highlighted: viewModel.liked,
-                action: { /* TODO */ },
+                action: viewModel.like,
             )
             .likeButtonFeedback(liked: viewModel.liked)
         }

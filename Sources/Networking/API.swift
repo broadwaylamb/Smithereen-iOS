@@ -255,7 +255,36 @@ actor HTMLScrapingApi: AuthenticationService, APIService {
                     )
                 )
         } else {
-            fatalError("We can only handle HTML requests right now")
+            // TODO: Add more metadata to User-Agent header:
+            // app version, iOS version, device name etc
+            urlRequest.setValue(
+                "Smithereen-iOS",
+                forHTTPHeaderField: "User-Agent"
+            )
+
+            urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+
+            switch Request.method {
+            case .post:
+                if let encodableBody {
+                    urlRequest.setValue(
+                        "application/json",
+                        forHTTPHeaderField: "Content-Type",
+                    )
+                    urlRequest.httpBody = Data(try encoder.encode(encodableBody).utf8)
+                }
+            default:
+                break
+            }
+
+            let (data, urlResponse) = try await urlSession.data(for: urlRequest)
+
+            return try Request.extractResult(
+                from: ResponseAdapter(
+                    statusCode: urlResponse.statusCode,
+                    body: data as! Request.ResponseBody
+                )
+            )
         }
     }
 
