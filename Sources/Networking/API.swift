@@ -37,13 +37,13 @@ protocol APIService: Sendable {
     func send<Request: DecodableRequestProtocol>(
         _ request: Request,
         instance: URL?,
-    ) async throws -> Request.Result where Request.ResponseBody == Document
+    ) async throws -> Request.Result
 }
 
 extension APIService {
     func send<Request: DecodableRequestProtocol>(
         _ request: Request,
-    ) async throws -> Request.Result where Request.ResponseBody == Document {
+    ) async throws -> Request.Result {
         try await send(request, instance: nil)
     }
 }
@@ -58,7 +58,7 @@ struct MockApi: AuthenticationService, APIService {
     func send<Request: DecodableRequestProtocol>(
         _ request: Request,
         instance: URL?
-    ) async throws -> Request.Result where Request.ResponseBody == Document {
+    ) async throws -> Request.Result {
         if request is FeedRequest {
             return [
                 Post(
@@ -184,7 +184,7 @@ actor HTMLScrapingApi: AuthenticationService, APIService {
     func send<Request: DecodableRequestProtocol>(
         _ request: Request,
         instance: URL? = nil,
-    ) async throws -> Request.Result where Request.ResponseBody == Document {
+    ) async throws -> Request.Result {
         var instance = instance
         if instance == nil {
             instance = await self.authenticationState.authenticatedInstance
@@ -211,38 +211,55 @@ actor HTMLScrapingApi: AuthenticationService, APIService {
 
         var urlRequest = URLRequest(url: components.url!)
         urlRequest.httpMethod = Request.method.rawValue
-        urlRequest.setValue(
-            "Mozilla/5.0 (iPhone; CPU OS 18_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Mobile/14E304 Safari/605.1.15",
-            forHTTPHeaderField: "User-Agent"
-        )
         urlRequest.setValue(instance.host!, forHTTPHeaderField: "Host")
-        urlRequest.setValue("text/html", forHTTPHeaderField: "Accept")
-        urlRequest.setValue("en-GB,en", forHTTPHeaderField: "Accept-Language")
 
-        switch Request.method {
-        case .post:
-            if let encodableBody {
-                urlRequest.setValue(
-                    "application/x-www-form-urlencoded",
-                    forHTTPHeaderField: "Content-Type",
-                )
-                urlRequest.httpBody = Data(try encoder.encode(encodableBody).utf8)
+        if Request.ResponseBody.self == SwiftSoup.Document.self {
+            // Mimic to a mobile web browser so that the server sends us the mobile
+            // version.
+            urlRequest.setValue(
+                """
+                Mozilla/5.0 (iPhone; CPU OS 18_3_1 like Mac OS X) AppleWebKit/605.1.15 \
+                (KHTML, like Gecko) Version/18.3 Mobile/14E304 Safari/605.1.15
+                """,
+                forHTTPHeaderField: "User-Agent"
+            )
+            urlRequest.setValue("text/html", forHTTPHeaderField: "Accept")
+            urlRequest.setValue("en-GB,en", forHTTPHeaderField: "Accept-Language")
+
+            switch Request.method {
+            case .post:
+                if let encodableBody {
+                    urlRequest.setValue(
+                        "application/x-www-form-urlencoded",
+                        forHTTPHeaderField: "Content-Type",
+                    )
+                    urlRequest.httpBody = Data(try encoder.encode(encodableBody).utf8)
+                }
+            default:
+                break
             }
-        default:
-            break
-        }
 
-        let (data, urlResponse) = try await urlSession.data(for: urlRequest)
-        let document = try SwiftSoup
-            .parse(String(decoding: data, as: UTF8.self), urlRequest.url!.host!)
-        let response = APIResponse(
-            statusCode: HTTPStatusCode(
-                rawValue: (urlResponse as! HTTPURLResponse).statusCode
-            ),
-            body: document,
-        )
-        saveCSRF(document)
-        return try Request.extractResult(from: response)
+            let (data, urlResponse) = try await urlSession.data(for: urlRequest)
+            let document = try SwiftSoup
+                .parse(String(decoding: data, as: UTF8.self), urlRequest.url!.host!)
+
+            saveCSRF(document)
+
+            return try Request
+                .extractResult(
+                    from: ResponseAdapter(
+                        statusCode: urlResponse.statusCode,
+                        body: document as! Request.ResponseBody,
+                    )
+                )
+        } else {
+            fatalError("We can only handle HTML requests right now")
+        }
+    }
+
+    private struct ResponseAdapter<Body>: ResponseProtocol {
+        var statusCode: HTTPStatusCode
+        var body: Body
     }
 
     private func saveCSRF(_ document: Document) {
