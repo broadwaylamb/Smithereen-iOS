@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     let api: any AuthenticationService
     @EnvironmentObject private var paletteHolder: PaletteHolder
+    @AppStorage(.roundProfilePictures) private var roundProfilePictures: Bool
 
     var body: some View {
         List {
@@ -23,6 +24,7 @@ struct SettingsView: View {
                 )
             }
             Section(header: Text("Appearance")) {
+                Toggle("Round profile pictures", isOn: $roundProfilePictures)
                 Picker("Color theme", selection: $paletteHolder.palette) {
                     ForEach(Palette.allCases) { palette in
                         Text(verbatim: palette.name)
@@ -42,6 +44,7 @@ struct SettingsView: View {
                 }
             }
         }
+        .tint(nil)
         .listStyle(.grouped)
         .colorScheme(.light)
     }

@@ -1,15 +1,31 @@
 import SwiftUI
 
-struct AppStorageKey<Value>: RawRepresentable {
-    var rawValue: String
+struct AppStorageKey<Value> {
+    fileprivate var name: String
+    fileprivate var defaultValue: Value
 }
 
+extension AppStorageKey: Sendable where Value: Sendable {}
+
 extension AppStorage where Value == String {
-    init(wrappedValue: String, _ key: AppStorageKey<String>, store: UserDefaults? = nil) {
-        self.init(wrappedValue: wrappedValue, key.rawValue, store: store)
+    init(_ key: AppStorageKey<String>, store: UserDefaults? = nil) {
+        self.init(wrappedValue: key.defaultValue, key.name, store: store)
+    }
+}
+
+extension AppStorage where Value == Bool {
+    init(_ key: AppStorageKey<Bool>, store: UserDefaults? = nil) {
+        self.init(wrappedValue: key.defaultValue, key.name, store: store)
     }
 }
 
 extension AppStorageKey<String> {
-    static let smithereenInstance = Self(rawValue: "smithereenInstance")
+    static let smithereenInstance = Self(name: "smithereenInstance", defaultValue: "")
+}
+
+extension AppStorageKey<Bool> {
+    static let roundProfilePictures = Self(
+        name: "smithereen.roundProfilePictures",
+        defaultValue: false,
+    )
 }

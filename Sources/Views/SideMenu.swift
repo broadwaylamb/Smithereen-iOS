@@ -33,7 +33,7 @@ enum SideMenuItem: Int, Identifiable, CaseIterable {
 struct SideMenu: View {
     @EnvironmentObject private var palette: PaletteHolder
     @State var userFullName: String
-    var userProfilePicture: Image
+    var userProfilePicture: ImageLocation
     @Binding var selectedItem: SideMenuItem
 
     @ScaledMetric(relativeTo: .body)
@@ -48,10 +48,8 @@ struct SideMenu: View {
                     Label {
                         Text(verbatim: userFullName)
                     } icon: {
-                        userProfilePicture
-                            .resizable()
+                        UserProfilePictureView(location: userProfilePicture)
                             .frame(width: iconSize, height: iconSize)
-                            .clipShape(Circle())
                     }
                 } else {
                     Label {
@@ -87,7 +85,7 @@ struct SideMenu: View {
     @Previewable @State var selectedItem: SideMenuItem = .news
     SideMenu(
         userFullName: "Boromir",
-        userProfilePicture: Image(.boromirProfilePicture),
+        userProfilePicture: .bundled(.boromirProfilePicture),
         selectedItem: $selectedItem,
     )
     .prefireIgnored()
@@ -96,7 +94,7 @@ struct SideMenu: View {
 #Preview("Non-interactive side menu") {
     SideMenu(
         userFullName: "Boromir",
-        userProfilePicture: Image(.boromirProfilePicture),
+        userProfilePicture: .bundled(.boromirProfilePicture),
         selectedItem: .constant(.news)
     )
     .snapshot(perceptualPrecision: 0.96)

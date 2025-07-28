@@ -22,7 +22,7 @@ private struct InputFields: View {
 struct AuthView: View {
     let api: any AuthenticationService
     @EnvironmentObject private var palette: PaletteHolder
-    @AppStorage(.smithereenInstance) private var instanceAddress: String = ""
+    @AppStorage(.smithereenInstance) private var instanceAddress: String
     @StateObject private var errorObserver = ErrorObserver()
     @State private var email: String = ""
     @State private var password: String = ""

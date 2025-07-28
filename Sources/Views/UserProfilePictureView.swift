@@ -7,16 +7,26 @@ struct UserProfilePictureView: View {
 
     @EnvironmentObject private var palette: PaletteHolder
 
-    var body: some View {
+    @AppStorage(.roundProfilePictures) private var roundProfilePictures
+
+    private var image: some View {
         CacheableAsyncImage(
             location,
             content: { $0.resizable() },
             placeholder: { palette.loadingImagePlaceholder },
         )
-        .cornerRadius(2.5)
+    }
+
+    var body: some View {
+        if roundProfilePictures {
+            image.clipShape(Circle())
+        } else {
+            image.clipShape(RoundedRectangle(cornerRadius: 2.5))
+        }
     }
 }
 
 #Preview {
     UserProfilePictureView()
+        .environmentObject(PaletteHolder())
 }

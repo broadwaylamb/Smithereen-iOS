@@ -506,6 +506,22 @@
         }
       }
     },
+    "Round profile pictures" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Круглые фотографии профилей"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Круглі фотографії профілів"
+          }
+        }
+      }
+    },
     "Settings" : {
       "localizations" : {
         "ru" : {

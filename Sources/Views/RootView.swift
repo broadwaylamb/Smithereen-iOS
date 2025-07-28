@@ -27,7 +27,7 @@ struct RootView: View {
         SlideableMenuView(isMenuShown: $menuShown) {
             SideMenu(
                 userFullName: "Boromir",
-                userProfilePicture: Image(.boromirProfilePicture),
+                userProfilePicture: .bundled(.boromirProfilePicture),
                 selectedItem: $selectedItem
             )
         } content: { alwaysShowMenu in
