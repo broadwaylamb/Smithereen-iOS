@@ -14,3 +14,18 @@
 
    `ORGANIZATION_IDENTIFIER` is any string in reverse DNS notation.
    Used for forming the app's bundle identifier, which should uniquely identify the app.
+
+#### Producing an unsigned IPA for sideloading:
+1. Run the following command:
+   ```
+   xcodebuild archive \
+       -project Smithereen \
+       -scheme Smithereen \
+       -archivePath Smithereen.xcarchive \
+       -configuration Release \
+       -skipMacroValidation \
+       CODE_SIGN_IDENTITY="" \
+       CODE_SIGNING_REQUIRED=NO \
+     && zip -r Smithereen.ipa Smithereen.xcarchive/Products/Applications \
+   ```
+1. Congratulations, you have an IPA file that you can sideload.
