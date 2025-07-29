@@ -47,13 +47,17 @@ extension View {
             return toolbarBackground(color, for: .navigationBar)
         } else {
             return introspect(.navigationView(style: .stack), on: .iOS(.v15)) { nc in
-                let uiColor = UIColor(color)
-                nc.navigationBar.backgroundColor = uiColor
-                let appearance = nc.navigationBar.standardAppearance
-                appearance.backgroundColor = uiColor
-                nc.navigationBar.compactAppearance = appearance
-                nc.navigationBar.scrollEdgeAppearance = appearance
-                nc.navigationBar.compactScrollEdgeAppearance = appearance
+                // Set the colors on the next run loop cycle,
+                // otherwise it will be initially black.
+                DispatchQueue.main.async {
+                    let uiColor = UIColor(color)
+                    nc.navigationBar.backgroundColor = uiColor
+                    let appearance = nc.navigationBar.standardAppearance
+                    appearance.backgroundColor = uiColor
+                    nc.navigationBar.compactAppearance = appearance
+                    nc.navigationBar.scrollEdgeAppearance = appearance
+                    nc.navigationBar.compactScrollEdgeAppearance = appearance
+                }
             }
         }
     }
@@ -66,6 +70,7 @@ extension View {
             toolbarBackground(visibility, for: .navigationBar)
         } else {
             introspect(.navigationView(style: .stack), on: .iOS(.v15)) { nc in
+                print("navigationBarBackground visibility")
                 let appearance = nc.navigationBar.standardAppearance
                 switch visibility {
                 case .automatic:
