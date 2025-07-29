@@ -75,6 +75,7 @@ struct SideMenu: View {
             }
         }
         .listStyle(.plain)
+        .scrollContentBackgroundPolyfill(.hidden)
         .background(palette.sideMenu.background)
         .foregroundStyle(palette.sideMenu.text)
     }
