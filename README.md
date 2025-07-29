@@ -19,7 +19,7 @@
 1. Run the following command:
    ```
    xcodebuild archive \
-       -project Smithereen \
+       -project Smithereen.xcodeproj \
        -scheme Smithereen \
        -archivePath Smithereen.xcarchive \
        -configuration Release \
