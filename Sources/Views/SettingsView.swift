@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftUIIntrospect
 
 struct SettingsView: View {
     let api: any AuthenticationService
@@ -25,13 +26,12 @@ struct SettingsView: View {
             }
             Section(header: Text("Appearance")) {
                 Toggle("Round profile pictures", isOn: $roundProfilePictures)
-                Picker("Color theme", selection: $paletteHolder.palette) {
+                MenuPicker("Color theme", selection: $paletteHolder.palette) {
                     ForEach(Palette.allCases) { palette in
                         Text(verbatim: palette.name)
                             .tag(palette)
                     }
                 }
-
             }
             Section {
                 AreYouSureButton(
@@ -78,4 +78,5 @@ private struct AreYouSureButton: View {
 
 #Preview("Settings") {
     SettingsView(api: MockApi())
+        .environmentObject(PaletteHolder())
 }
