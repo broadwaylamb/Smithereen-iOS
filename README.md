@@ -26,6 +26,6 @@
        -skipMacroValidation \
        CODE_SIGN_IDENTITY="" \
        CODE_SIGNING_REQUIRED=NO \
-     && zip -r Smithereen.ipa Smithereen.xcarchive/Products/Applications \
+     && zip -r Smithereen.ipa Smithereen.xcarchive/Products/Applications
    ```
 1. Congratulations, you have an IPA file that you can sideload.
