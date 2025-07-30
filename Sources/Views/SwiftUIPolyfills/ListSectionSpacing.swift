@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 extension View {
     func listSectionSpacingPolyfill(_ spacing: CGFloat) -> some View {
@@ -34,3 +35,17 @@ extension View {
     }
 }
 
+extension UICollectionViewCompositionalLayout {
+    private typealias SectionProvider =
+        @convention(block)
+            (Int, any NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection?
+
+    fileprivate var sectionProvider: UICollectionViewCompositionalLayoutSectionProvider {
+        // Using a private API here, but this code is only ever invoked on iOS 16 which
+        // is quite old. Nothing will break here.
+        return unsafeBitCast(
+            value(forKey: "_layoutSectionProvider") as AnyObject?,
+            to: SectionProvider.self,
+        )
+    }
+}

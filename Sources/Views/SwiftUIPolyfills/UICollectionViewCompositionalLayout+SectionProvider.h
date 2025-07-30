@@ -1,9 +1,0 @@
-#import <UIKit/UIKit.h>
-
-NS_ASSUME_NONNULL_BEGIN
-
-@interface UICollectionViewCompositionalLayout (Smithereen_UICollectionViewCompositionalLayout_SectionProvider)
-@property(nonatomic,readonly) UICollectionViewCompositionalLayoutSectionProvider sectionProvider;
-@end
-
-NS_ASSUME_NONNULL_END
