@@ -574,22 +574,6 @@
         }
       }
     },
-    "Profile" : {
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Страница"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Сторінка"
-          }
-        }
-      }
-    },
     "Round profile pictures" : {
       "localizations" : {
         "ru" : {

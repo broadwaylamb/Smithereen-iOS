@@ -64,3 +64,9 @@ extension String {
         LocalizedStringKey(stringLiteral: self)
     }
 }
+
+extension NavigationPath {
+    mutating func removeAll() {
+        removeLast(count)
+    }
+}

@@ -2,63 +2,43 @@ import SwiftUI
 
 struct RootView: View {
     let api: any AuthenticationService & APIService
-    let feedViewModel: FeedViewModel
+    @ObservedObject var feedViewModel: FeedViewModel
 
     @EnvironmentObject private var palette: PaletteHolder
 
     @StateObject private var errorObserver = ErrorObserver()
 
-    @State private var menuShown: Bool = false
-    @State private var selectedItem: SideMenuItem = .news
+    @ScaledMetric(relativeTo: .body)
+    private var profilePictureSize = 37
 
     @State private var userFirstName: String = "…"
+    @State private var userProfilePicture: ImageLocation?
 
-    @State private var navigationPath = NavigationPath()
-
-    @ViewBuilder
-    private var mainView: some View {
-        switch selectedItem {
-        case .news:
-            FeedView(viewModel: feedViewModel)
-        case .settings:
-            SettingsView(api: api)
-        default:
-            UserProfileView(
-                firstName: userFirstName,
-                viewModel: UserProfileViewModel(
-                    api: api,
-                    userIDOrHandle: .left(feedViewModel.currentUserID!)
-                )
-            )
-        }
-    }
+    @State private var sideMenuSelection: SideMenuValue = .news
 
     var body: some View {
-        SlideableMenuView(
-            isNavigationStackEmpty: navigationPath.isEmpty,
-            isMenuShown: $menuShown
-        ) {
-            SideMenu(
-                api: api,
-                feedViewModel: feedViewModel,
-                userFirstName: $userFirstName,
-                selectedItem: $selectedItem
-            )
-        } content: { alwaysShowMenu in
-            NavigationStack(path: $navigationPath) {
-                mainView
-                    .navigationBarStyleSmithereen()
-                    .navigationTitle(selectedItem.localizedDescription)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
-                            if !alwaysShowMenu {
-                                Button(action: { menuShown.toggle() }) {
-                                    Image(.menu)
-                                }
-                                .tint(Color.white)
-                            }
-                        }
-                    }
+        SlideableMenuView(selection: $sideMenuSelection) {
+            SideMenuItem(value: SideMenuValue.profile) {
+                UserProfileView(
+                    firstName: userFirstName,
+                    viewModel: UserProfileViewModel(
+                        api: api,
+                        userIDOrHandle: feedViewModel.currentUserID.map(Either.left),
+                    )
+                )
+            } label: {
+                Label {
+                    Text(verbatim: userFirstName)
+                } icon: {
+                    UserProfilePictureView(location: userProfilePicture)
+                        .frame(width: profilePictureSize, height: profilePictureSize)
+                }
+            }
+
+            SideMenuItem("News", icon: .news, value: SideMenuValue.news) {
+                FeedView(viewModel: feedViewModel)
+                    .navigationTitle("News")
+                    // TODO: Factor this out, this is not feed-specific
                     .navigationDestinationPolyfill(
                         for: UserProfileNavigationItem.self
                     ) { item in
@@ -71,21 +51,35 @@ struct RootView: View {
                         )
                     }
             }
-            .environment(\.pushToNavigationStack) { item in
-                navigationPath.append(item)
+
+            SideMenuItem("Settings", icon: .settings, value: SideMenuValue.settings) {
+                SettingsView(api: api)
+                    .navigationTitle("Settings")
             }
-            .navigationBarBackground(palette.accent)
-            .navigationBarBackground(.visible)
-            .navigationBarColorScheme(.dark)
-            .onChange(of: selectedItem) { _ in
-                // TODO: Hide the menu not only on change, but on any tap on a menu item.
-                menuShown = false
-            }
-            .preferredColorScheme(.dark)
         }
         .environmentObject(errorObserver)
         .alert(errorObserver)
+        .onChange(of: feedViewModel.currentUserID) { newValue in
+            guard let newValue else { return }
+            Task {
+                await errorObserver.runCatching {
+                    let profile = try await api.send(UserProfileRequest(userID: newValue))
+                    await MainActor.run {
+                        // Welp, we don't have a way to get only the first name without
+                        // a proper API
+                        userFirstName = profile.fullName
+                        userProfilePicture = profile.profilePicture
+                    }
+                }
+            }
+        }
     }
+}
+
+private enum SideMenuValue: Hashable {
+    case profile
+    case news
+    case settings
 }
 
 #Preview {
