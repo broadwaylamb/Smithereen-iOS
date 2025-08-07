@@ -8,24 +8,42 @@ struct RootView: View {
 
     @StateObject private var errorObserver = ErrorObserver()
 
+    @ScaledMetric(relativeTo: .body)
+    private var profilePictureSize = 37
+
     var body: some View {
         SlideableMenuView {
-            NonModalSideMenuItem {
-                Text(verbatim: "Boromir")
-            } icon: {
-                UserProfilePictureView(location: .bundled(.boromirProfilePicture))
-            } content: {
+            SideMenuItem {
                 Text("Coming soon!").font(.largeTitle)
+            } label: {
+                Label {
+                    Text(verbatim: "Boromir")
+                } icon: {
+                    UserProfilePictureView(location: .bundled(.boromirProfilePicture))
+                        .frame(width: profilePictureSize, height: profilePictureSize)
+                }
             }
 
-            NonModalSideMenuItem("News", image: .news) {
-                FeedView(viewModel: feedViewModel)
-                    .navigationTitle("News")
-            }
+//            SideMenuItem {
+//                FeedView(viewModel: feedViewModel)
+//                    .navigationTitle("News")
+//            } label: {
+//                Label {
+//                    Text("News")
+//                } icon: {
+//                    Image(.news)
+//                }
+//            }
 
-            ModalSideMenuItem("Settings", image: .settings) {
+            SideMenuItem {
                 SettingsView(api: api)
                     .navigationTitle("Settings")
+            } label: {
+                Label {
+                    Text("Settings")
+                } icon: {
+                    Image(.settings)
+                }
             }
         }
         .environmentObject(errorObserver)
