@@ -26,6 +26,7 @@ struct ComposePostView: View {
                             .foregroundStyle(Color(UIColor.placeholderText))
                             // The same padding as UITextView uses for its text content.
                             .padding(8)
+                            .allowsHitTesting(false)
                     }
                 }
                 .navigationBarTitleDisplayMode(.inline)
