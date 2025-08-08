@@ -23,7 +23,7 @@ jobs:
         run: xcrun xctrace list devices
       - name: Build
         run: |
-          xcodebuild build-for-testing -scheme Smithereen -project Smithereen.xcodeproj
+          xcodebuild build-for-testing -scheme Smithereen -project Smithereen.xcodeproj -skipMacroValidation
       # - name: Test
       #   run: |
-      #     xcodebuild test-without-building -scheme Smithereen -project Smithereen.xcodeproj -destination "platform=iOS Simulator,name=iPhone 16 Pro,arch=x86_64,OS=18.4"
+      #     xcodebuild test-without-building -scheme Smithereen -project Smithereen.xcodeproj -skipMacroValidation -destination "platform=iOS Simulator,name=iPhone 16 Pro,arch=x86_64,OS=18.4"
