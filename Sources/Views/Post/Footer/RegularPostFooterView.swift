@@ -5,6 +5,9 @@ struct RegularPostFooterView: View {
 
     @EnvironmentObject private var palette: PaletteHolder
 
+    @EnvironmentObject private var errorObserver: ErrorObserver
+    @State private var composeRepostIsShown = false
+
     private var commentButtonText: Text {
         if viewModel.commentCount == 0 {
             Text(
@@ -36,7 +39,9 @@ struct RegularPostFooterView: View {
             Spacer()
 
             Group {
-                Button(action: { /* TODO */ }) {
+                Button {
+                    composeRepostIsShown = true
+                } label: {
                     HStack(spacing: 8) {
                         Image(.repostOutline)
                         if viewModel.repostCount != 0 {
@@ -75,6 +80,14 @@ struct RegularPostFooterView: View {
             .tint(palette.regularPostLikeAndRepostButton)
         }
         .font(.callout)
+        .sheet(isPresented: $composeRepostIsShown) {
+            ComposePostView
+                .forRepost(
+                    isShown: $composeRepostIsShown,
+                    errorObserver: errorObserver,
+                    repostedPostViewModel: viewModel,
+                )
+        }
     }
 }
 

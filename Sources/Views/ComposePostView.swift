@@ -6,8 +6,6 @@ struct ComposePostView: View {
 
     @ObservedObject private var viewModel: ComposePostViewModel
 
-    @State private var isFocused: Bool = true
-
     init(
         _ titleKey: LocalizedStringKey,
         placeholder: LocalizedStringKey,
@@ -20,7 +18,7 @@ struct ComposePostView: View {
 
     var body: some View {
         NavigationView {
-            ComposePostAdapter(isFocused: $isFocused, text: $viewModel.text)
+            ComposePostAdapter(text: $viewModel.text)
                 .overlay(alignment: .topLeading) {
                     if viewModel.showPlaceholder {
                         Text(placeholder)
@@ -56,36 +54,43 @@ struct ComposePostView: View {
     }
 }
 
+extension ComposePostView {
+    static func forRepost(
+        isShown: Binding<Bool>,
+        errorObserver: ErrorObserver,
+        repostedPostViewModel: PostViewModel
+    ) -> ComposePostView {
+        ComposePostView(
+            "compose_repost_title",
+            placeholder: "Add your comment",
+            viewModel: repostedPostViewModel
+                .createComposeRepostViewModel(
+                    isShown: isShown,
+                    errorObserver: errorObserver
+                )
+        )
+    }
+}
+
 /// Unlike SwiftUI's `TextEditor`, `UITextView` supports
 /// showing the keyboard upon presenting without delay.
 private struct ComposePostAdapter: UIViewRepresentable {
-    @Binding var isFocused: Bool
     @Binding var text: String
 
     class Coordinator: NSObject, UITextViewDelegate {
-        @Binding var isFocused: Bool
         @Binding var text: String
 
-        init(isFocused: Binding<Bool>, text: Binding<String>) {
-            self._isFocused = isFocused
+        init(text: Binding<String>) {
             self._text = text
         }
 
         func textViewDidChange(_ textView: UITextView) {
             text = textView.text ?? ""
         }
-
-        func textViewDidBeginEditing(_ textView: UITextView) {
-            isFocused = true
-        }
-
-        func textViewDidEndEditing(_ textView: UITextView) {
-            isFocused = false
-        }
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(isFocused: $isFocused, text: $text)
+        Coordinator(text: $text)
     }
 
     func makeUIView(context: Context) -> UITextView {
@@ -97,15 +102,15 @@ private struct ComposePostAdapter: UIViewRepresentable {
         view.font = .preferredFont(forTextStyle: .body)
         view.textContainerInset = UIEdgeInsets(top: 8, left: 4, bottom: 8, right: 4)
 
+        // https://stackoverflow.com/a/63142687
+        DispatchQueue.main.async {
+            view.becomeFirstResponder()
+        }
+
         return view
     }
 
     func updateUIView(_ uiView: UITextView, context: Context) {
-        if isFocused {
-            uiView.becomeFirstResponder()
-        } else {
-            uiView.resignFirstResponder()
-        }
         uiView.font = .preferredFont(
             forTextStyle: .body,
             compatibleWith: UITraitCollection(

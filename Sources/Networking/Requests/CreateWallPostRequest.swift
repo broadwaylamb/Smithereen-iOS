@@ -12,9 +12,9 @@ struct CreateWallPostRequest: DecodableRequestProtocol, RequiresCSRF {
 
     var text: String
     var userID: UserID
+    var repost: PostID?
 
     private let replyTo: String = ""
-    private let formID: String = "feed"
     private let attachments: String = ""
     private let attachAltTexts: String = "{}"
     private let _ajax: Int = 1

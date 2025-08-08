@@ -3,6 +3,9 @@ import SwiftUI
 struct CompactPostFooterView: View {
     @ObservedObject var viewModel: PostViewModel
 
+    @EnvironmentObject private var errorObserver: ErrorObserver
+    @State private var composeRepostIsShown = false
+
     var body: some View {
         HStack(spacing: 8) {
             CompactPostFooterButton(
@@ -25,7 +28,9 @@ struct CompactPostFooterView: View {
                     .frame(width: 15, height: 14),
                 count: viewModel.repostCount,
                 highlighted: false,
-                action: { /* TODO */ },
+                action: {
+                    composeRepostIsShown = true
+                },
             )
             CompactPostFooterButton(
                 alignment: .center,
@@ -39,6 +44,13 @@ struct CompactPostFooterView: View {
             .likeButtonFeedback(liked: viewModel.liked)
         }
         .font(.caption)
+        .sheet(isPresented: $composeRepostIsShown) {
+            ComposePostView.forRepost(
+                isShown: $composeRepostIsShown,
+                errorObserver: errorObserver,
+                repostedPostViewModel: viewModel,
+            )
+        }
     }
 }
 

@@ -4,7 +4,7 @@ import SwiftUI
 final class FeedViewModel: ObservableObject {
     private let api: APIService
 
-    @Published private var currentUserID: UserID?
+    @Published private(set) var currentUserID: UserID?
     @Published private(set) var posts: [PostViewModel] = []
 
     init(api: APIService) {
@@ -14,9 +14,17 @@ final class FeedViewModel: ObservableObject {
     func update() async throws {
         let response = try await api.send(FeedRequest())
         // TODO: Don't replace existing posts, mutate them instead.
-        posts = response.posts.map { PostViewModel(api: api, post: $0) }
+        posts = response.posts.map {
+            PostViewModel(api: api, post: $0, feed: self)
+        }
 
         currentUserID = response.currentUserID
+    }
+
+    func addNewPost(_ post: Post) {
+        let postViewModel = PostViewModel(api: api, post: post, feed: self)
+        // TODO: Use deque?
+        posts.insert(postViewModel, at: 0)
     }
 
     var canComposePost: Bool {
@@ -32,8 +40,7 @@ final class FeedViewModel: ObservableObject {
             api: api,
             userID: currentUserID,
             isShown: isShown,
-        ) { newPost in
-            self.posts.insert(PostViewModel(api: self.api, post: newPost), at: 0)
-        }
+            showNewPost: self.addNewPost,
+        )
     }
 }

@@ -6,16 +6,19 @@ final class PostViewModel: ObservableObject, Identifiable {
     let api: any APIService
     private var post: Post
 
+    // Needed so that we could push a repost of this post to it, thus updating the feed immediately
+    private weak var feedViewModel: FeedViewModel?
+
     @Published var commentCount: Int = 0
     @Published var repostCount: Int = 0
     @Published var likeCount: Int = 0
     @Published var liked: Bool = false
 
-
-    init(api: any APIService, post: Post) {
+    init(api: any APIService, post: Post, feed: FeedViewModel) {
         self.id = post.header.id
         self.api = api
         self.post = post
+        self.feedViewModel = feed
         update(from: post)
     }
 
@@ -84,6 +87,20 @@ final class PostViewModel: ObservableObject, Identifiable {
                 }
             }
         }
+    }
+
+    func createComposeRepostViewModel(
+        isShown: Binding<Bool>,
+        errorObserver: ErrorObserver,
+    ) -> ComposePostViewModel {
+        ComposePostViewModel(
+            errorObserver: errorObserver,
+            api: api,
+            userID: feedViewModel?.currentUserID,
+            isShown: isShown,
+            repostedPost: self,
+            showNewPost: { self.feedViewModel?.addNewPost($0) }
+        )
     }
 
     private func withLikeAnimation(_ body: () -> Void) {
