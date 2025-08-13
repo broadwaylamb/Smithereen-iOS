@@ -22,3 +22,5 @@ xcuserdata/
 
 .DS_Store
 DeveloperSettings.xcconfig
+*.xcarchive
+*.ipa
