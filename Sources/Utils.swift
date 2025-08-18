@@ -57,3 +57,11 @@ extension CGSize {
         width / height
     }
 }
+
+// Make only available in previews
+extension String {
+    /// Helps to avoid strings from previews appearing in the localization string catalog.
+    var excludedFromLocalization: LocalizedStringKey {
+        LocalizedStringKey(stringLiteral: self)
+    }
+}

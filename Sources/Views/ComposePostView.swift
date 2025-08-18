@@ -78,20 +78,32 @@ extension ComposePostView {
 private struct ComposePostAdapter: UIViewRepresentable {
     @Binding var text: String
 
+    @State private var isFocused = true
+
     class Coordinator: NSObject, UITextViewDelegate {
+        @Binding var isFocused: Bool
         @Binding var text: String
 
-        init(text: Binding<String>) {
+        init(isFocused: Binding<Bool>, text: Binding<String>) {
+            self._isFocused = isFocused
             self._text = text
         }
 
         func textViewDidChange(_ textView: UITextView) {
             text = textView.text ?? ""
         }
+
+        func textViewDidBeginEditing(_ textView: UITextView) {
+            isFocused = true
+        }
+
+        func textViewDidEndEditing(_ textView: UITextView) {
+            isFocused = false
+        }
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(text: $text)
+        Coordinator(isFocused: $isFocused, text: $text)
     }
 
     func makeUIView(context: Context) -> UITextView {
@@ -103,15 +115,19 @@ private struct ComposePostAdapter: UIViewRepresentable {
         view.font = .preferredFont(forTextStyle: .body)
         view.textContainerInset = UIEdgeInsets(top: 8, left: 4, bottom: 8, right: 4)
 
-        // https://stackoverflow.com/a/63142687
-        DispatchQueue.main.async {
-            view.becomeFirstResponder()
-        }
-
         return view
     }
 
     func updateUIView(_ uiView: UITextView, context: Context) {
+        // https://stackoverflow.com/a/63142687
+        DispatchQueue.main.async {
+            if isFocused {
+                uiView.becomeFirstResponder()
+            } else {
+                uiView.resignFirstResponder()
+            }
+        }
+
         uiView.font = .preferredFont(
             forTextStyle: .body,
             compatibleWith: UITraitCollection(

@@ -400,6 +400,23 @@
     "Hue: %lf" : {
       "shouldTranslate" : false
     },
+    "Information" : {
+      "comment" : "User/group profile info button label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Информация"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Інформація"
+          }
+        }
+      }
+    },
     "Instance domain" : {
       "localizations" : {
         "ru" : {
@@ -492,6 +509,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ОК"
+          }
+        }
+      }
+    },
+    "online" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "онлайн"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "онлайн"
+          }
+        }
+      }
+    },
+    "open group" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "открытая группа"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "відкрита група"
           }
         }
       }

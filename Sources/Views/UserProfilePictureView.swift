@@ -3,8 +3,6 @@ import SwiftUI
 struct UserProfilePictureView: View {
     var location: ImageLocation?
 
-    // TODO: Add a settting whether to display square or round avatars
-
     @EnvironmentObject private var palette: PaletteHolder
 
     @AppStorage(.roundProfilePictures) private var roundProfilePictures
