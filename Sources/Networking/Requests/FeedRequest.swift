@@ -8,43 +8,6 @@ struct FeedRequest: DecodableRequestProtocol {
     @Query var start: Int?
     @Query var offset: Int?
 
-    private struct Picture {
-        var url: URL?
-        var altText: String?
-        var blurHash: RGBAColor?
-    }
-
-    private static func parsePicture(
-        _ element: Element
-    ) -> Picture {
-        do {
-            let img = try element.select("img").first()
-            let altText = try img?.attr("alt")
-            let style = try img?.attr("style")
-            let blurHash = style.flatMap {
-                blurHashRegex.firstMatch(in: $0, captureGroup: 1)
-            }?.flatMap(RGBAColor.init(cssHex:))
-            for resource in try element.select("source") {
-                if try resource.attr("type") != "image/webp" {
-                    continue
-                }
-                let srcsets = try resource.attr("srcset")
-                    .split(separator: ",")
-                    .map { $0.trimmingCharacters(in: .whitespaces) }
-
-                for srcset in srcsets {
-                    if srcset.hasSuffix(" 2x") {
-                        let url = URL(string: String(srcset.prefix(srcset.count - 3)))
-                        return Picture(url: url, altText: altText, blurHash: blurHash)
-                    }
-                }
-            }
-        } catch {
-            // If there is an error, we ignore it and return nil
-        }
-        return Picture()
-    }
-
     private static func parseSinglePost(
         _ container: Element,
         authorNameLinkSelector: String,
@@ -214,9 +177,6 @@ struct FeedResponse {
     var posts: [Post]
     var currentUserID: UserID
 }
-
-private let blurHashRegex =
-    try! NSRegularExpression(pattern: #"background-color: #([a-fA-F0-9]{6})"#)
 
 private let userIDRegex =
     try! NSRegularExpression(pattern: "/users/([0-9]+)/createWallPost")

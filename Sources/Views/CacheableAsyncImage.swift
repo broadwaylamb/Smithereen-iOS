@@ -28,7 +28,7 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
 
     private var placeholder: () -> Placeholder
 
-    @StateObject private var phaseHolder: PhaseHolder
+    @ObservedObject private var phaseHolder: PhaseHolder
 
     init(
         _ location: ImageLocation?,
@@ -57,7 +57,7 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
         case nil:
             phase = .empty
         }
-        _phaseHolder = StateObject(wrappedValue: PhaseHolder(phase: phase))
+        _phaseHolder = ObservedObject(wrappedValue: PhaseHolder(phase: phase))
     }
 
     private func loadImage(_ urlRequest: URLRequest) async {

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RootView: View {
-    let api: any AuthenticationService
+    let api: any AuthenticationService & APIService
     let feedViewModel: FeedViewModel
 
     @EnvironmentObject private var palette: PaletteHolder
@@ -25,11 +25,7 @@ struct RootView: View {
 
     var body: some View {
         SlideableMenuView(isMenuShown: $menuShown) {
-            SideMenu(
-                userFullName: "Boromir",
-                userProfilePicture: .bundled(.boromirProfilePicture),
-                selectedItem: $selectedItem
-            )
+            SideMenu(api: api, feedViewModel: feedViewModel, selectedItem: $selectedItem)
         } content: { alwaysShowMenu in
             NavigationView {
                 mainView
@@ -67,5 +63,6 @@ struct RootView: View {
 #Preview {
     let api = MockApi()
     RootView(api: api, feedViewModel: FeedViewModel(api: api))
+        .environmentObject(PaletteHolder())
         .prefireIgnored()
 }

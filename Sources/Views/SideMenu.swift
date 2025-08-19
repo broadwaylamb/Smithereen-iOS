@@ -31,9 +31,12 @@ enum SideMenuItem: Int, Identifiable, CaseIterable {
 }
 
 struct SideMenu: View {
+    let api: any APIService
+    @ObservedObject var feedViewModel: FeedViewModel
+    @EnvironmentObject private var errorObserver: ErrorObserver
     @EnvironmentObject private var palette: PaletteHolder
-    @State var userFullName: String
-    var userProfilePicture: ImageLocation
+    @State private var userFirstName: String?
+    @State private var userProfilePicture: ImageLocation?
     @Binding var selectedItem: SideMenuItem
 
     @ScaledMetric(relativeTo: .body)
@@ -46,7 +49,7 @@ struct SideMenu: View {
             } label: {
                 if item == .profile {
                     Label {
-                        Text(verbatim: userFullName)
+                        Text(verbatim: userFirstName ?? "…")
                     } icon: {
                         UserProfilePictureView(location: userProfilePicture)
                             .frame(width: iconSize, height: iconSize)
@@ -78,25 +81,45 @@ struct SideMenu: View {
         .scrollContentBackgroundPolyfill(.hidden)
         .background(palette.sideMenu.background)
         .foregroundStyle(palette.sideMenu.text)
+        .onChange(of: feedViewModel.currentUserID) { newValue in
+            guard let newValue else { return }
+            Task {
+                await errorObserver.runCatching {
+                    let profile = try await api.send(UserProfileRequest(userID: newValue))
+                    await MainActor.run {
+                        // Welp, we don't have a way to get only the first name without
+                        // a proper API
+                        userFirstName = profile.fullName
+                        userProfilePicture = profile.profilePicture
+                    }
+                }
+            }
+        }
     }
 }
 
 @available(iOS 17.0, *)
 #Preview("Interactive side menu") {
     @Previewable @State var selectedItem: SideMenuItem = .news
+    let api = MockApi()
     SideMenu(
-        userFullName: "Boromir",
-        userProfilePicture: .bundled(.boromirProfilePicture),
+        api: api,
+        feedViewModel: FeedViewModel(api: api),
         selectedItem: $selectedItem,
     )
+    .environmentObject(ErrorObserver())
+    .environmentObject(PaletteHolder())
     .prefireIgnored()
 }
 
 #Preview("Non-interactive side menu") {
+    let api = MockApi()
     SideMenu(
-        userFullName: "Boromir",
-        userProfilePicture: .bundled(.boromirProfilePicture),
+        api: api,
+        feedViewModel: FeedViewModel(api: api),
         selectedItem: .constant(.news)
     )
+    .environmentObject(ErrorObserver())
+    .environmentObject(PaletteHolder())
     .snapshot(perceptualPrecision: 0.96)
 }

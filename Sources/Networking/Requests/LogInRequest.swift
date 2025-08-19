@@ -2,7 +2,7 @@ import Hammond
 
 @POST("/account/login")
 @EncodableRequest
-struct LogInRequest: DecodableRequestProtocol {
+struct LogInRequest: DecodableRequestProtocol, IgnoreRedirects {
     var username: String
     var password: String
 

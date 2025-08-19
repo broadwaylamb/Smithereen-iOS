@@ -121,13 +121,29 @@ struct MockApi: AuthenticationService, APIService {
 }
 
 private final class MyUrlSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
+    let ignoresRedirects: Bool
+    init(ignoresRedirects: Bool) {
+        self.ignoresRedirects = ignoresRedirects
+    }
+
     func urlSession(
         _ session: URLSession,
         task: URLSessionTask,
         willPerformHTTPRedirection response: HTTPURLResponse,
         newRequest request: URLRequest
     ) async -> URLRequest? {
-        return nil
+        if ignoresRedirects {
+            return nil
+        }
+        guard let redirectURL = request.url else { return request }
+        var urlComponents =
+            URLComponents(url: redirectURL, resolvingAgainstBaseURL: false)!
+        if urlComponents.scheme == "http" {
+            urlComponents.scheme = "https"
+        }
+        var request = request
+        request.url = urlComponents.url!
+        return request
     }
 }
 
@@ -177,10 +193,16 @@ actor HTMLScrapingApi: AuthenticationService, APIService {
         self.authenticationState = authenticationState
     }
 
-    private let urlSession = URLSession(
+    private let ignoringRedirectsUrlSession = URLSession(
         configuration: .default,
-        delegate: MyUrlSessionTaskDelegate(),
-        delegateQueue: nil
+        delegate: MyUrlSessionTaskDelegate(ignoresRedirects: true),
+        delegateQueue: nil,
+    )
+
+    private let respectingRedirectsURLSession = URLSession(
+        configuration: .default,
+        delegate: MyUrlSessionTaskDelegate(ignoresRedirects: false),
+        delegateQueue: nil,
     )
 
     func send<Request: DecodableRequestProtocol>(
@@ -239,7 +261,10 @@ actor HTMLScrapingApi: AuthenticationService, APIService {
             break
         }
 
-        let (data, urlResponse) = try await urlSession.data(for: urlRequest)
+        let session = request is IgnoreRedirects
+            ? ignoringRedirectsUrlSession
+            : respectingRedirectsURLSession
+        let (data, urlResponse) = try await session.data(for: urlRequest)
 
         if Request.ResponseBody.self == SwiftSoup.Document.self {
             let document = try SwiftSoup
