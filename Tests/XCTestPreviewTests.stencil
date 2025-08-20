@@ -45,7 +45,7 @@ class PreviewTests: XCTestCase {
         }
         let preview = PreviewWrapper{{ macroModel.componentTestName }}.init
         {% else %}
-        let preview = {
+        @ViewBuilder func preview() -> some View {
         {{ macroModel.body|indent:8 }}
         }
         {% endif %}
