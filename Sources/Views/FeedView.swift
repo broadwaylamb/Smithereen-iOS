@@ -87,5 +87,7 @@ struct FeedView: View {
 
 #Preview {
     FeedView(viewModel: FeedViewModel(api: MockApi()))
+        .environmentObject(PaletteHolder())
+        .environmentObject(ErrorObserver())
         .prefireIgnored()
 }

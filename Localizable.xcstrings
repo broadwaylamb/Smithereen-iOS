@@ -224,9 +224,6 @@
         }
       }
     },
-    "Coming soon!" : {
-      "shouldTranslate" : false
-    },
     "Comment" : {
       "comment" : "A button when there are no comments in a post; imperative.",
       "localizations" : {

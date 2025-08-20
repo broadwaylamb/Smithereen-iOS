@@ -33,9 +33,9 @@ enum SideMenuItem: Int, Identifiable, CaseIterable {
 struct SideMenu: View {
     let api: any APIService
     @ObservedObject var feedViewModel: FeedViewModel
+    @Binding var userFirstName: String
     @EnvironmentObject private var errorObserver: ErrorObserver
     @EnvironmentObject private var palette: PaletteHolder
-    @State private var userFirstName: String?
     @State private var userProfilePicture: ImageLocation?
     @Binding var selectedItem: SideMenuItem
 
@@ -49,7 +49,7 @@ struct SideMenu: View {
             } label: {
                 if item == .profile {
                     Label {
-                        Text(verbatim: userFirstName ?? "…")
+                        Text(verbatim: userFirstName)
                     } icon: {
                         UserProfilePictureView(location: userProfilePicture)
                             .frame(width: iconSize, height: iconSize)
@@ -65,6 +65,7 @@ struct SideMenu: View {
                     }
                 }
             }
+            .disabled(item == .profile && feedViewModel.currentUserID == nil)
             .listRowBackground(
                 item == selectedItem
                     ? palette.sideMenu.selectedBackground
@@ -101,25 +102,36 @@ struct SideMenu: View {
 @available(iOS 17.0, *)
 #Preview("Interactive side menu") {
     @Previewable @State var selectedItem: SideMenuItem = .news
+    @Previewable @State var userFirstName: String = "…"
     let api = MockApi()
+    let feedViewModel = FeedViewModel(api: api)
     SideMenu(
         api: api,
-        feedViewModel: FeedViewModel(api: api),
+        feedViewModel: feedViewModel,
+        userFirstName: $userFirstName,
         selectedItem: $selectedItem,
     )
     .environmentObject(ErrorObserver())
     .environmentObject(PaletteHolder())
+    .task {
+        try! await feedViewModel.update()
+    }
     .prefireIgnored()
 }
 
 #Preview("Non-interactive side menu") {
     let api = MockApi()
+    let feedViewModel = FeedViewModel(api: api)
     SideMenu(
         api: api,
-        feedViewModel: FeedViewModel(api: api),
-        selectedItem: .constant(.news)
+        feedViewModel: feedViewModel,
+        userFirstName: .constant("Boromir"),
+        selectedItem: .constant(.news),
     )
     .environmentObject(ErrorObserver())
     .environmentObject(PaletteHolder())
+    .task {
+        try! await feedViewModel.update()
+    }
     .snapshot(perceptualPrecision: 0.96)
 }

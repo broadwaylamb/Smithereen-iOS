@@ -14,6 +14,7 @@ struct RegularPostView: View {
     private func singleRepost(_ repost: Repost, headerOnly: Bool) -> some View {
         VStack(alignment: .leading, spacing: 13) {
             RepostedPostHeaderView(
+                api: viewModel.api,
                 postHeader: repost.header,
                 repostInfo: RepostInfo(
                     isMastodonStyle: repost.isMastodonStyleRepost,
@@ -69,7 +70,7 @@ struct RegularPostView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            PostHeaderView(postHeader: viewModel.header)
+            PostHeaderView(api: viewModel.api, postHeader: viewModel.header)
                 .padding(.horizontal, horizontalContentPadding)
                 .padding(.vertical, 13)
 

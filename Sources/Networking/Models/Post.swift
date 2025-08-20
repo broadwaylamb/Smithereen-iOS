@@ -5,7 +5,7 @@ struct PostHeader: Equatable {
     var id: PostID
     var localURL: URL
     var remoteInstanceLink: URL?
-    var localAuthorID: URL
+    var authorHandle: String
     var authorName: String
     var date: String
     var authorProfilePicture: ImageLocation?
@@ -27,7 +27,7 @@ extension Post {
         id: PostID,
         localURL: URL,
         remoteInstanceLink: URL? = nil,
-        localAuthorID: URL,
+        authorHandle: String,
         authorName: String,
         date: String,
         authorProfilePicture: ImageLocation? = nil,
@@ -43,7 +43,7 @@ extension Post {
             id: id,
             localURL: localURL,
             remoteInstanceLink: remoteInstanceLink,
-            localAuthorID: localAuthorID,
+            authorHandle: authorHandle,
             authorName: authorName,
             date: date,
             authorProfilePicture: authorProfilePicture,

@@ -14,7 +14,7 @@ struct FeedRequest: DecodableRequestProtocol {
         postLinkSelector: String,
     ) throws -> PostHeader? {
         guard let authorNameLink = try container.select(authorNameLinkSelector).first(),
-              let authorURL = try URL(string: authorNameLink.attr("href"))
+            let authorHandle = try authorNameLink.attr("href").split(separator: "/").last
         else {
             return nil
         }
@@ -41,7 +41,7 @@ struct FeedRequest: DecodableRequestProtocol {
             id: postID,
             localURL: localPostURL,
             remoteInstanceLink: nil, // FIXME: the HTML from the mobile version that we use as data source doesn't contain the link to a remote server.
-            localAuthorID: authorURL,
+            authorHandle: String(authorHandle),
             authorName: authorName,
             date: date,
             authorProfilePicture: profilePicture?.url.map(ImageLocation.remote),

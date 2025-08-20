@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct UserProfileHeaderView: View {
-    var profilePicture: ImageLocation
+    var profilePicture: ImageLocation?
     var fullName: String
     var onlineOrLastSeen: LocalizedStringKey?
     var ageAndPlace: LocalizedStringKey?
@@ -39,7 +39,7 @@ struct GroupProfileHeaderView: View {
 private let profilePictureHeight: CGFloat = 85
 
 private struct ProfilePictureView: View {
-    var location: ImageLocation
+    var location: ImageLocation?
     var body: some View {
         UserProfilePictureView(location: location)
             .frame(width: profilePictureHeight, height: profilePictureHeight)

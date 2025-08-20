@@ -11,6 +11,8 @@ struct RootView: View {
     @State private var menuShown: Bool = false
     @State private var selectedItem: SideMenuItem = .news
 
+    @State private var userFirstName: String = "…"
+
     @ViewBuilder
     private var mainView: some View {
         switch selectedItem {
@@ -19,21 +21,29 @@ struct RootView: View {
         case .settings:
             SettingsView(api: api)
         default:
-            Text("Coming soon!").font(.largeTitle)
+            UserProfileView(
+                firstName: userFirstName,
+                viewModel: UserProfileViewModel(
+                    api: api,
+                    userIDOrHandle: .left(feedViewModel.currentUserID!)
+                )
+            )
         }
     }
 
     var body: some View {
         SlideableMenuView(isMenuShown: $menuShown) {
-            SideMenu(api: api, feedViewModel: feedViewModel, selectedItem: $selectedItem)
+            SideMenu(
+                api: api,
+                feedViewModel: feedViewModel,
+                userFirstName: $userFirstName,
+                selectedItem: $selectedItem
+            )
         } content: { alwaysShowMenu in
             NavigationView {
                 mainView
-                    .navigationBarTitleDisplayMode(.inline)
+                    .navigationBarStyleSmithereen()
                     .navigationTitle(selectedItem.localizedDescription)
-                    .navigationBarBackground(palette.accent)
-                    .navigationBarBackground(.visible)
-                    .navigationBarColorScheme(.dark)
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
                             if !alwaysShowMenu {

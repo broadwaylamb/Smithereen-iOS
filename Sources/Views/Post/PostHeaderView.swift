@@ -1,11 +1,13 @@
 import SwiftUI
 
 struct PostHeaderView: View {
+    var api: any APIService
     var postHeader: PostHeader
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     var body: some View {
         GenericPostHeaderView(
+            api: api,
             postHeader: postHeader,
             kind: .regular,
             horizontalSizeClass: horizontalSizeClass,
@@ -24,6 +26,7 @@ struct PostHeaderView: View {
 }
 
 struct RepostedPostHeaderView: View {
+    var api: any APIService
     var postHeader: PostHeader
     var repostInfo: RepostInfo
 
@@ -42,6 +45,7 @@ struct RepostedPostHeaderView: View {
 
     var body: some View {
         GenericPostHeaderView(
+            api: api,
             postHeader: postHeader,
             kind: .repost(repostInfo),
             horizontalSizeClass: horizontalSizeClass,
@@ -59,6 +63,7 @@ struct RepostedPostHeaderView: View {
 }
 
 private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: View {
+    var api: any APIService
     var postHeader: PostHeader
     var kind: PostKind
     var repostIcon: () -> RepostIcon
@@ -68,13 +73,17 @@ private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: Vie
 
     @ScaledMetric private var imageSize: CGFloat
 
+    @State private var userProfileLinkActive = false
+
     init(
+        api: any APIService,
         postHeader: PostHeader,
         kind: PostKind,
         horizontalSizeClass: UserInterfaceSizeClass?,
         @ViewBuilder repostIcon: @escaping () -> RepostIcon,
         @ViewBuilder detailsButton: @escaping () -> DetailsButton,
     ) {
+        self.api = api
         self.postHeader = postHeader
         self.kind = kind
         let imageSize: CGFloat =
@@ -93,16 +102,42 @@ private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: Vie
         self.detailsButton = detailsButton
     }
 
+    private func userProfileLink(@ViewBuilder label: () -> some View) -> some View {
+        Button(action: {
+            userProfileLinkActive = true
+        }, label: label)
+            .buttonStyle(.borderless)
+            .background {
+                // This is a hack. When a NavigationLink is inside a List,
+                // it's rendered with an arrow. We don't want that arrow.
+                NavigationLink(isActive: $userProfileLinkActive) {
+                    UserProfileView(
+                        firstName: postHeader.authorName, // TODO: Sould be first name
+                        viewModel: UserProfileViewModel(
+                            api: api,
+                            userIDOrHandle: .right(postHeader.authorHandle)
+                        )
+                    )
+                } label: {
+                    EmptyView()
+                }.opacity(0)
+            }
+    }
+
     var body: some View {
         HStack(spacing: 8) {
-            UserProfilePictureView(location: postHeader.authorProfilePicture)
-                .frame(width: imageSize, height: imageSize)
+            userProfileLink {
+                UserProfilePictureView(location: postHeader.authorProfilePicture)
+                    .frame(width: imageSize, height: imageSize)
+            }
             VStack(alignment: .leading, spacing: 2) {
                 HStack(alignment: .center, spacing: 6) {
                     repostIcon()
-                    Text(postHeader.authorName)
-                        .bold()
-                        .foregroundStyle(palette.accent)
+                    userProfileLink {
+                        Text(postHeader.authorName)
+                            .bold()
+                            .foregroundStyle(palette.accent)
+                    }
                 }
                 Button(kind.grayText(postHeader.date)) {
                     // TODO: Navigate to the post
