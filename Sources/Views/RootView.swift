@@ -13,6 +13,8 @@ struct RootView: View {
 
     @State private var userFirstName: String = "…"
 
+    @State private var navigationPath = NavigationPath()
+
     @ViewBuilder
     private var mainView: some View {
         switch selectedItem {
@@ -40,7 +42,7 @@ struct RootView: View {
                 selectedItem: $selectedItem
             )
         } content: { alwaysShowMenu in
-            NavigationView {
+            NavigationStack(path: $navigationPath) {
                 mainView
                     .navigationBarStyleSmithereen()
                     .navigationTitle(selectedItem.localizedDescription)
@@ -54,8 +56,21 @@ struct RootView: View {
                             }
                         }
                     }
+                    .navigationDestinationPolyfill(
+                        for: UserProfileNavigationItem.self
+                    ) { item in
+                        UserProfileView(
+                            firstName: item.firstName,
+                            viewModel: UserProfileViewModel(
+                                api: api,
+                                userIDOrHandle: item.userIDOrHandle,
+                            ),
+                        )
+                    }
             }
-            .navigationViewStyle(.stack)
+            .environment(\.pushToNavigationStack) { item in
+                navigationPath.append(item)
+            }
             .navigationBarBackground(palette.accent)
             .navigationBarBackground(.visible)
             .navigationBarColorScheme(.dark)

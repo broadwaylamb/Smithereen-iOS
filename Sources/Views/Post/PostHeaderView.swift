@@ -1,13 +1,11 @@
 import SwiftUI
 
 struct PostHeaderView: View {
-    var api: any APIService
     var postHeader: PostHeader
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     var body: some View {
         GenericPostHeaderView(
-            api: api,
             postHeader: postHeader,
             kind: .regular,
             horizontalSizeClass: horizontalSizeClass,
@@ -26,7 +24,6 @@ struct PostHeaderView: View {
 }
 
 struct RepostedPostHeaderView: View {
-    var api: any APIService
     var postHeader: PostHeader
     var repostInfo: RepostInfo
 
@@ -45,7 +42,6 @@ struct RepostedPostHeaderView: View {
 
     var body: some View {
         GenericPostHeaderView(
-            api: api,
             postHeader: postHeader,
             kind: .repost(repostInfo),
             horizontalSizeClass: horizontalSizeClass,
@@ -63,7 +59,6 @@ struct RepostedPostHeaderView: View {
 }
 
 private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: View {
-    var api: any APIService
     var postHeader: PostHeader
     var kind: PostKind
     var repostIcon: () -> RepostIcon
@@ -73,17 +68,15 @@ private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: Vie
 
     @ScaledMetric private var imageSize: CGFloat
 
-    @State private var userProfileLinkActive = false
+    @Environment(\.pushToNavigationStack) private var pushToNavigationStack
 
     init(
-        api: any APIService,
         postHeader: PostHeader,
         kind: PostKind,
         horizontalSizeClass: UserInterfaceSizeClass?,
         @ViewBuilder repostIcon: @escaping () -> RepostIcon,
         @ViewBuilder detailsButton: @escaping () -> DetailsButton,
     ) {
-        self.api = api
         self.postHeader = postHeader
         self.kind = kind
         let imageSize: CGFloat =
@@ -103,25 +96,17 @@ private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: Vie
     }
 
     private func userProfileLink(@ViewBuilder label: () -> some View) -> some View {
-        Button(action: {
-            userProfileLinkActive = true
-        }, label: label)
-            .buttonStyle(.borderless)
-            .background {
-                // This is a hack. When a NavigationLink is inside a List,
-                // it's rendered with an arrow. We don't want that arrow.
-                NavigationLink(isActive: $userProfileLinkActive) {
-                    UserProfileView(
-                        firstName: postHeader.authorName, // TODO: Sould be first name
-                        viewModel: UserProfileViewModel(
-                            api: api,
-                            userIDOrHandle: .right(postHeader.authorHandle)
-                        )
-                    )
-                } label: {
-                    EmptyView()
-                }.opacity(0)
-            }
+        Button(
+            action: {
+                pushToNavigationStack(
+                    UserProfileNavigationItem(
+                        firstName: postHeader.authorName,
+                        userIDOrHandle: .right(postHeader.authorHandle))
+                )
+            },
+            label: label
+        )
+        .buttonStyle(.borderless)
     }
 
     var body: some View {

@@ -10,7 +10,6 @@ struct CompactPostView: View {
     private func singleRepost(_ repost: Repost, headerOnly: Bool) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             RepostedPostHeaderView(
-                api: viewModel.api,
                 postHeader: repost.header,
                 repostInfo: RepostInfo(
                     isMastodonStyle: repost.isMastodonStyleRepost,
@@ -36,7 +35,7 @@ struct CompactPostView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            PostHeaderView(api: viewModel.api, postHeader: viewModel.header)
+            PostHeaderView(postHeader: viewModel.header)
                 .padding(.horizontal, horizontalContentPadding)
                 .padding(.top, 7)
                 .padding(.bottom, 13)
