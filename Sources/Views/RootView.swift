@@ -34,7 +34,10 @@ struct RootView: View {
     }
 
     var body: some View {
-        SlideableMenuView(isMenuShown: $menuShown) {
+        SlideableMenuView(
+            isNavigationStackEmpty: navigationPath.isEmpty,
+            isMenuShown: $menuShown
+        ) {
             SideMenu(
                 api: api,
                 feedViewModel: feedViewModel,

@@ -4,7 +4,7 @@ private let collapsibleMenuWidth: CGFloat = 276
 private let alwaysShownMenuWidth: CGFloat = 256
 
 struct SlideableMenuView<Menu: View, Content: View>: View {
-
+    var isNavigationStackEmpty: Bool
     @Binding var isMenuShown: Bool
 
     @ViewBuilder
@@ -24,6 +24,11 @@ struct SlideableMenuView<Menu: View, Content: View>: View {
     private func contentOffset(alwaysShowMenu: Bool) -> CGFloat {
         if alwaysShowMenu {
             return alwaysShownMenuWidth
+        }
+        if !isNavigationStackEmpty && !isMenuShown && delta < 25 {
+            // Prevent conflicting with the native "swipe back from left edge"
+            // gesture.
+            return start
         }
         return start + delta
     }
