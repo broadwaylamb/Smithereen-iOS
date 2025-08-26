@@ -26,6 +26,7 @@ struct RootView: View {
                         userIDOrHandle: feedViewModel.currentUserID.map(Either.left),
                     )
                 )
+                .commonNavigationDestinations(api: api)
             } label: {
                 Label {
                     Text(verbatim: userFirstName)
@@ -38,18 +39,7 @@ struct RootView: View {
             SideMenuItem("News", icon: .news, value: SideMenuValue.news) {
                 FeedView(viewModel: feedViewModel)
                     .navigationTitle("News")
-                    // TODO: Factor this out, this is not feed-specific
-                    .navigationDestinationPolyfill(
-                        for: UserProfileNavigationItem.self
-                    ) { item in
-                        UserProfileView(
-                            firstName: item.firstName,
-                            viewModel: UserProfileViewModel(
-                                api: api,
-                                userIDOrHandle: item.userIDOrHandle,
-                            ),
-                        )
-                    }
+                    .commonNavigationDestinations(api: api)
             }
 
             SideMenuItem("Settings", icon: .settings, value: SideMenuValue.settings) {
@@ -72,6 +62,22 @@ struct RootView: View {
                     }
                 }
             }
+        }
+    }
+}
+
+extension View {
+    func commonNavigationDestinations(api: any APIService) -> some View {
+        navigationDestinationPolyfill(
+            for: UserProfileNavigationItem.self
+        ) { item in
+            UserProfileView(
+                firstName: item.firstName,
+                viewModel: UserProfileViewModel(
+                    api: api,
+                    userIDOrHandle: item.userIDOrHandle,
+                ),
+            )
         }
     }
 }
