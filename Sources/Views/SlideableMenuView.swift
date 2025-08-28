@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftUIIntrospect
 
 private let collapsibleMenuWidth: CGFloat = 276
 private let alwaysShownMenuWidth: CGFloat = 256
@@ -18,7 +19,7 @@ struct SideMenuRow<Value: Hashable, Label: View>: View {
     var body: some View {
         Button(action: { viewModel.selectItem(value) }, label: label)
             .listRowBackground(
-                viewModel.selection == value
+                viewModel.currentSelection == value
                     ? palette.sideMenu.selectedBackground
                     : Color.clear
             )
@@ -73,7 +74,7 @@ struct SlideableMenuView<Value: Hashable, Rows, Content>: View {
                 children[viewModel.currentViewIndex]
             }
         }
-        .id(viewModel.selection)
+        .id(viewModel.currentSelection)
     }
 
     private var start: CGFloat {
@@ -242,18 +243,21 @@ private final class SideMenuViewModel<Value: Hashable>: ObservableObject {
     let indices: [Value : Int]
     @Published var isMenuShown = false
     @Published var navigationPath = NavigationPath()
-    @Binding private(set) var selection: Value
+    @Published private(set) var currentSelection: Value
+    @Binding private var selection: Value
     @Published private(set) var currentViewIndex: Int
 
     init(indices: [Value : Int], selection: Binding<Value>) {
         self.indices = indices
         _selection = selection
+        currentSelection = selection.wrappedValue
         currentViewIndex = indices[selection.wrappedValue] ?? 0
     }
 
     func selectItem(_ newSelection: Value) {
         isMenuShown = false
         selection = newSelection
+        currentSelection = newSelection
         currentViewIndex = indices[newSelection] ?? 0
         navigationPath.removeAll()
     }
