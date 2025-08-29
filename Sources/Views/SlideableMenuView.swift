@@ -69,10 +69,20 @@ struct SlideableMenuView<Value: Hashable, Rows, Content>: View {
 
     @GestureState private var delta: CGFloat = 0
 
-    private func currentView(index: Int) -> some View {
+    private func currentView(alwaysShowMenu: Bool, index: Int) -> some View {
         ExtractSubviews(from: TupleView(content)) { children in
             SMNavigationStack(path: $viewModel.navigationPath) {
                 children[index]
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            if !alwaysShowMenu {
+                                Button(action: { viewModel.isMenuShown.toggle() }) {
+                                    Image(.menu)
+                                }
+                                .tint(Color.white)
+                            }
+                        }
+                    }
             }
         }
         .id(viewModel.currentSelection)
@@ -134,25 +144,31 @@ struct SlideableMenuView<Value: Hashable, Rows, Content>: View {
             ZStack(alignment: .topLeading) {
                 SideMenu(content: { TupleView(rows) })
                     .environmentObject(viewModel)
-                currentView(index: viewModel.currentViewIndex)
-                    .shadow(radius: 7)
-                    .overlay {
-                        if viewModel.isMenuShown {
-                            Color.black.opacity(0.0001)
-                                .ignoresSafeArea()
-                                .onTapGesture {
-                                    viewModel.isMenuShown = false
-                                }
-                        }
+                currentView(
+                    alwaysShowMenu: alwaysShowMenu,
+                    index: viewModel.currentViewIndex,
+                )
+                .shadow(radius: 7)
+                .overlay {
+                    if viewModel.isMenuShown {
+                        Color.black.opacity(0.0001)
+                            .ignoresSafeArea()
+                            .onTapGesture {
+                                viewModel.isMenuShown = false
+                            }
                     }
-                    .offset(x: contentOffset)
-                    .frame(maxWidth: contentWidth)
-                    .animation(.interactiveSpring(extraBounce: 0), value: contentOffset)
+                }
+                .offset(x: contentOffset)
+                .frame(maxWidth: contentWidth)
+                .animation(.interactiveSpring(extraBounce: 0), value: contentOffset)
             }
             .gesture(dragGesture, isEnabled: !alwaysShowMenu)
-        }
-        .sheet(isPresented: $viewModel.isModallyPresented) {
-            currentView(index: viewModel.currentModalViewIndex!)
+            .sheet(isPresented: $viewModel.isModallyPresented) {
+                currentView(
+                    alwaysShowMenu: alwaysShowMenu,
+                    index: viewModel.currentModalViewIndex!,
+                )
+            }
         }
     }
 }
