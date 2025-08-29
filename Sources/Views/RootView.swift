@@ -16,6 +16,8 @@ struct RootView: View {
 
     @State private var sideMenuSelection: SideMenuValue = .news
 
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
     var body: some View {
         SlideableMenuView(selection: $sideMenuSelection) {
             SideMenuItem(value: SideMenuValue.profile) {
@@ -42,7 +44,12 @@ struct RootView: View {
                     .commonNavigationDestinations(api: api)
             }
 
-            SideMenuItem("Settings", icon: .settings, value: SideMenuValue.settings) {
+            SideMenuItem(
+                "Settings",
+                icon: .settings,
+                value: SideMenuValue.settings,
+                isModal: horizontalSizeClass == .regular,
+            ) {
                 SettingsView(api: api)
                     .navigationTitle("Settings")
             }

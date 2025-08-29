@@ -8,6 +8,7 @@ private let defaultIconSize: CGFloat = 37
 
 struct SideMenuRow<Value: Hashable, Label: View>: View {
     fileprivate var value: Value
+    fileprivate var isModal: Bool
     fileprivate var label: () -> Label
 
     @EnvironmentObject private var viewModel: SideMenuViewModel<Value>
@@ -17,7 +18,7 @@ struct SideMenuRow<Value: Hashable, Label: View>: View {
     private var iconSize = defaultIconSize
 
     var body: some View {
-        Button(action: { viewModel.selectItem(value) }, label: label)
+        Button(action: { viewModel.selectItem(value, isModal: isModal) }, label: label)
             .listRowBackground(
                 viewModel.currentSelection == value
                     ? palette.sideMenu.selectedBackground
@@ -68,10 +69,10 @@ struct SlideableMenuView<Value: Hashable, Rows, Content>: View {
 
     @GestureState private var delta: CGFloat = 0
 
-    private func currentView() -> some View {
+    private func currentView(index: Int) -> some View {
         ExtractSubviews(from: TupleView(content)) { children in
             SMNavigationStack(path: $viewModel.navigationPath) {
-                children[viewModel.currentViewIndex]
+                children[index]
             }
         }
         .id(viewModel.currentSelection)
@@ -133,22 +134,25 @@ struct SlideableMenuView<Value: Hashable, Rows, Content>: View {
             ZStack(alignment: .topLeading) {
                 SideMenu(content: { TupleView(rows) })
                     .environmentObject(viewModel)
-                currentView()
-                .shadow(radius: 7)
-                .overlay {
-                    if viewModel.isMenuShown {
-                        Color.black.opacity(0.0001)
-                            .ignoresSafeArea()
-                            .onTapGesture {
-                                viewModel.isMenuShown = false
-                            }
+                currentView(index: viewModel.currentViewIndex)
+                    .shadow(radius: 7)
+                    .overlay {
+                        if viewModel.isMenuShown {
+                            Color.black.opacity(0.0001)
+                                .ignoresSafeArea()
+                                .onTapGesture {
+                                    viewModel.isMenuShown = false
+                                }
+                        }
                     }
-                }
-                .offset(x: contentOffset)
-                .frame(maxWidth: contentWidth)
-                .animation(.interactiveSpring(extraBounce: 0), value: contentOffset)
+                    .offset(x: contentOffset)
+                    .frame(maxWidth: contentWidth)
+                    .animation(.interactiveSpring(extraBounce: 0), value: contentOffset)
             }
             .gesture(dragGesture, isEnabled: !alwaysShowMenu)
+        }
+        .sheet(isPresented: $viewModel.isModallyPresented) {
+            currentView(index: viewModel.currentModalViewIndex!)
         }
     }
 }
@@ -164,10 +168,13 @@ protocol SideMenuContent<Value> {
     func identifiedView() -> IdentifiedView
 
     func labelView() -> Label
+
+    var isModal: Bool { get }
 }
 
 struct SideMenuItem<Value: Hashable, Content: View, Label: View>: SideMenuContent {
     var value: Value
+    var isModal: Bool = false
     @ViewBuilder var content: @MainActor () -> Content
     @ViewBuilder var label: @MainActor () -> Label
 
@@ -185,9 +192,10 @@ extension SideMenuItem where Label == SwiftUI.Label<Text, Image> {
         _ title: LocalizedStringKey,
         icon: ImageResource,
         value: Value,
+        isModal: Bool = false,
         @ViewBuilder content: @MainActor @escaping () -> Content,
     ) {
-        self.init(value: value, content: content) {
+        self.init(value: value, isModal: isModal, content: content) {
             SwiftUI.Label {
                 Text(title)
             } icon: {
@@ -220,7 +228,8 @@ struct SideMenuContentBuilder<Value: Hashable> {
         var indices = [Value : Int]()
         var i = 0
         for c in repeat each content {
-            indices[c.value as! Value] = i
+            let value = c.value as! Value
+            indices[value] = i
             i += 1
         }
 
@@ -229,6 +238,7 @@ struct SideMenuContentBuilder<Value: Hashable> {
             labelTuple: (
                 repeat SideMenuRow(
                     value: (each content).value,
+                    isModal: (each content).isModal,
                     label: (each content).labelView
                 ),
             ),
@@ -246,19 +256,42 @@ private final class SideMenuViewModel<Value: Hashable>: ObservableObject {
     @Published private(set) var currentSelection: Value
     @Binding private var selection: Value
     @Published private(set) var currentViewIndex: Int
+    @Published private(set) var currentModalViewIndex: Int?
+
+    private var lastNonModalSelection: Value
+
+    var isModallyPresented: Bool {
+        get {
+            currentModalViewIndex != nil
+        }
+        set {
+            if !newValue {
+                currentModalViewIndex = nil
+                currentSelection = lastNonModalSelection
+            }
+        }
+    }
 
     init(indices: [Value : Int], selection: Binding<Value>) {
         self.indices = indices
         _selection = selection
         currentSelection = selection.wrappedValue
+        lastNonModalSelection = selection.wrappedValue
         currentViewIndex = indices[selection.wrappedValue] ?? 0
     }
 
-    func selectItem(_ newSelection: Value) {
+    func selectItem(_ newSelection: Value, isModal: Bool) {
         isMenuShown = false
+        if isModal {
+            lastNonModalSelection = currentSelection
+            currentModalViewIndex = indices[newSelection] ?? 0
+        } else {
+            lastNonModalSelection = newSelection
+            currentModalViewIndex = nil
+            currentViewIndex = indices[newSelection] ?? 0
+        }
         selection = newSelection
         currentSelection = newSelection
-        currentViewIndex = indices[newSelection] ?? 0
         navigationPath.removeAll()
     }
 }
