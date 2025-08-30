@@ -1,5 +1,5 @@
 {
-  "originHash" : "0540ac694f15c3366163833600a190bcce35f8ef1eec99820a38b1febe35b1c0",
+  "originHash" : "7d309f1f2a48745a8ce95247b41a040cdfc887119c749850afe110f0ccb8f37f",
   "pins" : [
     {
       "identity" : "hammond",
@@ -35,6 +35,15 @@
       "state" : {
         "revision" : "534d68fcf09111aa41c633645a02712193d6a721",
         "version" : "5.0.1"
+      }
+    },
+    {
+      "identity" : "slideablemenu",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/broadwaylamb/SlideableMenu.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c7ad06c5a302b3aaae6094c84d786335b512a587"
       }
     },
     {

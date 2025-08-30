@@ -1,4 +1,5 @@
 import SwiftUI
+import SlideableMenu
 
 struct SMNavigationStack<Content: View>: View {
     @ViewBuilder var content: () -> Content

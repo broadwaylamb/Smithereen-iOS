@@ -14,13 +14,11 @@ struct RootView: View {
     @State private var userFirstName: String = "…"
     @State private var userProfilePicture: ImageLocation?
 
-    @State private var sideMenuSelection: SideMenuValue = .news
-
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     var body: some View {
-        SlideableMenuView(selection: $sideMenuSelection) {
-            SMSideMenuItem(value: SideMenuValue.profile) {
+        SMSlideableMenuView {
+            SMSideMenuItem(value: .profile) {
                 UserProfileView(
                     firstName: userFirstName,
                     viewModel: UserProfileViewModel(
@@ -38,7 +36,7 @@ struct RootView: View {
                 }
             }
 
-            SMSideMenuItem("News", icon: .news, value: SideMenuValue.news) {
+            SMSideMenuItem("News", icon: .news, value: .news) {
                 FeedView(viewModel: feedViewModel)
                     .navigationTitle("News")
                     .commonNavigationDestinations(api: api)
@@ -47,20 +45,12 @@ struct RootView: View {
             SMSideMenuItem(
                 "Settings",
                 icon: .settings,
-                value: SideMenuValue.settings,
+                value: .settings,
                 isModal: horizontalSizeClass == .regular,
             ) {
                 SettingsView(api: api)
                     .navigationTitle("Settings")
             }
-        } sideMenu: { rows in
-            List {
-                rows
-            }
-            .listStyle(.plain)
-            .scrollContentBackgroundPolyfill(.hidden)
-            .background(palette.sideMenu.background)
-            .foregroundStyle(palette.sideMenu.text)
         }
         .environmentObject(errorObserver)
         .alert(errorObserver)
@@ -93,47 +83,6 @@ extension View {
                     userIDOrHandle: item.userIDOrHandle,
                 ),
             )
-        }
-    }
-}
-
-private enum SideMenuValue: Hashable {
-    case profile
-    case news
-    case settings
-}
-
-private struct SMSideMenuItem<Content: View, Label: View>: SideMenuContent {
-    var value: SideMenuValue
-    var isModal: Bool = false
-    var content: () -> Content
-    var label: () -> Label
-
-    func identifiedView() -> some View {
-        SMNavigationStack {
-            content()
-        }
-    }
-
-    func labelView(isSelected: Binding<Bool>) -> some View {
-        SideMenuRow(value: value, isModal: isModal, isSelected: isSelected, label: label)
-    }
-}
-
-extension SMSideMenuItem where Label == SwiftUI.Label<Text, Image> {
-    init(
-        _ title: LocalizedStringKey,
-        icon: ImageResource,
-        value: SideMenuValue,
-        isModal: Bool = false,
-        @ViewBuilder content: @MainActor @escaping () -> Content,
-    ) {
-        self.init(value: value, isModal: isModal, content: content) {
-            Label {
-                Text(title)
-            } icon: {
-                Image(icon)
-            }
         }
     }
 }
