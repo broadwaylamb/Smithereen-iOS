@@ -29,7 +29,7 @@ struct RootView: View {
                     )
                 )
                 .commonNavigationDestinations(api: api)
-            } label: {
+            } item: {
                 Label {
                     Text(verbatim: userFirstName)
                 } icon: {
@@ -53,6 +53,14 @@ struct RootView: View {
                 SettingsView(api: api)
                     .navigationTitle("Settings")
             }
+        } sideMenu: { rows in
+            List {
+                rows
+            }
+            .listStyle(.plain)
+            .scrollContentBackgroundPolyfill(.hidden)
+            .background(palette.sideMenu.background)
+            .foregroundStyle(palette.sideMenu.text)
         }
         .environmentObject(errorObserver)
         .alert(errorObserver)
