@@ -6,21 +6,21 @@ private let alwaysShownMenuWidth: CGFloat = 256
 
 private let defaultIconSize: CGFloat = 37
 
-struct SideMenuRow<Value: Hashable, Item: View>: View {
-    fileprivate var value: Value
-    fileprivate var isModal: Bool
-    fileprivate var item: () -> Item
+struct SideMenuRow<Value: Hashable, Label: View>: View {
+    var value: Value
+    var isModal: Bool
+    @Binding var isSelected: Bool
+    var label: () -> Label
 
-    @EnvironmentObject private var viewModel: SideMenuViewModel<Value>
     @EnvironmentObject private var palette: PaletteHolder
 
     @ScaledMetric(relativeTo: .body)
     private var iconSize = defaultIconSize
 
     var body: some View {
-        Button(action: { viewModel.selectItem(value, isModal: isModal) }, label: item)
+        Button(action: { isSelected = true }, label: label)
             .listRowBackground(
-                viewModel.currentSelection == value
+                isSelected
                     ? palette.sideMenu.selectedBackground
                     : Color.clear
             )
@@ -30,6 +30,24 @@ struct SideMenuRow<Value: Hashable, Item: View>: View {
                 // Before iOS 16 cell separators are not aligned to the first text label
                 cell.separatorInset.left = iconSize
             }
+    }
+}
+
+struct _SlideableMenuRowView<Item: SideMenuContent>: View {
+    fileprivate let item: Item
+
+    @EnvironmentObject private var viewModel: SideMenuViewModel<Item.Value>
+
+    var body: Item.Item {
+        return item.labelView(
+            isSelected: Binding {
+                viewModel.currentSelection == item.value
+            } set: { isSelected in
+                if isSelected {
+                    viewModel.selectItem(item.value, isModal: item.isModal)
+                }
+            }
+        )
     }
 }
 
@@ -180,42 +198,9 @@ protocol SideMenuContent<Value> {
 
     func identifiedView() -> IdentifiedView
 
-    func labelView() -> Item
+    func labelView(isSelected: Binding<Bool>) -> Item
 
     var isModal: Bool { get }
-}
-
-struct SideMenuItem<Value: Hashable, Content: View, Item: View>: SideMenuContent {
-    var value: Value
-    var isModal: Bool = false
-    @ViewBuilder var content: @MainActor () -> Content
-    @ViewBuilder var item: @MainActor () -> Item
-
-    func identifiedView() -> Content {
-        content()
-    }
-
-    func labelView() -> Item {
-        item()
-    }
-}
-
-extension SideMenuItem where Item == Label<Text, Image> {
-    init(
-        _ title: LocalizedStringKey,
-        icon: ImageResource,
-        value: Value,
-        isModal: Bool = false,
-        @ViewBuilder content: @MainActor @escaping () -> Content,
-    ) {
-        self.init(value: value, isModal: isModal, content: content) {
-            SwiftUI.Label {
-                Text(title)
-            } icon: {
-                Image(icon)
-            }
-        }
-    }
 }
 
 struct SideMenuContentBuilderResult<Value: Hashable, RowTuple, ContentTuple> {
@@ -235,7 +220,7 @@ struct SideMenuContentBuilder<Value: Hashable> {
         _ content: repeat each T,
     ) -> SideMenuContentBuilderResult<
         Value,
-        (repeat SideMenuRow<(each T).Value ,(each T).Item>),
+        (repeat _SlideableMenuRowView<each T>),
         (repeat (each T).IdentifiedView)
     > {
         var indices = [Value : Int]()
@@ -248,13 +233,7 @@ struct SideMenuContentBuilder<Value: Hashable> {
 
         return SideMenuContentBuilderResult(
             indices: indices,
-            labelTuple: (
-                repeat SideMenuRow(
-                    value: (each content).value,
-                    isModal: (each content).isModal,
-                    item: (each content).labelView
-                ),
-            ),
+            labelTuple: (repeat _SlideableMenuRowView(item: each content)),
             contentTuple: (
                 repeat (each content).identifiedView()
             ),

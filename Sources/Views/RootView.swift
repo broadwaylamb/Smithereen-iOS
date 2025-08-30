@@ -20,7 +20,7 @@ struct RootView: View {
 
     var body: some View {
         SlideableMenuView(selection: $sideMenuSelection) {
-            SideMenuItem(value: SideMenuValue.profile) {
+            SMSideMenuItem(value: SideMenuValue.profile) {
                 UserProfileView(
                     firstName: userFirstName,
                     viewModel: UserProfileViewModel(
@@ -29,7 +29,7 @@ struct RootView: View {
                     )
                 )
                 .commonNavigationDestinations(api: api)
-            } item: {
+            } label: {
                 Label {
                     Text(verbatim: userFirstName)
                 } icon: {
@@ -38,13 +38,13 @@ struct RootView: View {
                 }
             }
 
-            SideMenuItem("News", icon: .news, value: SideMenuValue.news) {
+            SMSideMenuItem("News", icon: .news, value: SideMenuValue.news) {
                 FeedView(viewModel: feedViewModel)
                     .navigationTitle("News")
                     .commonNavigationDestinations(api: api)
             }
 
-            SideMenuItem(
+            SMSideMenuItem(
                 "Settings",
                 icon: .settings,
                 value: SideMenuValue.settings,
@@ -101,6 +101,39 @@ private enum SideMenuValue: Hashable {
     case profile
     case news
     case settings
+}
+
+private struct SMSideMenuItem<Content: View, Label: View>: SideMenuContent {
+    var value: SideMenuValue
+    var isModal: Bool = false
+    var content: () -> Content
+    var label: () -> Label
+
+    func identifiedView() -> Content {
+        content()
+    }
+
+    func labelView(isSelected: Binding<Bool>) -> some View {
+        SideMenuRow(value: value, isModal: isModal, isSelected: isSelected, label: label)
+    }
+}
+
+extension SMSideMenuItem where Label == SwiftUI.Label<Text, Image> {
+    init(
+        _ title: LocalizedStringKey,
+        icon: ImageResource,
+        value: SideMenuValue,
+        isModal: Bool = false,
+        @ViewBuilder content: @MainActor @escaping () -> Content,
+    ) {
+        self.init(value: value, isModal: isModal, content: content) {
+            Label {
+                Text(title)
+            } icon: {
+                Image(icon)
+            }
+        }
+    }
 }
 
 #Preview {
