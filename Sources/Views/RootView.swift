@@ -109,8 +109,10 @@ private struct SMSideMenuItem<Content: View, Label: View>: SideMenuContent {
     var content: () -> Content
     var label: () -> Label
 
-    func identifiedView() -> Content {
-        content()
+    func identifiedView() -> some View {
+        SMNavigationStack {
+            content()
+        }
     }
 
     func labelView(isSelected: Binding<Bool>) -> some View {

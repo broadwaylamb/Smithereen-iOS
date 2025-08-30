@@ -58,6 +58,18 @@ struct SlideableMenuItems<Rows>: View {
     }
 }
 
+struct ToggleSlideableMenuAction {
+    let handler: () -> Void
+    func callAsFunction() {
+        handler()
+    }
+}
+
+extension EnvironmentValues {
+    @Entry var isSlideableMenuFixed = false
+    @Entry var toggleSlideableMenu = ToggleSlideableMenuAction {}
+}
+
 struct SlideableMenuView<Value: Hashable, Rows, SideMenu: View, Content>: View {
     @StateObject private var viewModel: SideMenuViewModel<Value>
     private let sideMenu: (SlideableMenuItems<Rows>) -> SideMenu
@@ -86,21 +98,8 @@ struct SlideableMenuView<Value: Hashable, Rows, SideMenu: View, Content>: View {
 
     private func currentView(alwaysShowMenu: Bool, index: Int) -> some View {
         ExtractSubviews(from: TupleView(content)) { children in
-            SMNavigationStack(path: $viewModel.navigationPath) {
-                children[index]
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
-                            if !alwaysShowMenu {
-                                Button(action: { viewModel.isMenuShown.toggle() }) {
-                                    Image(.menu)
-                                }
-                                .tint(Color.white)
-                            }
-                        }
-                    }
-            }
+            children[index]
         }
-        .id(viewModel.currentSelection)
     }
 
     private var start: CGFloat {
@@ -111,7 +110,7 @@ struct SlideableMenuView<Value: Hashable, Rows, SideMenu: View, Content>: View {
         if alwaysShowMenu {
             return alwaysShownMenuWidth
         }
-        if !viewModel.navigationPath.isEmpty && !viewModel.isMenuShown && delta < 25 {
+        if /*!viewModel.navigationPath.isEmpty &&*/ !viewModel.isMenuShown && delta < 25 {
             // Prevent conflicting with the native "swipe back from left edge"
             // gesture.
             return start
@@ -177,6 +176,13 @@ struct SlideableMenuView<Value: Hashable, Rows, SideMenu: View, Content>: View {
                 .frame(maxWidth: contentWidth)
                 .animation(.interactiveSpring(extraBounce: 0), value: contentOffset)
             }
+            .environment(\.isSlideableMenuFixed, alwaysShowMenu)
+            .environment(
+                \.toggleSlideableMenu,
+                 ToggleSlideableMenuAction {
+                     viewModel.isMenuShown.toggle()
+                 }
+            )
             .gesture(dragGesture, isEnabled: !alwaysShowMenu)
             .sheet(isPresented: $viewModel.isModallyPresented) {
                 currentView(
@@ -244,7 +250,6 @@ struct SideMenuContentBuilder<Value: Hashable> {
 private final class SideMenuViewModel<Value: Hashable>: ObservableObject {
     let indices: [Value : Int]
     @Published var isMenuShown = false
-    @Published var navigationPath = NavigationPath()
     @Published private(set) var currentSelection: Value
     @Binding private var selection: Value
     @Published private(set) var currentViewIndex: Int
@@ -284,6 +289,5 @@ private final class SideMenuViewModel<Value: Hashable>: ObservableObject {
         }
         selection = newSelection
         currentSelection = newSelection
-        navigationPath.removeAll()
     }
 }

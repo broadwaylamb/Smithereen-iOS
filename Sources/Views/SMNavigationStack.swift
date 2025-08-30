@@ -1,10 +1,13 @@
 import SwiftUI
 
 struct SMNavigationStack<Content: View>: View {
-    @Binding var path: NavigationPath
     @ViewBuilder var content: () -> Content
 
+    @State var path = NavigationPath()
     @EnvironmentObject private var palette: PaletteHolder
+
+    @Environment(\.isSlideableMenuFixed) private var isSlideableMenuFixed
+    @Environment(\.toggleSlideableMenu) private var toggleSlideableMenu
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -12,6 +15,16 @@ struct SMNavigationStack<Content: View>: View {
                 .navigationBarStyleSmithereen()
                 .environment(\.pushToNavigationStack) { item in
                     path.append(item)
+                }
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        if !isSlideableMenuFixed {
+                            Button(action: toggleSlideableMenu.callAsFunction) {
+                                Image(.menu)
+                            }
+                            .tint(Color.white)
+                        }
+                    }
                 }
         }
         .navigationBarBackground(palette.accent)
@@ -22,7 +35,7 @@ struct SMNavigationStack<Content: View>: View {
 }
 
 #Preview {
-    SMNavigationStack(path: .constant(.init())) {
+    SMNavigationStack {
         Text("Hello!")
             .navigationTitle("Hello!")
     }
