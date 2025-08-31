@@ -24,8 +24,6 @@
 
 /* Begin PBXBuildFile section */
 		870D40ED2DF8FFA80026AB8A /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 870D40EC2DF8FFA80026AB8A /* Localizable.xcstrings */; };
-		872205E32DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 872205E22DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig */; };
-		872205E52DB9754200B65CBA /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 872205E42DB9753F00B65CBA /* README.md */; };
 		874291B92DC29C7F00571022 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 874291B82DC29C7F00571022 /* SnapshotTesting */; };
 		8755183A2E11B03B006EDF63 /* Hammond in Frameworks */ = {isa = PBXBuildFile; productRef = 875518392E11B03B006EDF63 /* Hammond */; };
 		876659422DC8E76E00D62CCA /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 876659412DC8E76E00D62CCA /* SwiftUIIntrospect */; };
@@ -266,9 +264,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				872205E32DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig in Resources */,
 				870D40ED2DF8FFA80026AB8A /* Localizable.xcstrings in Resources */,
-				872205E52DB9754200B65CBA /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
