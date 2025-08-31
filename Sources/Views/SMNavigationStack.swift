@@ -10,6 +10,7 @@ struct SMNavigationStack<Content: View>: View {
 
     @Environment(\.isSlideableMenuFixed) private var isSlideableMenuFixed
     @Environment(\.revealSlideableMenu) private var revealSlideableMenu
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -19,10 +20,18 @@ struct SMNavigationStack<Content: View>: View {
                     path.append(item)
                 }
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
+                    ToolbarItem(placement: .topBarLeading) {
                         if !isSlideableMenuFixed && !isModal {
                             Button(action: revealSlideableMenu.callAsFunction) {
                                 Image(.menu)
+                            }
+                            .tint(Color.white)
+                        }
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        if isModal {
+                            Button(action: dismiss.callAsFunction) {
+                                Image(.close)
                             }
                             .tint(Color.white)
                         }
