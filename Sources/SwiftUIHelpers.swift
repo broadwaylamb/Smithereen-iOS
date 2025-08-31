@@ -29,21 +29,8 @@ extension View {
         } else if #available(iOS 16, *) {
             toolbarBackground(visibility, for: .navigationBar)
         } else {
-            introspect(.navigationView(style: .stack), on: .iOS(.v15)) { nc in
-                print("navigationBarBackground visibility")
-                let appearance = nc.navigationBar.standardAppearance
-                switch visibility {
-                case .automatic:
-                    appearance.configureWithDefaultBackground()
-                case .hidden:
-                    appearance.configureWithTransparentBackground()
-                case .visible:
-                    appearance.configureWithOpaqueBackground()
-                }
-                nc.navigationBar.compactAppearance = appearance
-                nc.navigationBar.scrollEdgeAppearance = appearance
-                nc.navigationBar.compactScrollEdgeAppearance = appearance
-            }
+            // Doing nothing on iOS 15 is somehow better than doing something.
+            self
         }
     }
 
