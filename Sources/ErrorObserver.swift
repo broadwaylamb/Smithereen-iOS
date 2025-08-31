@@ -18,7 +18,7 @@ final class ErrorObserver: ObservableObject {
         do {
             return try await block()
         } catch {
-            if !(error is CancellationError) {
+            if !error.isCancellationError {
                 await MainActor.run {
                     self.error = error
                 }
@@ -35,7 +35,7 @@ final class ErrorObserver: ObservableObject {
         } catch {
             await MainActor.run {
                 onError(error)
-                if !(error is CancellationError) {
+                if !error.isCancellationError {
                     self.error = error
                 }
             }

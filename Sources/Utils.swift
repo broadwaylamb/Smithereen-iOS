@@ -70,3 +70,14 @@ extension NavigationPath {
         removeLast(count)
     }
 }
+
+extension Error {
+    var isCancellationError: Bool {
+        if self is CancellationError { return true }
+        let nsError = self as NSError
+        if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled {
+            return true
+        }
+        return false
+    }
+}
