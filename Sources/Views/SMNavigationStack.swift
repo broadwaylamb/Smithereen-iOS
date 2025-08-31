@@ -2,13 +2,14 @@ import SwiftUI
 import SlideableMenu
 
 struct SMNavigationStack<Content: View>: View {
+    var isModal = false
     @ViewBuilder var content: () -> Content
 
     @State var path = NavigationPath()
     @EnvironmentObject private var palette: PaletteHolder
 
     @Environment(\.isSlideableMenuFixed) private var isSlideableMenuFixed
-    @Environment(\.toggleSlideableMenu) private var toggleSlideableMenu
+    @Environment(\.revealSlideableMenu) private var revealSlideableMenu
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -19,8 +20,8 @@ struct SMNavigationStack<Content: View>: View {
                 }
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
-                        if !isSlideableMenuFixed {
-                            Button(action: toggleSlideableMenu.callAsFunction) {
+                        if !isSlideableMenuFixed && !isModal {
+                            Button(action: revealSlideableMenu.callAsFunction) {
                                 Image(.menu)
                             }
                             .tint(Color.white)

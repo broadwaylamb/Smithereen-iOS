@@ -24,6 +24,7 @@ struct SMSlideableMenuView<Rows, Content>: View {
             .fixSlideableMenu(alwaysShowMenu)
             .slideableMenuWidth(alwaysShowMenu ? 256 : 276)
         }
+        .ignoresSafeArea()
     }
 }
 
@@ -67,7 +68,7 @@ struct SMSideMenuItem<Content: View, Label: View>: SlideableMenuContent {
     var label: () -> Label
 
     func identifiedView() -> some View {
-        SMNavigationStack {
+        SMNavigationStack(isModal: isModal) {
             content()
         }
         .shadow(radius: 7)
