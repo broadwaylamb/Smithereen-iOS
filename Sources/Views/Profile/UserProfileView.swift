@@ -23,8 +23,28 @@ struct UserProfileView: View {
                         ageAndPlace: nil, // TODO
                     )
                     .listRowInsets(
-                        EdgeInsets(top: 9, leading: 9, bottom: 9, trailing: 9)
+                        EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
                     )
+                    .listRowSeparator(.hidden)
+
+                    let counters = [
+                        ProfileCounter(value: user.friendCount) { "\($0) friends" },
+                        ProfileCounter(value: user.commonFriendCount) {
+                            "\($0) in common"
+                        },
+                        ProfileCounter(value: user.followerCount) { "\($0) followers" },
+                        ProfileCounter(value: user.groupCount) { "\($0) groups" },
+                        ProfileCounter(value: user.photoCount) { "\($0) photos" },
+                        ProfileCounter(value: user.videoCount) { "\($0) videos" },
+                        ProfileCounter(value: user.audioCount) { "\($0) audios" },
+                    ]
+                    if counters.contains(where: { $0.value > 0 }) {
+                        ProfileCountersView(counters: counters)
+                            .listRowInsets(
+                                EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
+                            )
+                            .contentMarginsPolyfill(.horizontal, 10)
+                    }
                 }
             }
         }

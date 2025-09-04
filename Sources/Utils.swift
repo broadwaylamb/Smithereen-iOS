@@ -81,3 +81,18 @@ extension Error {
         return false
     }
 }
+
+extension RandomAccessCollection {
+    subscript(safe index: Index) -> Element? {
+        if indices.contains(index) {
+            return self[index]
+        }
+        return nil
+    }
+}
+
+extension String {
+    func parseInt() -> Int? {
+        Int(String(filter { $0.isNumber }))
+    }
+}

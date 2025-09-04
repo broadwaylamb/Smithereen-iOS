@@ -123,6 +123,10 @@ struct MockApi: AuthenticationService, APIService {
                 fullName: "Boromir",
                 profilePicture: .bundled(.boromirProfilePicture),
                 presence: "online",
+                friendCount: 42,
+                commonFriendCount: 12,
+                followerCount: 100,
+                groupCount: 2,
             ) as! Request.Result
         }
 
