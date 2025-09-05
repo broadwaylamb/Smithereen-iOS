@@ -1,6 +1,7 @@
 import SwiftUI
 
 @MainActor
+@dynamicMemberLookup
 final class UserProfileViewModel: ObservableObject {
     private let api: any APIService
     private let userIDOrHandle: Either<UserID, String>?
@@ -9,6 +10,10 @@ final class UserProfileViewModel: ObservableObject {
     init(api: any APIService, userIDOrHandle: Either<UserID, String>?) {
         self.api = api
         self.userIDOrHandle = userIDOrHandle
+    }
+
+    subscript(dynamicMember keyPath: KeyPath<UserProfile, Int>) -> Int {
+        user?[keyPath: keyPath] ?? 0
     }
 
     func update() async throws {

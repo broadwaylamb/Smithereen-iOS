@@ -21,6 +21,7 @@ struct RootView: View {
             SMSideMenuItem(value: .profile) {
                 UserProfileView(
                     firstName: userFirstName,
+                    fullName: userFirstName, // TODO
                     viewModel: UserProfileViewModel(
                         api: api,
                         userIDOrHandle: feedViewModel.currentUserID.map(Either.left),
@@ -78,6 +79,7 @@ extension View {
         ) { item in
             UserProfileView(
                 firstName: item.firstName,
+                fullName: item.firstName, // TODO: Use full name
                 viewModel: UserProfileViewModel(
                     api: api,
                     userIDOrHandle: item.userIDOrHandle,
