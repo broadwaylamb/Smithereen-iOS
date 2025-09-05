@@ -93,3 +93,19 @@ extension View {
         border(color)
     }
 }
+
+extension View {
+    func listRowSeparatorLeadingInset(_ inset: CGFloat?) -> some View {
+        if #available(iOS 16.0, *) {
+            return alignmentGuide(.listRowSeparatorLeading) { d in
+                inset ?? d[.listRowSeparatorLeading]
+            }
+        } else {
+            return introspect(.listCell, on: .iOS(.v15)) { cell in
+                if let inset {
+                    cell.separatorInset.left = inset
+                }
+            }
+        }
+    }
+}

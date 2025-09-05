@@ -25,7 +25,6 @@ struct UserProfileView: View {
                     .listRowInsets(
                         EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
                     )
-                    .listRowSeparator(.hidden)
 
                     let counters = [
                         ProfileCounter(value: user.friendCount) { "\($0) friends" },
@@ -45,7 +44,13 @@ struct UserProfileView: View {
                             )
                             .contentMarginsPolyfill(.horizontal, 10)
                     }
+                } header: {
+                    // Removing the top blank space
+                    // https://stackoverflow.com/a/78618856
+                    Spacer(minLength: 0)
+                        .listRowInsets(EdgeInsets())
                 }
+                .listRowSeparatorLeadingInset(0)
             }
         }
         .task {
@@ -56,6 +61,8 @@ struct UserProfileView: View {
         }
         .listStyle(.grouped)
         .contentMarginsPolyfill(.top, 0)
+        .listSectionSpacingPolyfill(0)
+        .environment(\.defaultMinListHeaderHeight, 0)
         .colorScheme(.light)
         .navigationTitle(Text(verbatim: firstName))
         .navigationBarStyleSmithereen()

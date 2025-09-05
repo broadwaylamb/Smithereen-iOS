@@ -42,6 +42,7 @@ struct SMNavigationStack<Content: View>: View {
         .navigationBarBackground(.visible)
         .navigationBarColorScheme(.dark)
         .preferredColorScheme(.dark)
+        .accentColor(.white)
     }
 }
 
