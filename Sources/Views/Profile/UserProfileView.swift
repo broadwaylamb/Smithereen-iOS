@@ -42,7 +42,6 @@ struct UserProfileView: View {
                             .listRowInsets(
                                 EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
                             )
-                            .contentMarginsPolyfill(.horizontal, 10)
                     }
                 } header: {
                     // Removing the top blank space

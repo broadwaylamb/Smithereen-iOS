@@ -129,7 +129,7 @@ private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: Vie
                 }
                 .buttonStyle(.borderless)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(palette.grayText)
             }
             Spacer()
             detailsButton()

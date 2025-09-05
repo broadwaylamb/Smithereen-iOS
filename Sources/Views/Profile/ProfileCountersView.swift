@@ -3,21 +3,26 @@ import SwiftUI
 struct ProfileCountersView: View {
     var counters: [ProfileCounter]
 
+    @EnvironmentObject private var palette: PaletteHolder
+
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 9) {
+            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                Spacer(minLength: 0)
                 ForEach(counters.indexed(), id: \.offset) { (i, counter) in
                     if counter.value > 0 {
                         VStack {
                             Text("\(counter.value)")
                                 .font(.title2)
                                 .fontWeight(.medium)
+                                .foregroundStyle(palette.profileCounterNumber)
                             Text(counter.text)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(palette.grayText)
                         }
                         .padding(.horizontal, 6)
                     }
                 }
+                Spacer(minLength: 0).layoutPriority(1)
             }
         }
         // Fixing an iOS 16 bug when ScrollView nested inside a refreshable List
@@ -49,4 +54,5 @@ struct ProfileCounter {
             ProfileCounter(value: 1531) { "\($0) audios" },
         ]
     )
+    .environmentObject(PaletteHolder())
 }

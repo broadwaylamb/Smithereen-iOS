@@ -18,6 +18,9 @@ struct Palette {
 
     @RGBAColor var postCodeBlockBackground: Color
 
+    @RGBAColor var grayText: Color
+    @RGBAColor var profileCounterNumber: Color
+
     struct SideMenuPalette: Hashable {
         @RGBAColor var background: Color
         @RGBAColor var selectedBackground: Color
@@ -42,6 +45,8 @@ struct Palette {
         repostVerticalLine: #colorLiteral(red: 0.8352941176, green: 0.8470588235, blue: 0.8549019608, alpha: 1),
         repostIcon: #colorLiteral(red: 0.5768606067, green: 0.6835266352, blue: 0.7990577817, alpha: 1),
         postCodeBlockBackground: #colorLiteral(red: 0.9348388314, green: 0.9348388314, blue: 0.9348388314, alpha: 1),
+        grayText: #colorLiteral(red: 0.6431373358, green: 0.6431372762, blue: 0.6431372762, alpha: 1),
+        profileCounterNumber: #colorLiteral(red: 0.2470588088, green: 0.2470588088, blue: 0.2470588088, alpha: 1),
         sideMenu: .init(
             background: #colorLiteral(red: 0.2235294118, green: 0.2705882353, blue: 0.3215686275, alpha: 1),
             selectedBackground: #colorLiteral(red: 0.1882352941, green: 0.2235294118, blue: 0.2705882353, alpha: 1),
@@ -76,6 +81,8 @@ struct Palette {
             repostVerticalLine: map($repostVerticalLine),
             repostIcon: map($repostIcon),
             postCodeBlockBackground: map($postCodeBlockBackground),
+            grayText: map($grayText),
+            profileCounterNumber: map($profileCounterNumber),
             sideMenu: .init(
                 background: map(sideMenu.$background),
                 selectedBackground: map(sideMenu.$selectedBackground),

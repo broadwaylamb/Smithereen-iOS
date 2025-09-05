@@ -51,19 +51,23 @@ private struct ProfileHeaderInfoView: View {
     var title: String
     var subheading: LocalizedStringKey?
     var additionalInfo: LocalizedStringKey?
+
+    @EnvironmentObject private var palette: PaletteHolder
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(verbatim: title)
-                .font(.headline)
+                .font(.title3)
+                .fontWeight(.medium)
             if let subheading {
                 Text(subheading)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.callout)
+                    .foregroundStyle(palette.grayText)
             }
             if let additionalInfo {
                 Text(additionalInfo)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.callout)
+                    .foregroundStyle(palette.grayText)
                     .padding(.top)
             }
         }
