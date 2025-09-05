@@ -20,6 +20,9 @@ struct ProfileCountersView: View {
                 }
             }
         }
+        // Fixing an iOS 16 bug when ScrollView nested inside a refreshable List
+        // becomes itself refreshable.
+        .environment(\EnvironmentValues.refresh as! WritableKeyPath<_, _>, nil)
     }
 }
 
