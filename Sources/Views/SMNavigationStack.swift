@@ -16,9 +16,6 @@ struct SMNavigationStack<Content: View>: View {
         NavigationStack(path: $path) {
             content()
                 .navigationBarStyleSmithereen()
-                .environment(\.pushToNavigationStack) { item in
-                    path.append(item)
-                }
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         if !isSlideableMenuFixed && !isModal {
@@ -38,12 +35,19 @@ struct SMNavigationStack<Content: View>: View {
                     }
                 }
         }
+        .environment(\.pushToNavigationStack) { item in
+            path.append(item)
+        }
         .navigationBarBackground(palette.accent)
         .navigationBarBackground(.visible)
         .navigationBarColorScheme(.dark)
         .preferredColorScheme(.dark)
         .accentColor(.white)
     }
+}
+
+extension EnvironmentValues {
+    @Entry var pushToNavigationStack: (any Hashable) -> Void = { _ in }
 }
 
 #Preview {
