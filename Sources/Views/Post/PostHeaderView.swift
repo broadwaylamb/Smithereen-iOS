@@ -101,7 +101,8 @@ private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: Vie
                 pushToNavigationStack(
                     UserProfileNavigationItem(
                         firstName: postHeader.authorName,
-                        userIDOrHandle: .right(postHeader.authorHandle))
+                        userHandle: postHeader.authorHandle,
+                    )
                 )
             },
             label: label

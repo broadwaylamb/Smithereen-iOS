@@ -4,18 +4,19 @@ import SwiftUI
 @dynamicMemberLookup
 final class UserProfileViewModel: ObservableObject {
     private let api: any APIService
-    private let userIDOrHandle: Either<UserID, String>?
+    private let userHandle: String?
     private let feedViewModel: FeedViewModel
     @Published var user: UserProfile?
-    @Published var posts: [PostViewModel] = []
+    @Published private var posts: [PostViewModel] = []
+    @Published var wallMode: WallMode = .allPosts
 
     init(
         api: any APIService,
-        userIDOrHandle: Either<UserID, String>?,
+        userHandle: String?,
         feedViewModel: FeedViewModel,
     ) {
         self.api = api
-        self.userIDOrHandle = userIDOrHandle
+        self.userHandle = userHandle
         self.feedViewModel = feedViewModel
     }
 
@@ -24,21 +25,23 @@ final class UserProfileViewModel: ObservableObject {
     }
 
     func update() async throws {
-        let request: UserProfileRequest
-        switch userIDOrHandle {
-        case .left(let userID)?:
-            request = UserProfileRequest(userID: userID)
-        case .right(let handle)?:
-            request = UserProfileRequest(handle: handle)
-        case nil:
-            return
-        }
+        guard let userHandle else { return }
+        let request = UserProfileRequest(handle: userHandle)
         let result = try await api.send(request)
         withAnimation {
             user = result
             posts = result.posts.map {
                 PostViewModel(api: api, post: $0, feed: feedViewModel)
             }
+        }
+    }
+
+    var filteredPosts: [PostViewModel] {
+        switch wallMode {
+        case .allPosts:
+            return posts
+        case .ownPosts:
+            return posts.filter { $0.header.authorHandle == userHandle }
         }
     }
 }

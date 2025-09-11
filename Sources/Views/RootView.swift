@@ -25,7 +25,7 @@ struct RootView: View {
                     fullName: userFirstName, // TODO
                     viewModel: UserProfileViewModel(
                         api: api,
-                        userIDOrHandle: feedViewModel.currentUserID.map(Either.left),
+                        userHandle: feedViewModel.currentUserHandle,
                         feedViewModel: feedViewModel,
                     )
                 )
@@ -82,19 +82,13 @@ extension View {
         navigationDestinationPolyfill(
             for: UserProfileNavigationItem.self
         ) { item in
-            let isMe = switch item.userIDOrHandle {
-            case .left(let userID):
-                userID == feedViewModel.currentUserID
-            case .right(let handle):
-                handle == feedViewModel.currentUserHandle
-            }
             UserProfileView(
-                isMe: isMe,
+                isMe: item.userHandle == feedViewModel.currentUserHandle,
                 firstName: item.firstName,
                 fullName: item.firstName, // TODO: Use full name
                 viewModel: UserProfileViewModel(
                     api: api,
-                    userIDOrHandle: item.userIDOrHandle,
+                    userHandle: item.userHandle,
                     feedViewModel: feedViewModel,
                 ),
             )

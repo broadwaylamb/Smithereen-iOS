@@ -22,6 +22,30 @@ enum WallSelectorActor {
     }
 }
 
+private struct WallSelectorButton: View {
+    var title: LocalizedStringKey
+    var mode: WallMode
+    @Binding var selectedMode: WallMode
+    var body: some View {
+        Button {
+            selectedMode = mode
+        } label: {
+            Text(title)
+                .font(.callout)
+                .fontWeight(.semibold)
+        }
+        .buttonStyle(.borderless)
+        .padding(.horizontal, 11)
+        .padding(.vertical, 6)
+        .background {
+            if selectedMode == mode {
+                Color(#colorLiteral(red: 0.8902018666, green: 0.8901113868, blue: 0.8988136053, alpha: 1))
+                    .cornerRadius(3)
+            }
+        }
+    }
+}
+
 struct WallSelectorView: View {
     var actor: WallSelectorActor
     @Binding var mode: WallMode
@@ -29,19 +53,12 @@ struct WallSelectorView: View {
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 12) {
-            Button("All posts") {
-                mode = .allPosts
-            }
-            if let buttonTitle = actor.buttonTitle {
-                Button(buttonTitle) {
-                    mode = .ownPosts
-                }
+            WallSelectorButton(title: "All posts", mode: .allPosts, selectedMode: $mode)
+            if let title = actor.buttonTitle {
+                WallSelectorButton(title: title, mode: .ownPosts, selectedMode: $mode)
             }
         }
-        .buttonStyle(.bordered)
-        .buttonBorderShape(.roundedRectangle)
-        .font(.callout)
-        .listRowInsets(EdgeInsets(top: 7, leading: 7, bottom: 7, trailing: 7))
+        .lineLimit(1)
         .tint(palette.profileCounterNumber)
     }
 }
@@ -50,4 +67,5 @@ struct WallSelectorView: View {
 #Preview {
     @Previewable @State var mode = WallMode.allPosts
     WallSelectorView(actor: .me, mode: $mode)
+        .environmentObject(PaletteHolder())
 }

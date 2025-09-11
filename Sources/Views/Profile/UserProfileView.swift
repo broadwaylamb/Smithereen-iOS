@@ -14,8 +14,6 @@ struct UserProfileView: View {
         }
     }
 
-    @State private var wallMode: WallMode = .allPosts
-
     var body: some View {
         List {
             Section {
@@ -62,13 +60,17 @@ struct UserProfileView: View {
                             firstNameGenitive: firstName ?? fullName, // TODO: Use genitive case
                             isSmithereenUser: true // TODO
                         ),
-                    mode: $wallMode,
+                    mode: $viewModel.wallMode,
+                )
+                .padding(.vertical, 8)
+                .listRowInsets(
+                    EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8)
                 )
             } header: {
                 Spacer(minLength: 19)
                     .listRowInsets(EdgeInsets())
             }
-            ForEach(viewModel.posts) { postViewModel in
+            ForEach(viewModel.filteredPosts) { postViewModel in
                 Section {
                     CompactPostView(viewModel: postViewModel)
                         .listRowInsets(
@@ -102,7 +104,7 @@ struct UserProfileView: View {
             fullName: "Boromir",
             viewModel: UserProfileViewModel(
                 api: MockApi(),
-                userIDOrHandle: .left(UserID(rawValue: 1)),
+                userHandle: "boromir",
                 feedViewModel: FeedViewModel(api: MockApi())
             )
         )
