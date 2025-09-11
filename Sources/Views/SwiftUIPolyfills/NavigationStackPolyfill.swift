@@ -353,5 +353,6 @@ extension View {
 
 // Using SwiftUI's NavigationLink may cause the navigation path to fall out of sync.
 // Make sure we don't accidentally use it.
+// periphery:ignore
 @available(*, unavailable, message: "NavigationLink is not supported, use NavigationPath")
 typealias NavigationLink = SwiftUI.NavigationLink

@@ -35,8 +35,6 @@ enum SideMenuValue: Hashable {
 }
 
 private struct SideMenuRow<Label: View>: View {
-    fileprivate var value: SideMenuValue
-    var isModal: Bool
     @Binding var isSelected: Bool
     var label: () -> Label
 
@@ -75,7 +73,7 @@ struct SMSideMenuItem<Content: View, Label: View>: SlideableMenuContent {
     }
 
     func labelView(isSelected: Binding<Bool>) -> some View {
-        SideMenuRow(value: value, isModal: isModal, isSelected: isSelected, label: label)
+        SideMenuRow(isSelected: isSelected, label: label)
     }
 }
 

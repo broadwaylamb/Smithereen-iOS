@@ -4,8 +4,6 @@ struct RootView: View {
     let api: any AuthenticationService & APIService
     @ObservedObject var feedViewModel: FeedViewModel
 
-    @EnvironmentObject private var palette: PaletteHolder
-
     @StateObject private var errorObserver = ErrorObserver()
 
     @ScaledMetric(relativeTo: .body)
