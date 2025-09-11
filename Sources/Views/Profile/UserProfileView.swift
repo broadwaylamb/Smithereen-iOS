@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct UserProfileView: View {
+    var isMe: Bool
     var firstName: String?
     var fullName: String
     @StateObject var viewModel: UserProfileViewModel
@@ -12,6 +13,8 @@ struct UserProfileView: View {
             try await viewModel.update()
         }
     }
+
+    @State private var wallMode: WallMode = .allPosts
 
     var body: some View {
         List {
@@ -50,6 +53,30 @@ struct UserProfileView: View {
                     .listRowInsets(EdgeInsets())
             }
             .listRowSeparatorLeadingInset(0)
+
+            Section {
+                WallSelectorView(
+                    actor: isMe
+                        ? .me
+                        : .user(
+                            firstNameGenitive: firstName ?? fullName, // TODO: Use genitive case
+                            isSmithereenUser: true // TODO
+                        ),
+                    mode: $wallMode,
+                )
+            } header: {
+                Spacer(minLength: 19)
+                    .listRowInsets(EdgeInsets())
+            }
+            ForEach(viewModel.posts) { postViewModel in
+                Section {
+                    CompactPostView(viewModel: postViewModel)
+                        .listRowInsets(
+                            EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
+                        )
+                        .listSectionSeparatorTint(Color(#colorLiteral(red: 0.7843137383, green: 0.7843137383, blue: 0.7843137383, alpha: 1)))
+                }
+            }
         }
         .task {
             await refreshProfile()
@@ -70,11 +97,13 @@ struct UserProfileView: View {
 #Preview {
     NavigationView {
         UserProfileView(
+            isMe: true,
             firstName: "Boromir",
             fullName: "Boromir",
             viewModel: UserProfileViewModel(
                 api: MockApi(),
                 userIDOrHandle: .left(UserID(rawValue: 1)),
+                feedViewModel: FeedViewModel(api: MockApi())
             )
         )
     }

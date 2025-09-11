@@ -9,4 +9,5 @@ struct UserProfile {
     var photoCount: Int = 0
     var videoCount: Int = 0
     var audioCount: Int = 0
+    var posts: [Post]
 }

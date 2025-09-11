@@ -59,22 +59,23 @@ struct MockApi: AuthenticationService, APIService {
         _ request: Request,
         instance: URL?
     ) async throws -> Request.Result {
+        let boromirPost = Post(
+            id: PostID(rawValue: 1),
+            localURL: URL(string: "https://smithereen.local/posts/1")!,
+            authorHandle: "boromir",
+            authorName: "Boromir",
+            date: "five minutes ago",
+            authorProfilePicture: .bundled(.boromirProfilePicture),
+            text: try! PostText(html: "One does not simply walk into mordor."),
+            likeCount: 1013,
+            replyCount: 74,
+            repostCount: 15,
+            liked: true,
+        )
         if request is FeedRequest {
             return FeedResponse(
                 posts: [
-                    Post(
-                        id: PostID(rawValue: 1),
-                        localURL: URL(string: "https://smithereen.local/posts/1")!,
-                        authorHandle: "boromir",
-                        authorName: "Boromir",
-                        date: "five minutes ago",
-                        authorProfilePicture: .bundled(.boromirProfilePicture),
-                        text: try! PostText(html: "One does not simply walk into mordor."),
-                        likeCount: 1013,
-                        replyCount: 74,
-                        repostCount: 15,
-                        liked: true,
-                    ),
+                    boromirPost,
                     Post(
                         id: PostID(rawValue: 2),
                         localURL: URL(string: "https://smithereen.local/posts/2")!,
@@ -116,6 +117,7 @@ struct MockApi: AuthenticationService, APIService {
                     ),
                 ],
                 currentUserID: UserID(rawValue: 1),
+                currentUserHandle: "boromir",
             ) as! Request.Result
         }
         if request is UserProfileRequest {
@@ -127,6 +129,7 @@ struct MockApi: AuthenticationService, APIService {
                 commonFriendCount: 12,
                 followerCount: 100,
                 groupCount: 2,
+                posts: [boromirPost],
             ) as! Request.Result
         }
 

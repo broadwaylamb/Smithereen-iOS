@@ -22,14 +22,21 @@ struct FeedRequest: DecodableRequestProtocol {
             .map(UserID.init)
             ?? UserID(rawValue: -1)
 
+        let userHandle = try document.select("#myProfileLink").attr("href").dropFirst()
+
         let posts = try parsePostList(document)
-        return FeedResponse(posts: posts, currentUserID: userID)
+        return FeedResponse(
+            posts: posts,
+            currentUserID: userID,
+            currentUserHandle: String(userHandle),
+        )
     }
 }
 
 struct FeedResponse {
     var posts: [Post]
     var currentUserID: UserID
+    var currentUserHandle: String
 }
 
 private let userIDRegex =

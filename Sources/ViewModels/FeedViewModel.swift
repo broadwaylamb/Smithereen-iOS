@@ -5,6 +5,7 @@ final class FeedViewModel: ObservableObject {
     private let api: APIService
 
     @Published private(set) var currentUserID: UserID?
+    @Published private(set) var currentUserHandle: String?
     @Published private(set) var posts: [PostViewModel] = []
 
     init(api: APIService) {
@@ -19,6 +20,7 @@ final class FeedViewModel: ObservableObject {
         }
 
         currentUserID = response.currentUserID
+        currentUserHandle = response.currentUserHandle
     }
 
     func addNewPost(_ post: Post) {

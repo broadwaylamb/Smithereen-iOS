@@ -49,6 +49,22 @@
         }
       }
     },
+    "%@'s posts" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Записи %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Записи %@"
+          }
+        }
+      }
+    },
     "%lld" : {
       "comment" : "The number of comments/likes/reposts of a post\nThe number of likes of a post\nThe number of reposts of a post",
       "shouldTranslate" : false
@@ -903,6 +919,22 @@
         }
       }
     },
+    "All posts" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Все записи"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Всі записи"
+          }
+        }
+      }
+    },
     "Appearance" : {
       "localizations" : {
         "ru" : {
@@ -1221,6 +1253,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Увійти"
+          }
+        }
+      }
+    },
+    "My posts" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мои записи"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мої записи"
           }
         }
       }

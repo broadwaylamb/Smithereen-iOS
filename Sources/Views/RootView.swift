@@ -20,14 +20,16 @@ struct RootView: View {
         SMSlideableMenuView {
             SMSideMenuItem(value: .profile) {
                 UserProfileView(
+                    isMe: true,
                     firstName: userFirstName,
                     fullName: userFirstName, // TODO
                     viewModel: UserProfileViewModel(
                         api: api,
                         userIDOrHandle: feedViewModel.currentUserID.map(Either.left),
+                        feedViewModel: feedViewModel,
                     )
                 )
-                .commonNavigationDestinations(api: api)
+                .commonNavigationDestinations(api: api, feedViewModel: feedViewModel)
             } label: {
                 Label {
                     Text(verbatim: userFirstName)
@@ -40,7 +42,7 @@ struct RootView: View {
             SMSideMenuItem("News", icon: .news, value: .news) {
                 FeedView(viewModel: feedViewModel)
                     .navigationTitle("News")
-                    .commonNavigationDestinations(api: api)
+                    .commonNavigationDestinations(api: api, feedViewModel: feedViewModel)
             }
 
             SMSideMenuItem(
@@ -73,16 +75,27 @@ struct RootView: View {
 }
 
 extension View {
-    func commonNavigationDestinations(api: any APIService) -> some View {
+    func commonNavigationDestinations(
+        api: any APIService,
+        feedViewModel: FeedViewModel,
+    ) -> some View {
         navigationDestinationPolyfill(
             for: UserProfileNavigationItem.self
         ) { item in
+            let isMe = switch item.userIDOrHandle {
+            case .left(let userID):
+                userID == feedViewModel.currentUserID
+            case .right(let handle):
+                handle == feedViewModel.currentUserHandle
+            }
             UserProfileView(
+                isMe: isMe,
                 firstName: item.firstName,
                 fullName: item.firstName, // TODO: Use full name
                 viewModel: UserProfileViewModel(
                     api: api,
                     userIDOrHandle: item.userIDOrHandle,
+                    feedViewModel: feedViewModel,
                 ),
             )
         }
