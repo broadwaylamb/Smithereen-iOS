@@ -81,7 +81,7 @@ struct UserProfileView: View {
                     EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8)
                 )
             } header: {
-                Spacer(minLength: 19)
+                Color.clear.frame(height: 19)
                     .listRowInsets(EdgeInsets())
             }
             ForEach(viewModel.filteredPosts) { postViewModel in
