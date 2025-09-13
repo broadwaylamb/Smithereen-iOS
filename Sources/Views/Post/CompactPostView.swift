@@ -64,7 +64,7 @@ struct CompactPostView: View {
         }
         .background(Color.white)
         .colorScheme(.light)
-        .openURLsInBuiltInBrowser()
+        .openLinks()
         .draggableAsURL(viewModel.originalPostURL)
     }
 }

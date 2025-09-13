@@ -2,8 +2,8 @@ import SwiftUI
 
 struct UserProfileView: View {
     var isMe: Bool
-    var firstName: String?
-    var fullName: String
+    var initialFirstName: String?
+    var initialFullName: String
     @StateObject var viewModel: UserProfileViewModel
 
     @EnvironmentObject private var errorObserver: ErrorObserver
@@ -12,6 +12,20 @@ struct UserProfileView: View {
         await errorObserver.runCatching {
             try await viewModel.update()
         }
+    }
+
+    private var firstName: String {
+        viewModel.user?.fullName // TODO: User actual first name
+            ?? initialFirstName
+            ?? initialFullName
+    }
+
+    private var firstNameGenitive: String {
+        firstName // TODO: Use actual first name in the genitive case
+    }
+
+    private var fullName: String {
+        viewModel.user?.fullName ?? initialFullName
     }
 
     var body: some View {
@@ -57,7 +71,7 @@ struct UserProfileView: View {
                     actor: isMe
                         ? .me
                         : .user(
-                            firstNameGenitive: firstName ?? fullName, // TODO: Use genitive case
+                            firstNameGenitive: firstNameGenitive,
                             isSmithereenUser: true // TODO
                         ),
                     mode: $viewModel.wallMode,
@@ -91,7 +105,7 @@ struct UserProfileView: View {
         .listSectionSpacingPolyfill(0)
         .environment(\.defaultMinListHeaderHeight, 0)
         .colorScheme(.light)
-        .navigationTitle(Text(verbatim: firstName ?? fullName))
+        .navigationTitle(Text(verbatim: firstName))
         .navigationBarStyleSmithereen()
     }
 }
@@ -100,8 +114,8 @@ struct UserProfileView: View {
     NavigationView {
         UserProfileView(
             isMe: true,
-            firstName: "Boromir",
-            fullName: "Boromir",
+            initialFirstName: "Boromir",
+            initialFullName: "Boromir",
             viewModel: UserProfileViewModel(
                 api: MockApi(),
                 userHandle: "boromir",
