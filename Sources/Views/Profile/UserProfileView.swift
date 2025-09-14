@@ -74,7 +74,7 @@ struct UserProfileView: View {
                             firstNameGenitive: firstNameGenitive,
                             supportsWalls: true // TODO
                         ),
-                    mode: $viewModel.wallMode,
+                    selectedMode: $viewModel.wallMode,
                 )
                 .padding(.vertical, 8)
                 .listRowInsets(
