@@ -90,7 +90,11 @@ extension View {
 extension View {
     // periphery:ignore
     func debugBorder(_ color: Color = .red) -> some View {
+#if DEBUG
         border(color)
+#else
+        self
+#endif
     }
 }
 
