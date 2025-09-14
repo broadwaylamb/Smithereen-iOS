@@ -1,5 +1,5 @@
 {
-  "originHash" : "7d309f1f2a48745a8ce95247b41a040cdfc887119c749850afe110f0ccb8f37f",
+  "originHash" : "89a708720b4da02c013dfdecd489e7e51b980632f8c51d0c55e002092acc0a83",
   "pins" : [
     {
       "identity" : "hammond",
@@ -22,10 +22,9 @@
     {
       "identity" : "placement",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/sampettersson/Placement.git",
+      "location" : "https://github.com/broadwaylamb/Placement.git",
       "state" : {
-        "revision" : "792ec6847951f991486cd5d8c5a203666abea334",
-        "version" : "1.8.0"
+        "revision" : "11feb0858f530e0ebfebf6b83bbbadd78148efb5"
       }
     },
     {

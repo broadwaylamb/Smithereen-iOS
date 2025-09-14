@@ -674,10 +674,10 @@
 		};
 		8787F0512E32B89600D2715A /* XCRemoteSwiftPackageReference "Placement" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sampettersson/Placement.git";
+			repositoryURL = "https://github.com/broadwaylamb/Placement.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.8.0;
+				kind = revision;
+				revision = 11feb0858f530e0ebfebf6b83bbbadd78148efb5;
 			};
 		};
 		8793F4442E63619400662021 /* XCRemoteSwiftPackageReference "SlideableMenu" */ = {
