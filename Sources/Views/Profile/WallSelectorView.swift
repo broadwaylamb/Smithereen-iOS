@@ -1,3 +1,4 @@
+import Placement
 import SwiftUI
 
 enum WallMode {
@@ -7,19 +8,8 @@ enum WallMode {
 
 enum WallSelectorActor {
     case me
-    case user(firstNameGenitive: String, isSmithereenUser: Bool)
+    case user(firstNameGenitive: String, supportsWalls: Bool)
     case group
-
-    var buttonTitle: LocalizedStringKey? {
-        switch self {
-        case .me:
-            return "My posts"
-        case .user(firstNameGenitive: _, isSmithereenUser: false), .group:
-            return nil
-        case .user(let firstNameGenitive, isSmithereenUser: true):
-            return "\(firstNameGenitive)'s posts"
-        }
-    }
 }
 
 private struct WallSelectorButton: View {
@@ -52,10 +42,60 @@ struct WallSelectorView: View {
     @EnvironmentObject private var palette: PaletteHolder
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 12) {
-            WallSelectorButton(title: "All posts", mode: .allPosts, selectedMode: $mode)
-            if let title = actor.buttonTitle {
-                WallSelectorButton(title: title, mode: .ownPosts, selectedMode: $mode)
+        HStack(spacing: 12) {
+            switch actor {
+            case .me:
+                WallSelectorButton(
+                    title: "All posts",
+                    mode: .allPosts,
+                    selectedMode: $mode,
+                )
+                WallSelectorButton(
+                    title: "My posts",
+                    mode: .ownPosts,
+                    selectedMode: $mode,
+                )
+            case .user(let firstNameGenitive, supportsWalls: true):
+                WallSelectorButton(
+                    title: "All posts",
+                    mode: .allPosts,
+                    selectedMode: $mode,
+                )
+                PlacementThatFits(in: .horizontal) {
+                    // If the name is too long and doesn't fit, don't truncate it,
+                    // don't use the name at all instead.
+                    WallSelectorButton(
+                        title: "\(firstNameGenitive)'s posts",
+                        mode: .ownPosts,
+                        selectedMode: $mode,
+                    )
+                    WallSelectorButton(
+                        title: "Own posts",
+                        mode: .ownPosts,
+                        selectedMode: $mode
+                    )
+                }
+            case .user(let firstNameGenitive, supportsWalls: false):
+                PlacementThatFits(in: .horizontal) {
+                    // If the name is too long and doesn't fit, don't truncate it,
+                    // don't use the name at all instead.
+                    WallSelectorButton(
+                        title: "\(firstNameGenitive)'s posts",
+                        mode: .allPosts,
+                        selectedMode: $mode,
+                    )
+                    WallSelectorButton(
+                        title: "All posts",
+                        mode: .allPosts,
+                        selectedMode: $mode
+                    )
+                }
+            case .group:
+                WallSelectorButton(
+                    title: "All posts",
+                    mode: .allPosts,
+                    selectedMode: $mode,
+                )
             }
         }
         .lineLimit(1)
@@ -64,8 +104,11 @@ struct WallSelectorView: View {
 }
 
 @available(iOS 17.0, *)
-#Preview {
+#Preview(traits: .sizeThatFitsLayout) {
     @Previewable @State var mode = WallMode.allPosts
-    WallSelectorView(actor: .me, mode: $mode)
-        .environmentObject(PaletteHolder())
+    WallSelectorView(
+        actor: .user(firstNameGenitive: "Boromir", supportsWalls: true),
+        mode: $mode,
+    )
+    .environmentObject(PaletteHolder())
 }

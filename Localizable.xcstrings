@@ -50,6 +50,7 @@
       }
     },
     "%@'s posts" : {
+      "comment" : "Wall mode selector. Shows only user's own posts on their wall. When the name is too long, \"Own posts\" is used instead.",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
@@ -920,6 +921,7 @@
       }
     },
     "All posts" : {
+      "comment" : "Wall mode selector. Shows all the posts on the user's wall.",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
@@ -1349,6 +1351,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "відкрита група"
+          }
+        }
+      }
+    },
+    "Own posts" : {
+      "comment" : "Wall mode selector. Shows only user's own posts on their wall. When the name is not too long, \"%@'s posts\" is used instead.",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Только свои"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тільки свої"
           }
         }
       }

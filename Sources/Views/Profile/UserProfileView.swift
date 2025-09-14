@@ -72,7 +72,7 @@ struct UserProfileView: View {
                         ? .me
                         : .user(
                             firstNameGenitive: firstNameGenitive,
-                            isSmithereenUser: true // TODO
+                            supportsWalls: true // TODO
                         ),
                     mode: $viewModel.wallMode,
                 )
