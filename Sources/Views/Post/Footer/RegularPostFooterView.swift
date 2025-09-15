@@ -8,30 +8,22 @@ struct RegularPostFooterView: View {
     @EnvironmentObject private var errorObserver: ErrorObserver
     @State private var composeRepostIsShown = false
 
-    private var commentButtonText: Text {
-        if viewModel.commentCount == 0 {
-            Text(
-                "Comment",
-                comment: "A button when there are no comments in a post; imperative.",
-            )
-        } else {
-            Text(
-                "\(viewModel.commentCount) comments",
-                comment: "The number of comments of a post",
-            )
-        }
-    }
-
     var body: some View {
         HStack(spacing: 0) {
             Button(action: { /* TODO */ }) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Image(.commentOutline)
                         .alignmentGuide(.firstTextBaseline) { $0.height - 4 }
-                    commentButtonText
-                        .contentTransitionIfAvailable(
-                            .numericText(value: Double(viewModel.commentCount))
-                        )
+                    Text(
+                        "\(viewModel.commentCount) comments",
+                        comment: """
+                        The number of comments of a post. \
+                        If the number is 0, should be imperative
+                        """,
+                    )
+                    .contentTransitionIfAvailable(
+                        .numericText(value: Double(viewModel.commentCount))
+                    )
                 }
                 .padding(.horizontal, 15)
                 .padding(.vertical, 14)

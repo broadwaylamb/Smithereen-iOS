@@ -180,7 +180,7 @@
       }
     },
     "%lld comments" : {
-      "comment" : "The number of comments of a post",
+      "comment" : "The number of comments of a post. If the number is 0, should be imperative",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -195,6 +195,12 @@
                 "stringUnit" : {
                   "state" : "new",
                   "value" : "%lld comments"
+                }
+              },
+              "zero" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Comment"
                 }
               }
             }
@@ -220,6 +226,12 @@
                   "state" : "translated",
                   "value" : "%lld комментариев"
                 }
+              },
+              "zero" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Комментировать"
+                }
               }
             }
           }
@@ -243,6 +255,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld коментарів"
+                }
+              },
+              "zero" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Коментувати"
                 }
               }
             }
@@ -1017,23 +1035,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Колірна тема"
-          }
-        }
-      }
-    },
-    "Comment" : {
-      "comment" : "A button when there are no comments in a post; imperative.",
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Комментировать"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Коментувати"
           }
         }
       }
