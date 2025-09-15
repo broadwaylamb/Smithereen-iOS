@@ -29,6 +29,9 @@ struct RegularPostFooterView: View {
                     Image(.commentOutline)
                         .alignmentGuide(.firstTextBaseline) { $0.height - 4 }
                     commentButtonText
+                        .contentTransitionIfAvailable(
+                            .numericText(value: Double(viewModel.commentCount))
+                        )
                 }
                 .padding(.horizontal, 15)
                 .padding(.vertical, 14)
@@ -50,6 +53,9 @@ struct RegularPostFooterView: View {
                                 comment: "The number of reposts of a post"
                             )
                             .fontWeight(.semibold)
+                            .contentTransitionIfAvailable(
+                                .numericText(value: Double(viewModel.repostCount))
+                            )
                         }
                     }
                     .padding(.horizontal, 15)
@@ -67,6 +73,9 @@ struct RegularPostFooterView: View {
                                 comment: "The number of likes of a post"
                             )
                             .fontWeight(.semibold)
+                            .contentTransitionIfAvailable(
+                                .numericText(value: Double(viewModel.likeCount))
+                            )
                         }
                     }
                     .padding(.horizontal, 15)

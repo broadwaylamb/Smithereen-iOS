@@ -113,3 +113,30 @@ extension View {
         }
     }
 }
+
+struct ContentTransitionPolyfill {
+    fileprivate var transition: () -> Any?
+
+    static func numericText(value: Double) -> ContentTransitionPolyfill {
+        ContentTransitionPolyfill {
+            return if #available(iOS 17.0, *) {
+                ContentTransition.numericText(value: value)
+            } else {
+                nil
+            }
+        }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func contentTransitionIfAvailable(
+        _ transition: ContentTransitionPolyfill,
+    ) -> some View {
+        if #available(iOS 16.0, *), let transition = transition.transition() {
+            contentTransition(transition as! ContentTransition)
+        } else {
+            self
+        }
+    }
+}

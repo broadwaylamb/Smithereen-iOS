@@ -73,6 +73,7 @@ private struct CompactPostFooterButton<Image: View>: View {
                         comment: "The number of comments/likes/reposts of a post"
                     )
                     .fontWeight(.bold)
+                    .contentTransitionIfAvailable(.numericText(value: Double(count)))
                 }
             }
         }
