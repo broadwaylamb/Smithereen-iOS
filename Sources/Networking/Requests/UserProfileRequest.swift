@@ -1,5 +1,6 @@
 import Hammond
 import SwiftSoup
+import SmithereenAPI
 
 struct UserProfileRequest: DecodableRequestProtocol {
     let path: String

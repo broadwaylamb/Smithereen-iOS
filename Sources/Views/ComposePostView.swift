@@ -1,4 +1,5 @@
 import SwiftUI
+import SmithereenAPI
 
 struct ComposePostView: View {
     var titleKey: LocalizedStringKey

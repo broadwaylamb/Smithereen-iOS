@@ -2,6 +2,7 @@ import Foundation
 import Hammond
 import HammondMacros
 import SwiftSoup
+import SmithereenAPI
 
 @GET("/feed")
 @EncodableRequest
@@ -19,9 +20,9 @@ struct FeedRequest: DecodableRequestProtocol {
             .flatMap {
                 userIDRegex.firstMatch(in: $0, captureGroup: 1)
             }
-            .flatMap { Int($0) }
+            .flatMap { UInt32($0) }
             .map(UserID.init)
-            ?? UserID(rawValue: -1)
+            ?? UserID(rawValue: 0)
 
         let userHandle = try document.select("#myProfileLink").attr("href").dropFirst()
 

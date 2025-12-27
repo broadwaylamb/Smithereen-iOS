@@ -1,5 +1,6 @@
 import Foundation
 import SwiftSoup
+import SmithereenAPI
 
 private let blurHashRegex =
     try! NSRegularExpression(pattern: #"background-color: #([a-fA-F0-9]{6})"#)
@@ -52,8 +53,8 @@ private func parseSinglePost(
               .absoluteString
               .components(separatedBy: "posts/")
               .last
-              .flatMap(Int.init)
-              .map(PostID.init)
+              .flatMap(UInt64.init)
+              .map(WallPostID.init)
     else {
         return nil
     }

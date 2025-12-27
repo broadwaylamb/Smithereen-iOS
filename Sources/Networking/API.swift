@@ -3,6 +3,7 @@ import Foundation
 import Hammond
 import HammondEncoders
 import SwiftSoup
+import SmithereenAPI
 
 enum AuthenticationError: LocalizedError {
     case instanceNotFound(String)
@@ -61,7 +62,7 @@ struct MockApi: AuthenticationService, APIService {
         instance: URL?
     ) async throws -> Request.Result {
         let boromirPost = Post(
-            id: PostID(rawValue: 1),
+            id: WallPostID(rawValue: 1),
             localURL: URL(string: "https://smithereen.local/posts/1")!,
             authorHandle: "boromir",
             authorName: "Boromir",
@@ -78,7 +79,7 @@ struct MockApi: AuthenticationService, APIService {
                 posts: [
                     boromirPost,
                     Post(
-                        id: PostID(rawValue: 2),
+                        id: WallPostID(rawValue: 2),
                         localURL: URL(string: "https://smithereen.local/posts/2")!,
                         authorHandle: "rms",
                         authorName: "Richard Stallman",

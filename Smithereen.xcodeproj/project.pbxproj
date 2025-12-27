@@ -36,6 +36,7 @@
 		87B5CEE82E1732C900ADFA70 /* Hammond in Frameworks */ = {isa = PBXBuildFile; productRef = 87B5CEE72E1732C900ADFA70 /* Hammond */; };
 		87D345AA2F00167E00CD09FF /* HammondEncoders in Frameworks */ = {isa = PBXBuildFile; productRef = 87D345A92F00167E00CD09FF /* HammondEncoders */; };
 		87D345AC2F0016F900CD09FF /* HammondMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 87D345AB2F0016F900CD09FF /* HammondMacros */; };
+		87D346562F002A0600CD09FF /* SmithereenAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 87D346552F002A0600CD09FF /* SmithereenAPI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,6 +98,7 @@
 				876659422DC8E76E00D62CCA /* SwiftUIIntrospect in Frameworks */,
 				876659742DC920E200D62CCA /* SwiftSoup in Frameworks */,
 				87B5CEE82E1732C900ADFA70 /* Hammond in Frameworks */,
+				87D346562F002A0600CD09FF /* SmithereenAPI in Frameworks */,
 				8755183A2E11B03B006EDF63 /* Hammond in Frameworks */,
 				87D345AA2F00167E00CD09FF /* HammondEncoders in Frameworks */,
 				87D345AC2F0016F900CD09FF /* HammondMacros in Frameworks */,
@@ -178,6 +180,7 @@
 				8793F4452E63619400662021 /* SlideableMenu */,
 				87D345A92F00167E00CD09FF /* HammondEncoders */,
 				87D345AB2F0016F900CD09FF /* HammondMacros */,
+				87D346552F002A0600CD09FF /* SmithereenAPI */,
 			);
 			productName = Smithereen;
 			productReference = 01E20ABA2DB7926D00CC0EBE /* Smithereen.app */;
@@ -252,6 +255,7 @@
 				87864EDD2E28520600D8ACE0 /* XCRemoteSwiftPackageReference "MediaGridLayout" */,
 				8787F0512E32B89600D2715A /* XCRemoteSwiftPackageReference "Placement" */,
 				8793F4442E63619400662021 /* XCRemoteSwiftPackageReference "SlideableMenu" */,
+				87D346542F002A0600CD09FF /* XCRemoteSwiftPackageReference "smithereen-api-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 01E20ABB2DB7926D00CC0EBE /* Products */;
@@ -712,7 +716,15 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/broadwaylamb/Hammond.git";
 			requirement = {
-				branch = master;
+				branch = d94c1c0adef230a0cd29ab0803e499c9d03830de;
+				kind = branch;
+			};
+		};
+		87D346542F002A0600CD09FF /* XCRemoteSwiftPackageReference "smithereen-api-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/broadwaylamb/smithereen-api-swift.git";
+			requirement = {
+				branch = main;
 				kind = branch;
 			};
 		};
@@ -782,6 +794,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 87B5CEE62E1732C900ADFA70 /* XCRemoteSwiftPackageReference "Hammond" */;
 			productName = HammondMacros;
+		};
+		87D346552F002A0600CD09FF /* SmithereenAPI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 87D346542F002A0600CD09FF /* XCRemoteSwiftPackageReference "smithereen-api-swift" */;
+			productName = SmithereenAPI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

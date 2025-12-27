@@ -1,8 +1,9 @@
 import Foundation
+import SmithereenAPI
 import SwiftSoup
 
 struct PostHeader: Equatable {
-    var id: PostID
+    var id: WallPostID
     var localURL: URL
     var remoteInstanceLink: URL?
     var authorHandle: String
@@ -24,7 +25,7 @@ struct Post: Equatable, Sendable {
 
 extension Post {
     init(
-        id: PostID,
+        id: WallPostID,
         localURL: URL,
         remoteInstanceLink: URL? = nil,
         authorHandle: String,
@@ -64,7 +65,7 @@ struct Repost: Identifiable, Equatable {
     var isMastodonStyleRepost: Bool
     var attachments: [PostAttachment] = []
 
-    var id: PostID { header.id }
+    var id: WallPostID { header.id }
 
     var hasContent: Bool {
         !text.isEmpty && !attachments.isEmpty

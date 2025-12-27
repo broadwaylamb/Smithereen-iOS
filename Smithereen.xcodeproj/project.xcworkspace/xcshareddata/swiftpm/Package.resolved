@@ -1,12 +1,11 @@
 {
-  "originHash" : "89a708720b4da02c013dfdecd489e7e51b980632f8c51d0c55e002092acc0a83",
+  "originHash" : "edf580564264bfaf8ed565cc5716b9c521f37cbf1404ed34630fa5d89fcbd839",
   "pins" : [
     {
       "identity" : "hammond",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/broadwaylamb/Hammond.git",
       "state" : {
-        "branch" : "master",
         "revision" : "d94c1c0adef230a0cd29ab0803e499c9d03830de"
       }
     },
@@ -43,6 +42,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "a61c442fa8a7ff2bf4e3999291defaa58bb79282"
+      }
+    },
+    {
+      "identity" : "smithereen-api-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/broadwaylamb/smithereen-api-swift.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "60c191e06ba745983b3813ecffb737d2e8c07178"
       }
     },
     {

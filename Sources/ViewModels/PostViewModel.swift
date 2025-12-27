@@ -1,8 +1,9 @@
 import SwiftUI
+import SmithereenAPI
 
 @MainActor
 final class PostViewModel: ObservableObject, Identifiable {
-    let id: PostID
+    let id: WallPostID
     let api: any APIService
     private var post: Post
 

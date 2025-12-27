@@ -1,6 +1,7 @@
 import Foundation
 import Hammond
 import HammondMacros
+import SmithereenAPI
 
 @GET("/posts/{postID}/like")
 @EncodableRequest
@@ -10,7 +11,7 @@ struct LikeRequest: DecodableRequestProtocol, RequiresCSRF {
 
     static let accept: ContentType = .application.json
 
-    var postID: PostID
+    var postID: WallPostID
     @Query(key: "_ajax") private let ajax: Int = 1
 }
 
@@ -22,7 +23,7 @@ struct UnlikeRequest: DecodableRequestProtocol, RequiresCSRF {
 
     static let accept: ContentType = .application.json
 
-    var postID: PostID
+    var postID: WallPostID
     @Query(key: "_ajax") private let ajax: Int = 1
 }
 

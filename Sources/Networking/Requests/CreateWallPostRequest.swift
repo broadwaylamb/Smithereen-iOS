@@ -2,6 +2,7 @@ import Foundation
 import Hammond
 import HammondMacros
 import SwiftSoup
+import SmithereenAPI
 
 @POST("/users/{userID}/createWallPost")
 @EncodableRequest
@@ -13,7 +14,7 @@ struct CreateWallPostRequest: DecodableRequestProtocol, RequiresCSRF {
 
     var text: String
     var userID: UserID
-    var repost: PostID?
+    var repost: WallPostID?
 
     private let replyTo: String = ""
     private let attachments: String = ""

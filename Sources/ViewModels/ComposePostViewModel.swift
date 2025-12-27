@@ -1,4 +1,5 @@
 import SwiftUI
+import SmithereenAPI
 
 @MainActor
 final class ComposePostViewModel: ObservableObject {
