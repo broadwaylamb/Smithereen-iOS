@@ -40,6 +40,10 @@ protocol APIService: Sendable {
         _ request: Request,
         instance: URL?,
     ) async throws -> Request.Result
+
+    func invokeMethod<Method: SmithereenAPIRequest & Sendable>(
+        _ method: Method
+    ) async throws -> Method.Result
 }
 
 extension APIService {
@@ -137,6 +141,12 @@ struct MockApi: AuthenticationService, APIService {
 
         fatalError("No mock data for this request")
     }
+
+    func invokeMethod<Method: SmithereenAPIRequest>(
+        _ method: Method
+    ) async throws -> Method.Result {
+        fatalError("Not implemented yet")
+    }
 }
 
 private final class MyUrlSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
@@ -201,6 +211,21 @@ final class AuthenticationState: ObservableObject {
     @MainActor
     func setAuthenticated(instance: URL?) {
         self.authenticatedInstance = instance
+    }
+}
+
+actor RealAPIService: APIService {
+    func send<Request: DecodableRequestProtocol>(
+        _ request: Request,
+        instance: URL?
+    ) async throws -> Request.Result {
+        fatalError("Not supported")
+    }
+
+    func invokeMethod<Method: SmithereenAPIRequest>(
+        _ method: Method
+    ) async throws -> Method.Result {
+        fatalError("Not implemented yet")
     }
 }
 
@@ -308,6 +333,12 @@ actor HTMLScrapingApi: AuthenticationService, APIService {
         } else {
             fatalError("Unsupported request body type")
         }
+    }
+
+    func invokeMethod<Method: SmithereenAPIRequest>(
+        _ method: Method,
+    ) async throws -> Method.Result {
+        fatalError("Not supported")
     }
 
     private struct ResponseAdapter<Body>: ResponseProtocol {

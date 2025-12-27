@@ -55,22 +55,37 @@ final class ComposePostViewModel: ObservableObject {
         setActivityIndicator(true)
         Task {
             await errorObserver.runCatching {
-                let response: CreateWallPostResponse
                 do {
-                     response = try await api
-                        .send(
-                            CreateWallPostRequest(
-                                text: text,
-                                userID: userID,
-                                repost: repostedPost?.id
+                    let newPostID = if let repostedPost {
+                        try await api.invokeMethod(
+                            Wall.Repost(
+                                postID: repostedPost.id,
+                                message: text,
+                                textFormat: .plain,
+                                attachments: nil, // TODO: Support attachments
+                                contentWarning: nil, // TODO: Support content warnings
+                                guid: nil // FIXME: Pass GUID
                             )
                         )
+                    } else {
+                        try await api.invokeMethod(
+                            Wall.Post(
+                                ownerID: ActorID(userID), // TODO: Support posts on group walls
+                                message: text,
+                                textFormat: .plain,
+                                attachments: nil, // TODO: Support attachments
+                                contentWarning: nil, // TODO: Support content warnings
+                                guid: nil, // FIXME: Pass GUID
+                            )
+                        )
+                    }
+                    _ = newPostID
                 } catch {
                     await setActivityIndicator(false)
                     throw error
                 }
                 // TODO: If this is a repost, update the repost count (#18)
-                await done(response.newPost)
+                await done(nil)
             }
         }
     }
