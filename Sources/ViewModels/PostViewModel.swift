@@ -69,12 +69,16 @@ final class PostViewModel: ObservableObject, Identifiable {
 
         Task {
             do {
-                let response = if liked {
-                    try await api.send(LikeRequest(postID: post.header.id))
+                let newLikeCount = if liked {
+                    try await api.invokeMethod(
+                        Likes.Add(itemID: .post(post.header.id))
+                    ).likes
                 } else {
-                    try await api.send(UnlikeRequest(postID: post.header.id))
+                    try await api.invokeMethod(
+                        Likes.Delete(itemID: .post(post.header.id))
+                    ).likes
                 }
-                if let newLikeCount = response.newLikeCount, newLikeCount != likeCount {
+                if newLikeCount != likeCount {
                     withLikeAnimation {
                         likeCount = newLikeCount
                     }
