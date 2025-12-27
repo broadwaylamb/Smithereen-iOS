@@ -1,5 +1,6 @@
 import Foundation
 import Hammond
+import HammondMacros
 import SwiftSoup
 
 @GET("/feed")
@@ -8,7 +9,7 @@ struct FeedRequest: DecodableRequestProtocol {
     @Query var start: Int?
     @Query var offset: Int?
 
-    static func deserializeResult(from document: Document) throws -> FeedResponse {
+    func deserializeResult(from document: Document) throws -> FeedResponse {
         let createWallPostURL = try document
             .select("#wallPostFormForm_feed")
             .first()?

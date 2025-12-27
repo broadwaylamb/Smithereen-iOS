@@ -1,5 +1,6 @@
 import Foundation
 import Hammond
+import HammondMacros
 
 @GET("/posts/{postID}/like")
 @EncodableRequest

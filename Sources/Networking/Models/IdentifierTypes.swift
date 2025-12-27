@@ -1,4 +1,5 @@
 import Hammond
+import HammondMacros
 
 @Newtype<Int>
 struct PostID {}

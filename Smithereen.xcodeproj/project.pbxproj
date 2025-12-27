@@ -34,6 +34,8 @@
 		8793F4462E63619400662021 /* SlideableMenu in Frameworks */ = {isa = PBXBuildFile; productRef = 8793F4452E63619400662021 /* SlideableMenu */; };
 		87B0C99B2DC41A4200D5DB87 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 87B0C99A2DC41A4200D5DB87 /* Prefire */; };
 		87B5CEE82E1732C900ADFA70 /* Hammond in Frameworks */ = {isa = PBXBuildFile; productRef = 87B5CEE72E1732C900ADFA70 /* Hammond */; };
+		87D345AA2F00167E00CD09FF /* HammondEncoders in Frameworks */ = {isa = PBXBuildFile; productRef = 87D345A92F00167E00CD09FF /* HammondEncoders */; };
+		87D345AC2F0016F900CD09FF /* HammondMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 87D345AB2F0016F900CD09FF /* HammondMacros */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,6 +98,8 @@
 				876659742DC920E200D62CCA /* SwiftSoup in Frameworks */,
 				87B5CEE82E1732C900ADFA70 /* Hammond in Frameworks */,
 				8755183A2E11B03B006EDF63 /* Hammond in Frameworks */,
+				87D345AA2F00167E00CD09FF /* HammondEncoders in Frameworks */,
+				87D345AC2F0016F900CD09FF /* HammondMacros in Frameworks */,
 				8787F0532E32B89600D2715A /* Placement in Frameworks */,
 				87864EDF2E28520600D8ACE0 /* MediaGridLayout in Frameworks */,
 				8793F4462E63619400662021 /* SlideableMenu in Frameworks */,
@@ -172,6 +176,8 @@
 				87864EDE2E28520600D8ACE0 /* MediaGridLayout */,
 				8787F0522E32B89600D2715A /* Placement */,
 				8793F4452E63619400662021 /* SlideableMenu */,
+				87D345A92F00167E00CD09FF /* HammondEncoders */,
+				87D345AB2F0016F900CD09FF /* HammondMacros */,
 			);
 			productName = Smithereen;
 			productReference = 01E20ABA2DB7926D00CC0EBE /* Smithereen.app */;
@@ -766,6 +772,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 87B5CEE62E1732C900ADFA70 /* XCRemoteSwiftPackageReference "Hammond" */;
 			productName = Hammond;
+		};
+		87D345A92F00167E00CD09FF /* HammondEncoders */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 87B5CEE62E1732C900ADFA70 /* XCRemoteSwiftPackageReference "Hammond" */;
+			productName = HammondEncoders;
+		};
+		87D345AB2F0016F900CD09FF /* HammondMacros */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 87B5CEE62E1732C900ADFA70 /* XCRemoteSwiftPackageReference "Hammond" */;
+			productName = HammondMacros;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -14,7 +14,7 @@ struct UserProfileRequest: DecodableRequestProtocol {
 
     static var method: HTTPMethod { .get }
 
-    static func deserializeResult(from document: Document) throws -> UserProfile {
+    func deserializeResult(from document: Document) throws -> UserProfile {
         let fullName = try document.select("div.profileName").text()
         let presence = try? document.select("div.profilePresence").first()?.text()
 

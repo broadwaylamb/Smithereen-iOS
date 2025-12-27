@@ -1,5 +1,6 @@
 import Foundation
 import Hammond
+import HammondMacros
 import SwiftSoup
 
 @POST("/users/{userID}/createWallPost")
@@ -29,6 +30,6 @@ struct CreateWallPostResponse: Decodable {
         }
         guard let html = try? container?.decodeIfPresent(Command.self)?.c else { return }
         guard let document = try? SwiftSoup.parse(html) else { return }
-        newPost = try? FeedRequest.deserializeResult(from: document).posts.first
+        newPost = try? FeedRequest().deserializeResult(from: document).posts.first
     }
 }

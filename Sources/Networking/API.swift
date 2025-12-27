@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 import Hammond
+import HammondEncoders
 import SwiftSoup
 
 enum AuthenticationError: LocalizedError {
@@ -289,7 +290,7 @@ actor HTMLScrapingApi: AuthenticationService, APIService {
 
             saveCSRF(document)
 
-            return try Request
+            return try request
                 .extractResult(
                     from: ResponseAdapter(
                         statusCode: urlResponse.statusCode,
@@ -297,7 +298,7 @@ actor HTMLScrapingApi: AuthenticationService, APIService {
                     )
                 )
         } else if Request.ResponseBody.self == Data.self {
-            return try Request.extractResult(
+            return try request.extractResult(
                 from: ResponseAdapter(
                     statusCode: urlResponse.statusCode,
                     body: data as! Request.ResponseBody

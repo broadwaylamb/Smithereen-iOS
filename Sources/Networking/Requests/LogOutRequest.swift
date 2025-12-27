@@ -1,4 +1,5 @@
 import Hammond
+import HammondMacros
 import SwiftSoup
 
 @GET("/account/logout")
