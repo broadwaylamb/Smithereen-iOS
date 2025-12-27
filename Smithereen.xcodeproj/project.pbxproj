@@ -665,7 +665,7 @@
 			repositoryURL = "https://github.com/siteline/swiftui-introspect";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.3.0;
+				minimumVersion = 26.0.0;
 			};
 		};
 		876659722DC920E200D62CCA /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
