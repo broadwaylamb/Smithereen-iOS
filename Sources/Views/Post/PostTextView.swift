@@ -1,5 +1,6 @@
 import SwiftSoup
 import SwiftUI
+import SmithereenAPI
 
 struct PostTextView: View {
     var blocks: [PostTextBlock]
@@ -199,7 +200,7 @@ extension AttributedString {
 @available(iOS 17.0, *)
 #Preview("Basic", traits: .sizeThatFitsLayout) {
     PostTextView(
-        try! PostText(
+        PostText(
             html: """
             <p>
                 First paragraph, with <b>bold</b>, <i>italic</i>, <u>underlined</u>,

@@ -1,6 +1,7 @@
 import Foundation
 import Hammond
 import SwiftUI
+import SmithereenAPI
 
 struct AnyLocalizedError: LocalizedError {
     let error: Error
@@ -96,3 +97,14 @@ extension String {
         Int(String(filter { $0.isNumber }))
     }
 }
+
+extension User {
+    var nameComponents: PersonNameComponents {
+        PersonNameComponents(
+            givenName: firstName,
+            middleName: nickname,
+            familyName: lastName,
+        )
+    }
+}
+

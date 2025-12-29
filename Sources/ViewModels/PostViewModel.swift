@@ -5,7 +5,7 @@ import SmithereenAPI
 final class PostViewModel: ObservableObject, Identifiable {
     let id: WallPostID
     let api: any APIService
-    private var post: Post
+    private(set) var post: WallPost
 
     // Needed so that we could push a repost of this post to it, thus updating the feed immediately
     private weak var feedViewModel: FeedViewModel?
@@ -15,44 +15,78 @@ final class PostViewModel: ObservableObject, Identifiable {
     @Published var likeCount: Int = 0
     @Published var liked: Bool = false
 
-    init(api: any APIService, post: Post, feed: FeedViewModel) {
-        self.id = post.header.id
+    init(api: any APIService, post: WallPost, feed: FeedViewModel) {
+        self.id = post.id
         self.api = api
         self.post = post
         self.feedViewModel = feed
         update(from: post)
     }
 
-    func update(from post: Post) {
+    @available(*, deprecated)
+    convenience init(api: any APIService, post: Post, feed: FeedViewModel) {
+        fatalError("To be removed")
+    }
+
+    func update(from post: WallPost) {
         self.post = post
-        commentCount = post.replyCount
-        repostCount = post.repostCount
-        likeCount = post.likeCount
-        liked = post.liked
+        commentCount = post.comments?.count ?? 0
+        repostCount = post.reposts?.count ?? 0
+        likeCount = post.likes?.count ?? 0
+        liked = post.likes?.userLikes ?? false
     }
 
     var originalPostURL: URL {
-        post.header.remoteInstanceLink ?? post.header.localURL
+        post.url
     }
 
-    var header: PostHeader {
-        post.header
+    var repostIDs: [WallPostID] {
+        post.repostHistory?.map(\.id) ?? []
     }
 
-    var text: PostText {
-        post.text
+    func hasContent(postID: WallPostID? = nil) -> Bool {
+        let post = getPostIncludingReposted(postID)
+        return !(post.text?.isEmpty ?? true) && !(post.attachments ?? []).isEmpty
     }
 
-    var attachments: [PostAttachment] {
-        post.attachments
+    var isMastodonStyleRepost: Bool {
+        post.isMastodonStyleRepost ?? false
     }
 
-    var reposted: [Repost] {
-        post.reposted
+    func getAuthor(_ id: WallPostID? = nil) -> PostAuthor {
+        fatalError("Not implemented yet")
     }
 
-    var hasContent: Bool {
-        !text.isEmpty && !attachments.isEmpty
+    private func getPostIncludingReposted(_ postID: WallPostID?) -> WallPost {
+        guard let postID = postID else {
+            return post
+        }
+        if postID == post.id {
+           return post
+        } else {
+            for repost in self.post.repostHistory ?? [] {
+                if postID == repost.id {
+                    return repost
+                }
+            }
+        }
+        fatalError("Post with ID \(postID) not found among reposts of \(id)")
+    }
+
+    func getPostDate(postID: WallPostID? = nil) -> String {
+        postDateFormatter.string(from: getPostIncludingReposted(postID).date)
+    }
+
+    func getText(postID: WallPostID? = nil) -> PostText {
+        // TODO: Cache parsed HTML?
+        getPostIncludingReposted(postID)
+            .text
+            .map(PostText.init(html:))
+            ?? PostText()
+    }
+
+    func getAttachments(postID: WallPostID? = nil) -> [Attachment] {
+        getPostIncludingReposted(postID).attachments ?? []
     }
 
     func like() {
@@ -70,13 +104,9 @@ final class PostViewModel: ObservableObject, Identifiable {
         Task {
             do {
                 let newLikeCount = if liked {
-                    try await api.invokeMethod(
-                        Likes.Add(itemID: .post(post.header.id))
-                    ).likes
+                    try await api.invokeMethod(Likes.Add(itemID: .post(id))).likes
                 } else {
-                    try await api.invokeMethod(
-                        Likes.Delete(itemID: .post(post.header.id))
-                    ).likes
+                    try await api.invokeMethod(Likes.Delete(itemID: .post(id))).likes
                 }
                 if newLikeCount != likeCount {
                     withLikeAnimation {
@@ -112,3 +142,11 @@ final class PostViewModel: ObservableObject, Identifiable {
         withAnimation(.easeInOut(duration: 0.2), body)
     }
 }
+
+private let postDateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.doesRelativeDateFormatting = true
+    formatter.dateStyle = .long
+    formatter.timeStyle = .short
+    return formatter
+}()

@@ -1,4 +1,5 @@
 import SwiftUI
+import SmithereenAPI
 
 private let horizontalContentPadding: CGFloat = 13
 private let attachmentBlockTopPadding: CGFloat = 10
@@ -11,25 +12,29 @@ struct RegularPostView: View {
 
     @ScaledMetric(relativeTo: .body) private var repostVerticalLineThickness = 2
 
-    private func singleRepost(_ repost: Repost, headerOnly: Bool) -> some View {
+    private func singleRepost(
+        postID: WallPostID,
+        isMastodonStyleRepost: Bool,
+        headerOnly: Bool,
+    ) -> some View {
         VStack(alignment: .leading, spacing: 13) {
             RepostedPostHeaderView(
-                postHeader: repost.header,
+                author: viewModel.getAuthor(postID),
+                date: viewModel.getPostDate(postID: postID),
                 repostInfo: RepostInfo(
-                    isMastodonStyle: repost.isMastodonStyleRepost,
+                    isMastodonStyle: isMastodonStyleRepost,
                     entity: .post, // TODO: Use the actual entity
                 ),
             )
 
             if !headerOnly {
-                PostTextView(repost.text)
+                let text = viewModel.getText(postID: postID)
+                PostTextView(text)
 
-                if !repost.attachments.isEmpty {
-                    PostAttachmentsView(attachments: repost.attachments)
-                        .padding(
-                            .top,
-                            repost.text.isEmpty ? 0 : attachmentBlockTopPadding,
-                        )
+                let attachments = viewModel.getAttachments(postID: postID)
+                if !attachments.isEmpty {
+                    PostAttachmentsView(attachments: attachments)
+                        .padding(.top, text.isEmpty ? 0 : attachmentBlockTopPadding)
                 }
             }
         }
@@ -37,24 +42,25 @@ struct RegularPostView: View {
 
     @ViewBuilder
     private func repostChain(
-        _ reposts: ArraySlice<Repost>,
+        _ repostIDs: ArraySlice<WallPostID>,
         hasContentAbove: Bool,
         depth: Int = 1,
     ) -> some View {
-        if let repost = reposts.first {
+        if let repostID = repostIDs.first {
             HStack(spacing: 0) {
                 palette
                     .repostVerticalLine
                     .frame(width: repostVerticalLineThickness)
                 VStack(alignment: .leading, spacing: 0) {
                     singleRepost(
-                        repost,
+                        postID: repostID,
+                        isMastodonStyleRepost: depth == 1 && viewModel.isMastodonStyleRepost,
                         headerOnly: depth >= maxRepostChainDepth,
                     )
                     AnyView(
                         repostChain(
-                            reposts.dropFirst(),
-                            hasContentAbove: repost.hasContent,
+                            repostIDs.dropFirst(),
+                            hasContentAbove: viewModel.hasContent(postID: repostID),
                             depth: depth + 1,
                         )
                     )
@@ -69,22 +75,24 @@ struct RegularPostView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            PostHeaderView(postHeader: viewModel.header)
+            PostHeaderView(author: viewModel.getAuthor(), date: viewModel.getPostDate())
                 .padding(.horizontal, horizontalContentPadding)
                 .padding(.vertical, 13)
 
-            PostTextView(viewModel.text)
+            let text = viewModel.getText()
+            PostTextView(text)
                 .padding(.horizontal, horizontalContentPadding)
 
-            if !viewModel.attachments.isEmpty {
-                PostAttachmentsView(attachments: viewModel.attachments)
+            let attachments = viewModel.getAttachments()
+            if !attachments.isEmpty {
+                PostAttachmentsView(attachments: attachments)
                     .padding(.horizontal, horizontalContentPadding)
-                    .padding(.top, viewModel.text.isEmpty ? 0 : attachmentBlockTopPadding)
+                    .padding(.top, text.isEmpty ? 0 : attachmentBlockTopPadding)
             }
 
             repostChain(
-                viewModel.reposted.prefix(maxRepostChainDepth),
-                hasContentAbove: viewModel.hasContent,
+                ArraySlice(viewModel.repostIDs),
+                hasContentAbove: viewModel.hasContent(),
             )
             .padding(.horizontal, horizontalContentPadding)
 

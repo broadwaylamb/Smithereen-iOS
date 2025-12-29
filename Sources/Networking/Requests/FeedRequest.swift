@@ -26,9 +26,8 @@ struct FeedRequest: DecodableRequestProtocol {
 
         let userHandle = try document.select("#myProfileLink").attr("href").dropFirst()
 
-        let posts = try parsePostList(document)
         return FeedResponse(
-            posts: posts,
+            posts: [],
             currentUserID: userID,
             currentUserHandle: String(userHandle),
         )

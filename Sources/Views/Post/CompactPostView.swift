@@ -1,33 +1,37 @@
 import SwiftUI
+import SmithereenAPI
 
 private let horizontalContentPadding: CGFloat = 4
 private let attachmentBlockTopPadding: CGFloat = 6
-private let maxRepostChainDepth = 3
 
 struct CompactPostView: View {
     @ObservedObject var viewModel: PostViewModel
 
-    private func singleRepost(_ repost: Repost, headerOnly: Bool) -> some View {
+    private func singleRepost(
+        postID : WallPostID,
+        isMastodonStyleRepost: Bool,
+        headerOnly: Bool,
+    ) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             RepostedPostHeaderView(
-                postHeader: repost.header,
+                author: viewModel.getAuthor(postID),
+                date: viewModel.getPostDate(postID: postID),
                 repostInfo: RepostInfo(
-                    isMastodonStyle: repost.isMastodonStyleRepost,
+                    isMastodonStyle: isMastodonStyleRepost,
                     entity: .post, // TODO: Use the actual entity
                 ),
             )
             .padding(.horizontal, 4)
 
             if !headerOnly {
-                PostTextView(repost.text)
+                let text = viewModel.getText(postID: postID)
+                PostTextView(text)
                     .padding(.horizontal, 4)
 
-                if !repost.attachments.isEmpty {
-                    PostAttachmentsView(attachments: repost.attachments)
-                        .padding(
-                            .top,
-                            repost.text.isEmpty ? 0 : attachmentBlockTopPadding
-                        )
+                let attachments = viewModel.getAttachments(postID: postID)
+                if !attachments.isEmpty {
+                    PostAttachmentsView(attachments: attachments)
+                        .padding(.top, text.isEmpty ? 0 : attachmentBlockTopPadding)
                 }
             }
         }
@@ -35,26 +39,33 @@ struct CompactPostView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            PostHeaderView(postHeader: viewModel.header)
+            PostHeaderView(author: viewModel.getAuthor(), date: viewModel.getPostDate())
                 .padding(.horizontal, horizontalContentPadding)
                 .padding(.top, 7)
                 .padding(.bottom, 13)
 
-            PostTextView(viewModel.text)
+            let text = viewModel.getText()
+            PostTextView(text)
                 .padding(.horizontal, horizontalContentPadding)
 
-            if !viewModel.attachments.isEmpty {
-                PostAttachmentsView(attachments: viewModel.attachments)
+            let attachments = viewModel.getAttachments()
+            if !attachments.isEmpty {
+                PostAttachmentsView(attachments: attachments)
                     .padding(.horizontal, 0)
-                    .padding(.top, viewModel.text.isEmpty ? 0 : attachmentBlockTopPadding)
+                    .padding(.top, text.isEmpty ? 0 : attachmentBlockTopPadding)
             }
 
-            let reposts = viewModel.reposted.prefix(maxRepostChainDepth)
-            ForEach(reposts.indexed(), id: \.offset) { (i, repost) in
+            let repostIDs = viewModel.repostIDs
+            ForEach(repostIDs.indexed(), id: \.offset) { (i, repostID) in
                 let hasTopPadding =
-                    i == 0 && viewModel.hasContent || i > 0 && reposts[i - 1].hasContent
-                singleRepost(repost, headerOnly: i + 1 >= maxRepostChainDepth)
-                    .padding(.top, hasTopPadding ? attachmentBlockTopPadding : 0)
+                    i == 0 && viewModel.hasContent()
+                        || i > 0 && viewModel.hasContent(postID: repostID)
+                singleRepost(
+                    postID: repostID,
+                    isMastodonStyleRepost: i == 0 && viewModel.isMastodonStyleRepost,
+                    headerOnly: i == repostIDs.count - 1,
+                )
+                .padding(.top, hasTopPadding ? attachmentBlockTopPadding : 0)
             }
 
             CompactPostFooterView(viewModel: viewModel)

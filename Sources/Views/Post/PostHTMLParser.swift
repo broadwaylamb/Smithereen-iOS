@@ -2,7 +2,7 @@ import Foundation
 import SwiftSoup
 
 // All the text formating supported by Smithereen in posts.
-// https://github.com/grishka/Smithereen/blob/c530e8b8fcb8145b8e78de142710736e6bf46c3c/src/main/java/smithereen/text/MicroFormatAwareHTMLWhitelist.java#L27
+// https://smithereen.software/docs/api/text-formatting/
 
 struct PostText: Equatable {
     var blocks: [PostTextBlock]
@@ -17,8 +17,13 @@ struct PostText: Equatable {
         blocks = parser.result
     }
 
-    init(html: String) throws {
-        self.init(try SwiftSoup.parse(html))
+    init(html: String) {
+        do {
+            self.init(try SwiftSoup.parse(html))
+        } catch {
+            self.init()
+            blocks = [.paragraph(content: [.text(html)])]
+        }
     }
 
     var isEmpty: Bool {

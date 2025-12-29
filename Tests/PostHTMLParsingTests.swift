@@ -4,8 +4,8 @@ import Testing
 @testable import Smithereen
 
 struct PostHTMLParsingTests {
-    @Test func testBlocks() throws {
-        let postText = try PostText(
+    @Test func testBlocks() {
+        let postText = PostText(
             html: """
             <p>Paragraph with <br/> multiple <br/> lines.</p>
             <blockquote><p>Quote</p></blockquote>
@@ -31,8 +31,8 @@ struct PostHTMLParsingTests {
         )
     }
 
-    @Test func testNestedParagraphs() throws {
-        let postText = try PostText(
+    @Test func testNestedParagraphs() {
+        let postText = PostText(
             html: """
             <p>Outer<p>Inner</p>Outer</p>
             """
@@ -50,8 +50,8 @@ struct PostHTMLParsingTests {
          )
     }
 
-    @Test func testQuoteInsideParagraph() throws {
-        let postText = try PostText(
+    @Test func testQuoteInsideParagraph() {
+        let postText = PostText(
             html: """
             <p>1<blockquote>Quote</blockquote>2</p>
             """
@@ -71,8 +71,8 @@ struct PostHTMLParsingTests {
         )
     }
 
-    @Test func testNestedQuotes() throws {
-        let postText = try PostText(
+    @Test func testNestedQuotes() {
+        let postText = PostText(
             html: """
             <blockquote><p>Outer</p><blockquote><p>Inner</p></blockquote><p>Outer</p></blockquote>
             """
@@ -97,8 +97,8 @@ struct PostHTMLParsingTests {
         )
     }
 
-    @Test func testNestedCodeBlocks() throws {
-        let postText = try PostText(
+    @Test func testNestedCodeBlocks() {
+        let postText = PostText(
             html: """
             <pre>code<pre>nested</pre>code</pre>
             """
@@ -111,8 +111,8 @@ struct PostHTMLParsingTests {
         )
     }
 
-    @Test func testPlainText() throws {
-        let postText = try PostText(html: "Plain text")
+    @Test func testPlainText() {
+        let postText = PostText(html: "Plain text")
 
         #expect(
             postText.toHTML() == """
@@ -123,8 +123,8 @@ struct PostHTMLParsingTests {
         )
     }
 
-    @Test func testQuoteWithoutParagraphs() throws {
-        let postText = try PostText(html: "<blockquote>Quote</blockquote>")
+    @Test func testQuoteWithoutParagraphs() {
+        let postText = PostText(html: "<blockquote>Quote</blockquote>")
 
         #expect(
             postText.toHTML() == """
@@ -137,8 +137,8 @@ struct PostHTMLParsingTests {
         )
     }
 
-    @Test func testNonBreakingSpace() async throws {
-        let postText = try PostText(
+    @Test func testNonBreakingSpace() {
+        let postText = PostText(
             html: """
             <p>
             &nbsp;&nbsp;▲

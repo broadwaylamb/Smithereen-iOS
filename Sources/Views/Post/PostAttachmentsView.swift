@@ -1,13 +1,14 @@
 import SwiftUI
 import MediaGridLayout
+import SmithereenAPI
 
 struct PostAttachmentsView: View {
-    var attachments: [PostAttachment]
+    var attachments: [Attachment]
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @EnvironmentObject private var palette: PaletteHolder
 
-    private var photos: [PhotoAttachment] {
+    private var photos: [Photo] {
         attachments.compactMap {
             switch $0 {
             case .photo(let photo):
@@ -23,8 +24,8 @@ struct PostAttachmentsView: View {
             Spacer(minLength: 0)
             MediaGridLayout(spacing: 2) {
                 ForEach(photos.indexed(), id: \.offset) { (_, photo) in
-                    let placeholder = photo.blurHash?.wrappedValue
-                        ?? palette.loadingImagePlaceholder
+                    // TODO: Show blurhash
+                    let placeholder = palette.loadingImagePlaceholder
                     let cornerRadius = horizontalSizeClass == .regular ? 2.5 : 0
 
                     // We put the image into an overlay because otherwise it won't be
@@ -32,7 +33,7 @@ struct PostAttachmentsView: View {
                     Color.clear
                         .overlay {
                             // TODO: Use the correct URL based on the size
-                            CacheableAsyncImage(photo.thumbnail!) { image in
+                            CacheableAsyncImage(nil) { image in
                                 image.resizable()
                             } placeholder: {
                                 placeholder
@@ -47,5 +48,11 @@ struct PostAttachmentsView: View {
             Spacer(minLength: 0)
         }
         .frame(maxHeight: 510)
+    }
+}
+
+extension Photo {
+    var aspectRatio: CGFloat {
+        sizes.last.map { CGFloat($0.width) / CGFloat($0.height) } ?? 1
     }
 }

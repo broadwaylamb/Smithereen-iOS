@@ -1,8 +1,14 @@
 import Foundation
+import SmithereenAPI
 
 enum ImageLocation: Equatable {
     case remote(URL)
     case bundled(ImageResource)
+
+    init(url: URL) {
+        // TODO: Support bundled:// scheme
+        self = .remote(url)
+    }
 }
 
 extension ImageLocation: Decodable {

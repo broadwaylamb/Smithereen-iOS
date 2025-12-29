@@ -40,7 +40,7 @@ struct UserProfileRequest: DecodableRequestProtocol {
             commonFriendCount: (try? friendCounters?[safe: 1]?.text().parseInt()) ?? 0,
             followerCount: (try? followersCounter?.text().parseInt()) ?? 0,
             groupCount: (try? groupCounter?.text().parseInt()) ?? 0,
-            posts: (try? parsePostList(document)) ?? []
+            posts: [],
         )
     }
 }

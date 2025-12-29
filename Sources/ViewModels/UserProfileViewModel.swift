@@ -1,4 +1,5 @@
 import SwiftUI
+import SmithereenAPI
 
 @MainActor
 @dynamicMemberLookup
@@ -41,7 +42,7 @@ final class UserProfileViewModel: ObservableObject {
         case .allPosts:
             return posts
         case .ownPosts:
-            return posts.filter { $0.header.authorHandle == userHandle }
+            return posts // TODO: Filter
         }
     }
 }

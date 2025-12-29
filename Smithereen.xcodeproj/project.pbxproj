@@ -304,7 +304,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "periphery scan --project-root \"$PROJECT_DIR\" --format xcode\n";
+			shellScript = "periphery scan --project-root \"$PROJECT_DIR\" --format xcode -- -destination \"generic/platform=iOS Simulator\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

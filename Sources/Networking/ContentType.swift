@@ -12,7 +12,6 @@ struct ContentType: Hashable {
         private static let type = "application"
 
         let formURLEncoded = ContentType(type: type, subtype: "x-www-form-urlencoded")
-        let json = ContentType(type: type, subtype: "json")
     }
 
     static let application = _ApplicationBuilder()

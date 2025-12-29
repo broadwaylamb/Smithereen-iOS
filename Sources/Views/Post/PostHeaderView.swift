@@ -1,13 +1,16 @@
 import SwiftUI
+import SmithereenAPI
 
 struct PostHeaderView: View {
-    var postHeader: PostHeader
+    var author: PostAuthor
+    var date: String
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     var body: some View {
         GenericPostHeaderView(
-            postHeader: postHeader,
             kind: .regular,
+            author: author,
+            date: date,
             horizontalSizeClass: horizontalSizeClass,
             repostIcon: {
                 EmptyView()
@@ -24,7 +27,8 @@ struct PostHeaderView: View {
 }
 
 struct RepostedPostHeaderView: View {
-    var postHeader: PostHeader
+    var author: PostAuthor
+    var date: String
     var repostInfo: RepostInfo
 
     @EnvironmentObject private var palette: PaletteHolder
@@ -42,8 +46,9 @@ struct RepostedPostHeaderView: View {
 
     var body: some View {
         GenericPostHeaderView(
-            postHeader: postHeader,
             kind: .repost(repostInfo),
+            author: author,
+            date: date,
             horizontalSizeClass: horizontalSizeClass,
             repostIcon: {
                 image
@@ -59,8 +64,9 @@ struct RepostedPostHeaderView: View {
 }
 
 private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: View {
-    var postHeader: PostHeader
     var kind: PostKind
+    var author: PostAuthor
+    var date: String
     var repostIcon: () -> RepostIcon
     var detailsButton: () -> DetailsButton
 
@@ -71,14 +77,16 @@ private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: Vie
     @Environment(\.pushToNavigationStack) private var pushToNavigationStack
 
     init(
-        postHeader: PostHeader,
         kind: PostKind,
+        author: PostAuthor,
+        date: String,
         horizontalSizeClass: UserInterfaceSizeClass?,
         @ViewBuilder repostIcon: @escaping () -> RepostIcon,
         @ViewBuilder detailsButton: @escaping () -> DetailsButton,
     ) {
-        self.postHeader = postHeader
         self.kind = kind
+        self.author = author
+        self.date = date
         let imageSize: CGFloat =
             switch (kind, horizontalSizeClass) {
             case (.regular, .regular):
@@ -100,8 +108,8 @@ private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: Vie
             action: {
                 pushToNavigationStack(
                     UserProfileNavigationItem(
-                        firstName: postHeader.authorName,
-                        userHandle: postHeader.authorHandle,
+                        firstName: "!!!", // TODO: Use actual first name
+                        userHandle: "!!!", // TODO: Remove
                     )
                 )
             },
@@ -113,19 +121,20 @@ private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: Vie
     var body: some View {
         HStack(spacing: 8) {
             userProfileLink {
-                UserProfilePictureView(location: postHeader.authorProfilePicture)
-                    .frame(width: imageSize, height: imageSize)
+                UserProfilePictureView(
+                    location: author.profilePictureSizes.sizeThatFits(square: imageSize)
+                ).frame(width: imageSize, height: imageSize)
             }
             VStack(alignment: .leading, spacing: 2) {
                 HStack(alignment: .center, spacing: 6) {
                     repostIcon()
                     userProfileLink {
-                        Text(postHeader.authorName)
+                        Text(author.displayedName)
                             .bold()
                             .foregroundStyle(palette.accent)
                     }
                 }
-                Button(kind.grayText(postHeader.date)) {
+                Button(kind.grayText(date)) {
                     // TODO: Navigate to the post
                 }
                 .buttonStyle(.borderless)
