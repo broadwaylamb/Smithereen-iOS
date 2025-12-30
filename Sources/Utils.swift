@@ -24,29 +24,6 @@ extension Optional where Wrapped: OptionSet, Wrapped.Element == Wrapped {
     }
 }
 
-extension NSRegularExpression {
-    func firstMatch(in s: String) -> NSTextCheckingResult? {
-        firstMatch(
-            in: s,
-            range: NSRange(s.startIndex..<s.endIndex, in: s)
-        )
-    }
-
-    func firstMatch(in s: String, captureGroup: Int) -> Substring? {
-        let tcr = firstMatch(in: s)
-        return tcr?.captureGroup(captureGroup, in: s)
-    }
-}
-
-extension NSTextCheckingResult {
-    func captureGroup<S: StringProtocol>(_ n: Int, in s: S) -> S.SubSequence? {
-        if numberOfRanges < n {
-            return nil
-        }
-        return Range(range(at: n), in: s).map { s[$0] }
-    }
-}
-
 extension URLResponse {
     var statusCode: HTTPStatusCode {
         HTTPStatusCode(rawValue: (self as! HTTPURLResponse).statusCode)
@@ -66,12 +43,6 @@ extension String {
     }
 }
 
-extension NavigationPath {
-    mutating func removeAll() {
-        removeLast(count)
-    }
-}
-
 extension Error {
     var isCancellationError: Bool {
         if self is CancellationError { return true }
@@ -83,20 +54,7 @@ extension Error {
     }
 }
 
-extension RandomAccessCollection {
-    subscript(safe index: Index) -> Element? {
-        if indices.contains(index) {
-            return self[index]
-        }
-        return nil
-    }
-}
-
 extension String {
-    func parseInt() -> Int? {
-        Int(String(filter { $0.isNumber }))
-    }
-
     var isBlank: Bool {
         isEmpty || allSatisfy { $0.isWhitespace }
     }

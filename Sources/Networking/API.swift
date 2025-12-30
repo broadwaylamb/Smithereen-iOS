@@ -36,22 +36,9 @@ protocol AuthenticationService: Sendable {
 }
 
 protocol APIService: Sendable {
-    func send<Request: DecodableRequestProtocol>(
-        _ request: Request,
-        instance: URL?,
-    ) async throws -> Request.Result
-
     func invokeMethod<Method: SmithereenAPIRequest & Sendable>(
         _ method: Method
     ) async throws -> Method.Result
-}
-
-extension APIService {
-    func send<Request: DecodableRequestProtocol>(
-        _ request: Request,
-    ) async throws -> Request.Result {
-        try await send(request, instance: nil)
-    }
 }
 
 struct MockApi: AuthenticationService, APIService {
@@ -59,13 +46,6 @@ struct MockApi: AuthenticationService, APIService {
     }
 
     func logOut() {
-    }
-
-    func send<Request: DecodableRequestProtocol>(
-        _ request: Request,
-        instance: URL?
-    ) async throws -> Request.Result {
-        fatalError("No mock data for this request")
     }
 
     func invokeMethod<Method: SmithereenAPIRequest>(
@@ -141,13 +121,6 @@ final class AuthenticationState: ObservableObject {
 }
 
 actor RealAPIService: APIService {
-    func send<Request: DecodableRequestProtocol>(
-        _ request: Request,
-        instance: URL?
-    ) async throws -> Request.Result {
-        fatalError("Not supported")
-    }
-
     func invokeMethod<Method: SmithereenAPIRequest>(
         _ method: Method
     ) async throws -> Method.Result {

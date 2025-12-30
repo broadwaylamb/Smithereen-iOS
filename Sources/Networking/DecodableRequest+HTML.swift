@@ -50,9 +50,3 @@ extension DecodableRequestProtocol where ResponseBody == Data, Result: Decodable
 protocol RequiresCSRF: RequestProtocol {}
 
 protocol IgnoreRedirects: RequestProtocol {}
-
-struct PictureFromHTML {
-    var url: URL?
-    var altText: String?
-    var blurHash: RGBAColor?
-}
