@@ -147,7 +147,7 @@ private struct ComposePostAdapter: UIViewRepresentable {
         viewModel: ComposePostViewModel(
             errorObserver: ErrorObserver(),
             api: MockApi(),
-            userID: UserID(rawValue: 1),
+            wallOwner: nil,
             isShown: .constant(true),
             showNewPost: { _ in },
         )

@@ -5,9 +5,9 @@ import SmithereenAPI
 final class ComposePostViewModel: ObservableObject {
     private let errorObserver: ErrorObserver
     private let api: any APIService
-    private let userID: UserID?
+    private let wallOwner: ActorID?
     private let repostedPost: PostViewModel?
-    private let showNewPost: @MainActor (Post) -> Void
+    private let showNewPost: @MainActor (WallPost) -> Void
 
     @Published private(set) var showActivityIndicator: Bool = false
     @Published var text: String = ""
@@ -16,14 +16,14 @@ final class ComposePostViewModel: ObservableObject {
     init(
         errorObserver: ErrorObserver,
         api: any APIService,
-        userID: UserID?,
+        wallOwner: ActorID?,
         isShown: Binding<Bool>,
         repostedPost: PostViewModel? = nil,
-        showNewPost: @MainActor @escaping (Post) -> Void,
+        showNewPost: @MainActor @escaping (WallPost) -> Void,
     ) {
         self.errorObserver = errorObserver
         self.api = api
-        self.userID = userID
+        self.wallOwner = wallOwner
         self.showNewPost = showNewPost
         self.repostedPost = repostedPost
         self._isShown = isShown
@@ -34,14 +34,14 @@ final class ComposePostViewModel: ObservableObject {
     }
 
     var canSubmit: Bool {
-        (!text.isEmpty || repostedPost != nil) && userID != nil
+        !text.isBlank || repostedPost != nil
     }
 
     private func setActivityIndicator(_ value: Bool) {
         showActivityIndicator = value
     }
 
-    private func done(_ newPost: Post?) {
+    private func done(_ newPost: WallPost?) {
         isShown = false
         setActivityIndicator(false)
         if let newPost {
@@ -50,8 +50,6 @@ final class ComposePostViewModel: ObservableObject {
     }
 
     func submit() {
-        guard let userID = userID else { return }
-
         setActivityIndicator(true)
         Task {
             await errorObserver.runCatching {
@@ -70,7 +68,7 @@ final class ComposePostViewModel: ObservableObject {
                     } else {
                         try await api.invokeMethod(
                             Wall.Post(
-                                ownerID: ActorID(userID), // TODO: Support posts on group walls
+                                ownerID: wallOwner, // TODO: Support posts on group walls
                                 message: text,
                                 textFormat: .plain,
                                 attachments: nil, // TODO: Support attachments

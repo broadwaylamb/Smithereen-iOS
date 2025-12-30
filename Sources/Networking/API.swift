@@ -66,16 +66,6 @@ struct MockApi: AuthenticationService, APIService {
         instance: URL?
     ) async throws -> Request.Result {
         let boromirPost = Post()
-        if request is FeedRequest {
-            return FeedResponse(
-                posts: [
-                    boromirPost,
-                    Post(),
-                ],
-                currentUserID: UserID(rawValue: 1),
-                currentUserHandle: "boromir",
-            ) as! Request.Result
-        }
         if request is UserProfileRequest {
             return UserProfile(
                 fullName: "Boromir",

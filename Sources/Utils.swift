@@ -96,6 +96,10 @@ extension String {
     func parseInt() -> Int? {
         Int(String(filter { $0.isNumber }))
     }
+
+    var isBlank: Bool {
+        isEmpty || allSatisfy { $0.isWhitespace }
+    }
 }
 
 extension User {

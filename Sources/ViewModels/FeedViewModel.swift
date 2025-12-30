@@ -5,8 +5,6 @@ import SmithereenAPI
 final class FeedViewModel: ObservableObject {
     private let api: APIService
 
-    @Published private(set) var currentUserID: UserID?
-    @Published private(set) var currentUserHandle: String?
     @Published private(set) var posts: [PostViewModel] = []
 
     init(api: APIService) {
@@ -14,24 +12,29 @@ final class FeedViewModel: ObservableObject {
     }
 
     func update() async throws {
-        let response = try await api.send(FeedRequest())
+        let response = try await api.invokeMethod(
+            Newsfeed.Get(
+                filters: nil, // TODO: Filter
+                startFrom: nil, // TODO: Pagination
+                count: nil, // TODO: Pagination
+                fields: nil, // TODO: Fields
+            )
+        )
         // TODO: Don't replace existing posts, mutate them instead.
-        posts = response.posts.map {
-            PostViewModel(api: api, post: $0, feed: self)
+        posts = response.items.compactMap { update in
+            switch update.item {
+            case .post(let post):
+                PostViewModel(api: api, post: post, feed: self)
+            default:
+                nil
+            }
         }
-
-        currentUserID = response.currentUserID
-        currentUserHandle = response.currentUserHandle
     }
 
-    func addNewPost(_ post: Post) {
+    func addNewPost(_ post: WallPost) {
         let postViewModel = PostViewModel(api: api, post: post, feed: self)
         // TODO: Use deque?
         posts.insert(postViewModel, at: 0)
-    }
-
-    var canComposePost: Bool {
-        currentUserID != nil
     }
 
     func createComposePostViewModel(
@@ -41,7 +44,7 @@ final class FeedViewModel: ObservableObject {
         ComposePostViewModel(
             errorObserver: errorObserver,
             api: api,
-            userID: currentUserID,
+            wallOwner: nil,
             isShown: isShown,
             showNewPost: self.addNewPost,
         )

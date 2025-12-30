@@ -59,7 +59,6 @@ struct FeedView: View {
                 } label: {
                     Image(.composePost)
                 }
-                .disabled(!viewModel.canComposePost)
                 .tint(Color.white)
             }
         }

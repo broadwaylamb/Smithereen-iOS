@@ -23,7 +23,7 @@ struct RootView: View {
                     initialFullName: userFirstName, // TODO: Use actual full name
                     viewModel: UserProfileViewModel(
                         api: api,
-                        userHandle: feedViewModel.currentUserHandle,
+                        userHandle: nil, // TODO: Remove this
                         feedViewModel: feedViewModel,
                     )
                 )
@@ -55,20 +55,6 @@ struct RootView: View {
         }
         .environmentObject(errorObserver)
         .alert(errorObserver)
-        .onChange(of: feedViewModel.currentUserID) { newValue in
-            guard let newValue else { return }
-            Task {
-                await errorObserver.runCatching {
-                    let profile = try await api.send(UserProfileRequest(userID: newValue))
-                    await MainActor.run {
-                        // Welp, we don't have a way to get only the first name without
-                        // a proper API
-                        userFirstName = profile.fullName
-                        userProfilePicture = profile.profilePicture
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -81,7 +67,7 @@ extension View {
             for: UserProfileNavigationItem.self
         ) { item in
             UserProfileView(
-                isMe: item.userHandle == feedViewModel.currentUserHandle,
+                isMe: false, // TODO: Specify the actual value
                 initialFirstName: item.firstName,
                 initialFullName: item.firstName, // TODO: Use actual full name
                 viewModel: UserProfileViewModel(

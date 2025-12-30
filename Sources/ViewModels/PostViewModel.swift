@@ -131,7 +131,7 @@ final class PostViewModel: ObservableObject, Identifiable {
         ComposePostViewModel(
             errorObserver: errorObserver,
             api: api,
-            userID: feedViewModel?.currentUserID,
+            wallOwner: nil,
             isShown: isShown,
             repostedPost: self,
             showNewPost: { self.feedViewModel?.addNewPost($0) }
