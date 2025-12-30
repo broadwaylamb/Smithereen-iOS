@@ -1124,22 +1124,6 @@
         }
       }
     },
-    "Email or username" : {
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Email или имя пользователя"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Email або ім'я користувача"
-          }
-        }
-      }
-    },
     "Erase" : {
       "localizations" : {
         "ru" : {
@@ -1185,22 +1169,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Показати повністю…"
-          }
-        }
-      }
-    },
-    "Forgot password?" : {
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Забыли пароль?"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Забули пароль?"
           }
         }
       }
@@ -1385,22 +1353,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Тільки свої"
-          }
-        }
-      }
-    },
-    "Password" : {
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Пароль"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Пароль"
           }
         }
       }

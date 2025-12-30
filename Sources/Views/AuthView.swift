@@ -1,24 +1,6 @@
 import Prefire
 import SwiftUI
 
-private struct InputFields: View {
-    @Binding var instanceAddress: String
-    @Binding var email: String
-    @Binding var password: String
-    var body: some View {
-        TextField("Instance domain", text: $instanceAddress)
-            .textContentType(.URL)
-            .textInputAutocapitalization(.never)
-            .autocorrectionDisabled()
-        TextField("Email or username", text: $email)
-            .textContentType(.emailAddress)
-            .textInputAutocapitalization(.never)
-            .autocorrectionDisabled()
-        SecureField("Password", text: $password)
-            .textContentType(.password)
-    }
-}
-
 struct AuthView: View {
     let api: any AuthenticationService
     @EnvironmentObject private var palette: PaletteHolder
@@ -90,11 +72,10 @@ struct AuthView: View {
                     .accessibilityLabel(Text("Smithereen"))
                 Form {
                     Section {
-                        InputFields(
-                            instanceAddress: $instanceAddress,
-                            email: $email,
-                            password: $password,
-                        )
+                        TextField("Instance domain", text: $instanceAddress)
+                            .textContentType(.URL)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
                     }
                     Section {
                         Button {
@@ -104,17 +85,6 @@ struct AuthView: View {
                                 .frame(maxWidth: .infinity, alignment: .center)
                         }
                         .disabled(instanceURL == nil)
-                    }
-                    Section {
-                        Button {
-                            // TODO
-                        } label: {
-                            Text("Forgot password?")
-                                .frame(maxWidth: .infinity, alignment: .center)
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(Color.white)
-                        .listRowBackground(Color.clear)
                     }
                 }
                 .environment(\.colorScheme, .light)
