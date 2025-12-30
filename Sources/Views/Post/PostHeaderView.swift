@@ -106,12 +106,11 @@ private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: Vie
     private func userProfileLink(@ViewBuilder label: () -> some View) -> some View {
         Button(
             action: {
-                pushToNavigationStack(
-                    UserProfileNavigationItem(
-                        firstName: "!!!", // TODO: Use actual first name
-                        userHandle: "!!!", // TODO: Remove
-                    )
-                )
+                author.id.map { userID in
+                    pushToNavigationStack(UserProfileNavigationItem(userID: userID))
+                } groupID: { _ in
+                    // TODO: Navigate to group
+                }
             },
             label: label
         )

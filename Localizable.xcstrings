@@ -922,6 +922,19 @@
         }
       }
     },
+    "%lld years old" : {
+
+    },
+    "%lld years old, %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld years old, %2$@"
+          }
+        }
+      }
+    },
     "Add your comment" : {
       "localizations" : {
         "ru" : {
@@ -1227,6 +1240,9 @@
           }
         }
       }
+    },
+    "last seen %@" : {
+
     },
     "Like" : {
       "localizations" : {

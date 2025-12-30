@@ -23,11 +23,6 @@ final class PostViewModel: ObservableObject, Identifiable {
         update(from: post)
     }
 
-    @available(*, deprecated)
-    convenience init(api: any APIService, post: Post, feed: FeedViewModel) {
-        fatalError("To be removed")
-    }
-
     func update(from post: WallPost) {
         self.post = post
         commentCount = post.comments?.count ?? 0

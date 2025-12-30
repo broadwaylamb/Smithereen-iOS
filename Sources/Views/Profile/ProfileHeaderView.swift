@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct UserProfileHeaderView: View {
-    var profilePicture: ImageLocation?
+    var profilePicture: ImageSizes?
     var fullName: String
     var onlineOrLastSeen: LocalizedStringKey?
     var ageAndPlace: LocalizedStringKey?
 
     var body: some View {
         HStack(alignment: .center, spacing: 14) {
-            ProfilePictureView(location: profilePicture)
+            ProfilePictureView(profilePicture: profilePicture)
             ProfileHeaderInfoView(
                 title: fullName,
                 subheading: onlineOrLastSeen,
@@ -19,7 +19,7 @@ struct UserProfileHeaderView: View {
 }
 
 struct GroupProfileHeaderView: View {
-    var profilePicture: ImageLocation
+    var profilePicture: ImageSizes?
     var name: String
     var groupKind: LocalizedStringKey
     var place: LocalizedStringKey?
@@ -31,7 +31,7 @@ struct GroupProfileHeaderView: View {
                 subheading: groupKind,
                 additionalInfo: place,
             )
-            ProfilePictureView(location: profilePicture)
+            ProfilePictureView(profilePicture: profilePicture)
         }
     }
 }
@@ -39,11 +39,13 @@ struct GroupProfileHeaderView: View {
 private let profilePictureHeight: CGFloat = 85
 
 private struct ProfilePictureView: View {
-    var location: ImageLocation?
+    var profilePicture: ImageSizes?
     var body: some View {
-        UserProfilePictureView(location: location)
-            .frame(width: profilePictureHeight, height: profilePictureHeight)
-            .aspectRatio(1, contentMode: .fit)
+        UserProfilePictureView(
+            location: profilePicture?.sizeThatFits(square: profilePictureHeight)
+        )
+        .frame(width: profilePictureHeight, height: profilePictureHeight)
+        .aspectRatio(1, contentMode: .fit)
     }
 }
 
@@ -96,7 +98,7 @@ private struct ProfileHeaderInfoView: View {
 @available(iOS 17.0, *)
 #Preview("User profile header", traits: .sizeThatFitsLayout) {
     UserProfileHeaderView(
-        profilePicture: .bundled(.boromirProfilePicture),
+        profilePicture: nil, // TODO: Use picture
         fullName: "Boromir",
         onlineOrLastSeen: "last seen 5 minutes ago".excludedFromLocalization,
         ageAndPlace: "40 years, Gondor".excludedFromLocalization,
@@ -107,7 +109,7 @@ private struct ProfileHeaderInfoView: View {
 @available(iOS 17.0, *)
 #Preview("User profile header with very long name", traits: .fixedLayout(width: 320, height: 640)) {
     UserProfileHeaderView(
-        profilePicture: .bundled(.grzegorzProfilePicture),
+        profilePicture: nil, // TODO: Use picture
         fullName: "Grzegorz Brzęczyszczykiewicz",
         onlineOrLastSeen: "online",
         ageAndPlace: "27 years, Chrząszczyżewoszyce powiat Łękołody".excludedFromLocalization,
@@ -118,7 +120,7 @@ private struct ProfileHeaderInfoView: View {
 @available(iOS 17.0, *)
 #Preview("Group profile header", traits: .sizeThatFitsLayout) {
     GroupProfileHeaderView(
-        profilePicture: .bundled(.birdPhoto),
+        profilePicture: nil, // TODO: Use picture
         name: "Birdwatchers of the Fediverse",
         groupKind: "open group",
         place: "Planet Earth".excludedFromLocalization,

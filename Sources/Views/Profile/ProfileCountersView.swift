@@ -35,9 +35,9 @@ struct ProfileCounter {
     var value: Int
     fileprivate var text: LocalizedStringKey
 
-    init(value: Int, text: (Int) -> LocalizedStringKey) {
-        self.value = value
-        self.text = text(value)
+    init(value: Int?, text: (Int) -> LocalizedStringKey) {
+        self.value = value ?? 0
+        self.text = text(self.value)
     }
 }
 

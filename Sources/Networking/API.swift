@@ -65,20 +65,6 @@ struct MockApi: AuthenticationService, APIService {
         _ request: Request,
         instance: URL?
     ) async throws -> Request.Result {
-        let boromirPost = Post()
-        if request is UserProfileRequest {
-            return UserProfile(
-                fullName: "Boromir",
-                profilePicture: .bundled(.boromirProfilePicture),
-                presence: "online",
-                friendCount: 42,
-                commonFriendCount: 12,
-                followerCount: 100,
-                groupCount: 2,
-                posts: [boromirPost],
-            ) as! Request.Result
-        }
-
         fatalError("No mock data for this request")
     }
 

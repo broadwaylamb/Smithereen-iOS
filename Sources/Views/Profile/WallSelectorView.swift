@@ -8,7 +8,7 @@ enum WallMode {
 
 enum WallSelectorActor {
     case me
-    case user(firstNameGenitive: String, supportsWalls: Bool)
+    case user(firstNameGenitive: String, canPost: Bool)
     case group
 }
 
@@ -77,14 +77,14 @@ struct WallSelectorView: View {
             case .me:
                 button("All posts", mode: .allPosts)
                 button("My posts", mode: .ownPosts)
-            case .user(let firstNameGenitive, supportsWalls: true):
+            case .user(let firstNameGenitive, canPost: true):
                 button("All posts", mode: .allPosts)
                 buttonThatFits(
                     longTitle: "\(firstNameGenitive)'s posts",
                     shortTitle: "Own posts",
                     mode: .ownPosts
                 )
-            case .user(let firstNameGenitive, supportsWalls: false):
+            case .user(let firstNameGenitive, canPost: false):
                 buttonThatFits(
                     longTitle: "\(firstNameGenitive)'s posts",
                     shortTitle: "All posts",
@@ -103,7 +103,7 @@ struct WallSelectorView: View {
 #Preview(traits: .sizeThatFitsLayout) {
     @Previewable @State var mode = WallMode.allPosts
     WallSelectorView(
-        actor: .user(firstNameGenitive: "Boromir", supportsWalls: true),
+        actor: .user(firstNameGenitive: "Boromir", canPost: true),
         selectedMode: $mode,
     )
     .environmentObject(PaletteHolder())

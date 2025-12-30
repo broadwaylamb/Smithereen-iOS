@@ -112,3 +112,14 @@ extension User {
     }
 }
 
+extension Birthday {
+    var dateComponents: DateComponents {
+        DateComponents(
+            calendar: Calendar(identifier: .gregorian),
+            year: year,
+            month: month,
+            day: day,
+        )
+    }
+}
+

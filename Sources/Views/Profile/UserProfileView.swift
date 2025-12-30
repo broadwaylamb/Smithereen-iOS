@@ -2,55 +2,37 @@ import SwiftUI
 
 struct UserProfileView: View {
     var isMe: Bool
-    var initialFirstName: String?
-    var initialFullName: String
     @StateObject var viewModel: UserProfileViewModel
 
     @EnvironmentObject private var errorObserver: ErrorObserver
 
     private func refreshProfile() async {
         await errorObserver.runCatching {
-            try await viewModel.update()
+            try await viewModel.updateAll()
         }
-    }
-
-    private var firstName: String {
-        viewModel.user?.fullName // TODO: User actual first name
-            ?? initialFirstName
-            ?? initialFullName
-    }
-
-    private var firstNameGenitive: String {
-        firstName // TODO: Use actual first name in the genitive case
-    }
-
-    private var fullName: String {
-        viewModel.user?.fullName ?? initialFullName
     }
 
     var body: some View {
         List {
             Section {
                 UserProfileHeaderView(
-                    profilePicture: viewModel.user?.profilePicture,
-                    fullName: fullName,
-                    onlineOrLastSeen: viewModel.user?.presence?.excludedFromLocalization,
-                    ageAndPlace: nil, // TODO
+                    profilePicture: viewModel.user?.squareProfilePictureSizes,
+                    fullName: viewModel.fullName,
+                    onlineOrLastSeen: viewModel.onlineOrLastSeen,
+                    ageAndPlace: viewModel.ageAndPlace,
                 )
                 .listRowInsets(
                     EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
                 )
 
                 let counters = [
-                    ProfileCounter(value: viewModel.friendCount) { "\($0) friends" },
-                    ProfileCounter(value: viewModel.commonFriendCount) {
+                    ProfileCounter(value: viewModel.counters.friends) { "\($0) friends" },
+                    ProfileCounter(value: viewModel.counters.mutualFriends) {
                         "\($0) in common"
                     },
-                    ProfileCounter(value: viewModel.followerCount) { "\($0) followers" },
-                    ProfileCounter(value: viewModel.groupCount) { "\($0) groups" },
-                    ProfileCounter(value: viewModel.photoCount) { "\($0) photos" },
-                    ProfileCounter(value: viewModel.videoCount) { "\($0) videos" },
-                    ProfileCounter(value: viewModel.audioCount) { "\($0) audios" },
+                    ProfileCounter(value: viewModel.counters.followers) { "\($0) followers" },
+                    ProfileCounter(value: viewModel.counters.groups) { "\($0) groups" },
+                    ProfileCounter(value: viewModel.counters.photos) { "\($0) photos" },
                 ]
                 if counters.contains(where: { $0.value > 0 }) {
                     ProfileCountersView(counters: counters)
@@ -71,8 +53,8 @@ struct UserProfileView: View {
                     actor: isMe
                         ? .me
                         : .user(
-                            firstNameGenitive: firstNameGenitive,
-                            supportsWalls: true // TODO
+                            firstNameGenitive: viewModel.firstNameGenitive,
+                            canPost: viewModel.canPostOnWall,
                         ),
                     selectedMode: $viewModel.wallMode,
                 )
@@ -105,7 +87,7 @@ struct UserProfileView: View {
         .listSectionSpacingPolyfill(0)
         .environment(\.defaultMinListHeaderHeight, 0)
         .colorScheme(.light)
-        .navigationTitle(Text(verbatim: firstName))
+        .navigationTitle(Text(verbatim: viewModel.firstName))
         .navigationBarStyleSmithereen()
     }
 }
@@ -114,11 +96,9 @@ struct UserProfileView: View {
     NavigationView {
         UserProfileView(
             isMe: true,
-            initialFirstName: "Boromir",
-            initialFullName: "Boromir",
             viewModel: UserProfileViewModel(
                 api: MockApi(),
-                userHandle: "boromir",
+                userID: nil,
                 feedViewModel: FeedViewModel(api: MockApi())
             )
         )
