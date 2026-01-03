@@ -33,9 +33,6 @@
 		8792C5C62DCA9F1200C58B79 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 8792C5C52DCA9F1200C58B79 /* Prefire */; };
 		8793F4462E63619400662021 /* SlideableMenu in Frameworks */ = {isa = PBXBuildFile; productRef = 8793F4452E63619400662021 /* SlideableMenu */; };
 		87B0C99B2DC41A4200D5DB87 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 87B0C99A2DC41A4200D5DB87 /* Prefire */; };
-		87B5CEE82E1732C900ADFA70 /* Hammond in Frameworks */ = {isa = PBXBuildFile; productRef = 87B5CEE72E1732C900ADFA70 /* Hammond */; };
-		87D345AA2F00167E00CD09FF /* HammondEncoders in Frameworks */ = {isa = PBXBuildFile; productRef = 87D345A92F00167E00CD09FF /* HammondEncoders */; };
-		87D345AC2F0016F900CD09FF /* HammondMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 87D345AB2F0016F900CD09FF /* HammondMacros */; };
 		87D346562F002A0600CD09FF /* SmithereenAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 87D346552F002A0600CD09FF /* SmithereenAPI */; };
 /* End PBXBuildFile section */
 
@@ -56,6 +53,7 @@
 		872205E22DB972D000B65CBA /* DefaultDeveloperSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DefaultDeveloperSettings.xcconfig; sourceTree = "<group>"; };
 		872205E42DB9753F00B65CBA /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
 		874291BF2DC2ACD400571022 /* .prefire.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .prefire.yml; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.yaml; };
+		87EA5F702F055C2900B41B2F /* Smithereen-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Smithereen-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -97,11 +95,8 @@
 				8792C5C62DCA9F1200C58B79 /* Prefire in Frameworks */,
 				876659422DC8E76E00D62CCA /* SwiftUIIntrospect in Frameworks */,
 				876659742DC920E200D62CCA /* SwiftSoup in Frameworks */,
-				87B5CEE82E1732C900ADFA70 /* Hammond in Frameworks */,
 				87D346562F002A0600CD09FF /* SmithereenAPI in Frameworks */,
 				8755183A2E11B03B006EDF63 /* Hammond in Frameworks */,
-				87D345AA2F00167E00CD09FF /* HammondEncoders in Frameworks */,
-				87D345AC2F0016F900CD09FF /* HammondMacros in Frameworks */,
 				8787F0532E32B89600D2715A /* Placement in Frameworks */,
 				87864EDF2E28520600D8ACE0 /* MediaGridLayout in Frameworks */,
 				8793F4462E63619400662021 /* SlideableMenu in Frameworks */,
@@ -123,6 +118,7 @@
 		01E20AB12DB7926D00CC0EBE = {
 			isa = PBXGroup;
 			children = (
+				87EA5F702F055C2900B41B2F /* Smithereen-Info.plist */,
 				870D40EC2DF8FFA80026AB8A /* Localizable.xcstrings */,
 				874291BF2DC2ACD400571022 /* .prefire.yml */,
 				872205E42DB9753F00B65CBA /* README.md */,
@@ -174,12 +170,9 @@
 				876659732DC920E200D62CCA /* SwiftSoup */,
 				8792C5C52DCA9F1200C58B79 /* Prefire */,
 				875518392E11B03B006EDF63 /* Hammond */,
-				87B5CEE72E1732C900ADFA70 /* Hammond */,
 				87864EDE2E28520600D8ACE0 /* MediaGridLayout */,
 				8787F0522E32B89600D2715A /* Placement */,
 				8793F4452E63619400662021 /* SlideableMenu */,
-				87D345A92F00167E00CD09FF /* HammondEncoders */,
-				87D345AB2F0016F900CD09FF /* HammondMacros */,
 				87D346552F002A0600CD09FF /* SmithereenAPI */,
 			);
 			productName = Smithereen;
@@ -251,7 +244,6 @@
 				87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */,
 				876659402DC8E76E00D62CCA /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
 				876659722DC920E200D62CCA /* XCRemoteSwiftPackageReference "SwiftSoup" */,
-				87B5CEE62E1732C900ADFA70 /* XCRemoteSwiftPackageReference "Hammond" */,
 				87864EDD2E28520600D8ACE0 /* XCRemoteSwiftPackageReference "MediaGridLayout" */,
 				8787F0512E32B89600D2715A /* XCRemoteSwiftPackageReference "Placement" */,
 				8793F4442E63619400662021 /* XCRemoteSwiftPackageReference "SlideableMenu" */,
@@ -488,6 +480,8 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Smithereen-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -528,6 +522,8 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Smithereen-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -712,14 +708,6 @@
 				minimumVersion = 5.0.1;
 			};
 		};
-		87B5CEE62E1732C900ADFA70 /* XCRemoteSwiftPackageReference "Hammond" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/broadwaylamb/Hammond.git";
-			requirement = {
-				branch = d94c1c0adef230a0cd29ab0803e499c9d03830de;
-				kind = branch;
-			};
-		};
 		87D346542F002A0600CD09FF /* XCRemoteSwiftPackageReference "smithereen-api-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/broadwaylamb/smithereen-api-swift.git";
@@ -779,21 +767,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 87B0C9862DC40CC800D5DB87 /* XCRemoteSwiftPackageReference "Prefire" */;
 			productName = Prefire;
-		};
-		87B5CEE72E1732C900ADFA70 /* Hammond */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 87B5CEE62E1732C900ADFA70 /* XCRemoteSwiftPackageReference "Hammond" */;
-			productName = Hammond;
-		};
-		87D345A92F00167E00CD09FF /* HammondEncoders */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 87B5CEE62E1732C900ADFA70 /* XCRemoteSwiftPackageReference "Hammond" */;
-			productName = HammondEncoders;
-		};
-		87D345AB2F0016F900CD09FF /* HammondMacros */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 87B5CEE62E1732C900ADFA70 /* XCRemoteSwiftPackageReference "Hammond" */;
-			productName = HammondMacros;
 		};
 		87D346552F002A0600CD09FF /* SmithereenAPI */ = {
 			isa = XCSwiftPackageProductDependency;

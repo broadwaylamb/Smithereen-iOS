@@ -3,6 +3,11 @@
 CODE_SIGN_IDENTITY=Apple Development
 DEVELOPMENT_TEAM=N4X84VA3BB
 ORGANIZATION_IDENTIFIER=com.broadwaylamb
+PRODUCT_NAME=Smithereen
 CODE_SIGN_STYLE=Automatic
+
+// See https://stackoverflow.com/a/36297483 if you're wondering about the $() thing.
+SMITHEREEN_CLIENT_ID=https:/$()/smithereen.my2007.net/apps/1
+SMITHEREEN_URL_SCHEME=smithereen
 
 #include? "DeveloperSettings.xcconfig"

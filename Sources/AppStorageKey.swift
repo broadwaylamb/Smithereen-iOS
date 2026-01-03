@@ -7,12 +7,6 @@ struct AppStorageKey<Value> {
 
 extension AppStorageKey: Sendable where Value: Sendable {}
 
-extension AppStorage where Value == String {
-    init(_ key: AppStorageKey<String>, store: UserDefaults? = nil) {
-        self.init(wrappedValue: key.defaultValue, key.name, store: store)
-    }
-}
-
 extension AppStorage where Value == Bool {
     init(_ key: AppStorageKey<Bool>, store: UserDefaults? = nil) {
         self.init(wrappedValue: key.defaultValue, key.name, store: store)

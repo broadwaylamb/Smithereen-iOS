@@ -1,57 +1,26 @@
 import Prefire
 import SwiftUI
+import SmithereenAPI
 
 struct AuthView: View {
-    let api: any AuthenticationService
-    @EnvironmentObject private var palette: PaletteHolder
-    @AppStorage(.smithereenInstance) private var instanceAddress: String
-    @StateObject private var errorObserver = ErrorObserver()
-    @State private var email: String = ""
-    @State private var password: String = ""
+    @StateObject private var viewModel: AuthViewModel
 
-    private var instanceURL: URL? {
-        if instanceAddress.isEmpty {
-            return nil
-        }
-        var urlComponents: URLComponents
-        if instanceAddress.starts(with: "http://")
-            || instanceAddress.starts(with: "https://")
-        {
-            guard let c = URLComponents(string: instanceAddress) else {
-                return nil
-            }
-            urlComponents = c
-        } else if let components = URLComponents(string: instanceAddress),
-            components.scheme != nil
-        {
-            return nil
-        } else {
-            guard let c = URLComponents(string: "https://" + instanceAddress) else {
-                return nil
-            }
-            urlComponents = c
-        }
-        if urlComponents.host?.isEmpty ?? true {
-            return nil
-        }
-        urlComponents.queryItems = nil
-        urlComponents.path = ""
-        return urlComponents.url
+    init(viewModel: AuthViewModel) {
+        self._viewModel = StateObject(wrappedValue: viewModel)
     }
 
+    @EnvironmentObject private var palette: PaletteHolder
+    @StateObject private var errorObserver = ErrorObserver()
+    @Environment(\.smithereenWebAuthenticationSession) var authenticationSession
+
     private func logIn() {
-        guard let instanceURL = self.instanceURL else { return }
         Task {
             await errorObserver.runCatching {
-                try await api.authenticate(
-                    instance: instanceURL,
-                    email: email,
-                    password: password
-                )
+                try await viewModel.logIn(session: authenticationSession)
             } onError: { error in
                 switch error {
                 case AuthenticationError.instanceNotFound:
-                    self.instanceAddress = ""
+                    self.viewModel.instanceAddress = ""
                 default:
                     break
                 }
@@ -72,7 +41,7 @@ struct AuthView: View {
                     .accessibilityLabel(Text("Smithereen"))
                 Form {
                     Section {
-                        TextField("Instance domain", text: $instanceAddress)
+                        TextField("Instance domain", text: $viewModel.instanceAddress)
                             .textContentType(.URL)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
@@ -84,7 +53,7 @@ struct AuthView: View {
                             Text("Log in")
                                 .frame(maxWidth: .infinity, alignment: .center)
                         }
-                        .disabled(instanceURL == nil)
+                        .disabled(!viewModel.isValidInstanceAddress)
                     }
                 }
                 .environment(\.colorScheme, .light)
@@ -106,7 +75,7 @@ struct AuthView: View {
 }
 
 #Preview("Authentication") {
-    AuthView(api: MockApi())
+    AuthView(viewModel: AuthViewModel(api: MockApi()))
         .defaultAppStorage(UserDefaults())
         .snapshot(perceptualPrecision: 0.98)
 }

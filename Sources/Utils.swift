@@ -1,7 +1,7 @@
 import Foundation
-import Hammond
 import SwiftUI
 import SmithereenAPI
+import Hammond
 
 struct AnyLocalizedError: LocalizedError {
     let error: Error
@@ -10,9 +10,16 @@ struct AnyLocalizedError: LocalizedError {
     }
 }
 
-extension HTTPCookie {
-    var isExpired: Bool {
-        expiresDate.map { $0 <= Date() } ?? false
+extension OAuth.AuthorizationCodeError: @retroactive LocalizedError {
+    public var errorDescription: String? {
+        let description: String.LocalizationValue
+        switch self {
+        case .stateMismatch:
+            description = "Could not authenticate because of state mismatch."
+        case .invalidURL:
+            description = "Invalid redirection URL."
+        }
+        return String(localized: description)
     }
 }
 
@@ -81,3 +88,18 @@ extension Birthday {
     }
 }
 
+extension Data {
+    // TODO: Use base64URLAlphabet when it becomes available
+    // https://forums.swift.org/t/pitch-adding-base64-urlencoding-and-omitting-padding-options-to-base64-encoding-and-decoding/77659
+    func base64EncodedURLString() -> String {
+        let encoded = base64EncodedString()
+        let characters: [Character] = encoded.map {
+            switch $0 {
+            case "+": return "-" 
+            case "/": return "_"
+            default: return $0
+            }
+        }
+        return String(characters)
+    }
+}

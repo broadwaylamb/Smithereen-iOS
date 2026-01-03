@@ -1074,6 +1074,9 @@
         }
       }
     },
+    "Could not authenticate because of state mismatch." : {
+
+    },
     "Could not find a Smithereen instance at %@" : {
       "comment" : "An error message on the login screen",
       "localizations" : {
@@ -1208,6 +1211,9 @@
           }
         }
       }
+    },
+    "Invalid redirection URL." : {
+
     },
     "last seen %@" : {
 
@@ -1442,6 +1448,7 @@
     },
     "Wrong email/username or password" : {
       "comment" : "An error message on the login screen",
+      "extractionState" : "stale",
       "localizations" : {
         "ru" : {
           "stringUnit" : {

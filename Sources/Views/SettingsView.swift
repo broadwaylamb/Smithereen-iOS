@@ -40,7 +40,9 @@ struct SettingsView: View {
                     role: .destructive,
                     confirmationRole: .destructive
                 ) {
-                    api.logOut()
+                    Task {
+                        await api.logOut()
+                    }
                 }
             }
         }

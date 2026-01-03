@@ -1,38 +1,36 @@
-import Combine
+import SwiftUI
 import Foundation
-import Hammond
-import HammondEncoders
-import SwiftSoup
 import SmithereenAPI
+import Hammond
 
 enum AuthenticationError: LocalizedError {
     case instanceNotFound(String)
-    case invalidCredentials
+    case tokenError(OAuth.TokenError)
     case other(any Error)
 
     var errorDescription: String? {
         switch self {
         case .instanceNotFound(let url):
-            String(
+            return String(
                 localized: "Could not find a Smithereen instance at \(url)",
                 comment: "An error message on the login screen",
             )
-        case .invalidCredentials:
-            String(
-                localized: "Wrong email/username or password",
-                comment: "An error message on the login screen",
-            )
+        case .tokenError(let error):
+            return error.errorDescription
         case .other(let error):
-            error.localizedDescription
+            return error.localizedDescription
         }
     }
 }
 
 protocol AuthenticationService: Sendable {
-    func authenticate(instance: URL, email: String, password: String) async throws
+    func authenticate<Method: SmithereenOAuthTokenRequest>(
+        host: String,
+        port: Int?,
+        method: Method,
+    ) async throws
 
-    @MainActor
-    func logOut()
+    func logOut() async
 }
 
 protocol APIService: Sendable {
@@ -42,11 +40,13 @@ protocol APIService: Sendable {
 }
 
 struct MockApi: AuthenticationService, APIService {
-    func authenticate(instance: URL, email: String, password: String) async throws {
-    }
+    func authenticate<Method: SmithereenOAuthTokenRequest>(
+        host: String,
+        port: Int?,
+        method: Method,
+    ) async throws {}
 
-    func logOut() {
-    }
+    func logOut() {}
 
     func invokeMethod<Method: SmithereenAPIRequest>(
         _ method: Method
@@ -55,243 +55,166 @@ struct MockApi: AuthenticationService, APIService {
     }
 }
 
-private final class MyUrlSessionTaskDelegate: NSObject, URLSessionTaskDelegate {
-    let ignoresRedirects: Bool
-    init(ignoresRedirects: Bool) {
-        self.ignoresRedirects = ignoresRedirects
-    }
-
-    func urlSession(
-        _ session: URLSession,
-        task: URLSessionTask,
-        willPerformHTTPRedirection response: HTTPURLResponse,
-        newRequest request: URLRequest
-    ) async -> URLRequest? {
-        if ignoresRedirects {
-            return nil
-        }
-        guard let redirectURL = request.url else { return request }
-        var urlComponents =
-            URLComponents(url: redirectURL, resolvingAgainstBaseURL: false)!
-        if urlComponents.scheme == "http" {
-            urlComponents.scheme = "https"
-        }
-        var request = request
-        request.url = urlComponents.url!
-        return request
-    }
+enum AuthenticationState {
+    case loading
+    case authenticated
+    case notAuthenticated
 }
 
-extension HTTPCookieStorage {
-    private func getCookieByName(_ name: String) -> HTTPCookie? {
-        guard let cookies = self.cookies else { return nil }
-        for cookie in cookies {
-            if cookie.isExpired {
-                deleteCookie(cookie)
-                continue
-            }
-            if cookie.name == name {
-                return cookie
-            }
-        }
-        return nil
-    }
+actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableObject {
+    let keychain = KeychainAccess(service: Bundle.main.bundleIdentifier!)
 
-    fileprivate var psidCookie: HTTPCookie? {
-        getCookieByName("psid")
-    }
-
-    fileprivate var jsessionCookie: HTTPCookie? {
-        getCookieByName("JSESSIONID")
-    }
-}
-
-private func alreadyAuthenticatedOnInstance() -> URL? {
-    HTTPCookieStorage.shared.psidCookie.flatMap { URL(string: "https://" + $0.domain) }
-}
-
-@MainActor
-final class AuthenticationState: ObservableObject {
-    @Published var authenticatedInstance: URL? = alreadyAuthenticatedOnInstance()
+    private var session: SessionInfo?
 
     @MainActor
-    func setAuthenticated(instance: URL?) {
-        self.authenticatedInstance = instance
-    }
-}
+    @Published var state: AuthenticationState = .loading
 
-actor RealAPIService: APIService {
-    func invokeMethod<Method: SmithereenAPIRequest>(
-        _ method: Method
-    ) async throws -> Method.Result {
-        fatalError("Not implemented yet")
-    }
-}
-
-actor HTMLScrapingApi: AuthenticationService, APIService {
-    private let authenticationState: AuthenticationState
-    private var csrf: URLQueryItem?
-
-    init(authenticationState: AuthenticationState) {
-        self.authenticationState = authenticationState
+    @MainActor
+    private func setUIState(_ state: AuthenticationState) {
+        self.state = state
     }
 
-    private let ignoringRedirectsUrlSession = URLSession(
-        configuration: .default,
-        delegate: MyUrlSessionTaskDelegate(ignoresRedirects: true),
-        delegateQueue: nil,
-    )
-
-    private let respectingRedirectsURLSession = URLSession(
-        configuration: .default,
-        delegate: MyUrlSessionTaskDelegate(ignoresRedirects: false),
-        delegateQueue: nil,
-    )
-
-    func send<Request: DecodableRequestProtocol>(
-        _ request: Request,
-        instance: URL? = nil,
-    ) async throws -> Request.Result {
-        var instance = instance
-        if instance == nil {
-            instance = await self.authenticationState.authenticatedInstance
-        }
-        guard let instance else {
-            throw AuthenticationError.invalidCredentials
-        }
-
-        let encodableQuery = (request as? (any EncodableRequestProtocol))?.encodableQuery
-        let encodableBody = (request as? (any EncodableRequestProtocol))?.encodableBody
-
-        let encoder = URLEncodedFormEncoder()
-        var queryItems = [URLQueryItem]()
-        if let encodableQuery {
-            try encoder.encode(encodableQuery, into: &queryItems)
-        }
-        if request is RequiresCSRF, let csrf {
-            queryItems.append(csrf)
-        }
-
-        var components = URLComponents(url: instance, resolvingAgainstBaseURL: false)!
-        components.queryItems = queryItems
-        components.path = request.path
-
-        var urlRequest = URLRequest(url: components.url!)
-        urlRequest.httpMethod = Request.method.rawValue
-
-        // Mimic to a mobile web browser so that the server sends us the mobile
-        // version.
-        urlRequest.setValue(
-            """
-            Mozilla/5.0 (iPhone; CPU OS 18_3_1 like Mac OS X) AppleWebKit/605.1.15 \
-            (KHTML, like Gecko) Version/18.3 Mobile/14E304 Safari/605.1.15
-            """,
-            forHTTPHeaderField: "User-Agent"
-        )
-
-        urlRequest.setValue(instance.host!, forHTTPHeaderField: "Host")
-        urlRequest.setAccept(Request.accept)
-
-        switch Request.method {
-        case .post:
-            if let encodableBody {
-                urlRequest.setContentType(Request.contentType)
-                if Request.contentType == .application.formURLEncoded {
-                    urlRequest.httpBody = Data(try encoder.encode(encodableBody).utf8)
-                }
-            }
-        default:
-            break
-        }
-
-        let session = request is IgnoreRedirects
-            ? ignoringRedirectsUrlSession
-            : respectingRedirectsURLSession
-        let (data, urlResponse) = try await session.data(for: urlRequest)
-
-        if Request.ResponseBody.self == SwiftSoup.Document.self {
-            let document = try SwiftSoup
-                .parse(String(decoding: data, as: UTF8.self), urlRequest.url!.host!)
-
-            saveCSRF(document)
-
-            return try request
-                .extractResult(
-                    from: ResponseAdapter(
-                        statusCode: urlResponse.statusCode,
-                        body: document as! Request.ResponseBody,
-                    )
-                )
-        } else if Request.ResponseBody.self == Data.self {
-            return try request.extractResult(
-                from: ResponseAdapter(
-                    statusCode: urlResponse.statusCode,
-                    body: data as! Request.ResponseBody
-                )
-            )
+    private func storeSession(_ session: SessionInfo?) async throws {
+        try keychain.clear()
+        self.session = nil
+        let newState: AuthenticationState
+        if let session {
+            try keychain.storeSession(session)
+            self.session = session
+            newState = .authenticated
         } else {
-            fatalError("Unsupported request body type")
+            newState = .notAuthenticated
         }
+        await setUIState(newState)
+    }
+
+    func loadAuthenticationState() async {
+        let newState: AuthenticationState
+        do {
+            if let session = try keychain.retrieveSession() {
+                self.session = session
+                newState = .authenticated
+            } else {
+                self.session = nil
+                newState = .notAuthenticated
+            }
+        } catch {
+            if let session = self.session {
+                try? keychain.clear()
+            }
+            self.session = nil
+            newState = .notAuthenticated
+        }
+        await setUIState(newState)
+    }
+
+    private struct Response: ResponseProtocol {
+        var body: Data
+        var statusCode: HTTPStatusCode
+    }
+
+    private func performRequest(
+        _ urlRequest: URLRequest,
+    ) async throws -> Response {
+        var urlRequest = urlRequest
+        urlRequest.addValue(Constants.userAgent, forHTTPHeaderField: "User-Agent")
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        return Response(body: data, statusCode: response.statusCode)
+    }
+
+    private func apiVersionOfHost(
+        _ host: String,
+        port: Int?,
+    ) async throws -> SmithereenAPIVersion {
+        let serverInfoRequest = Server.GetInfo()
+        let data = try await performRequest(
+            URLRequest(
+                host: host,
+                port: port,
+                request: serverInfoRequest,
+                globalParameters: GlobalRequestParameters(apiVersion: .v1_0),
+            )
+        )
+        let info: Server.GetInfo.Result
+        do {
+            info = try serverInfoRequest.extractResult(from: data)
+        } catch {
+            throw AuthenticationError.instanceNotFound(host)
+        }
+        guard let version = info.apiVersions.smithereen else {
+            throw AuthenticationError.instanceNotFound(host)
+        }
+        return version
+    }
+
+    func authenticate<Method: SmithereenOAuthTokenRequest>(
+        host: String,
+        port: Int?,
+        method: Method,
+    ) async throws {
+        // We will use the value in later versions.
+        // For now, make sure that the host exists and is actually a Smithereen instance.
+        _ = try await apiVersionOfHost(host, port: port)
+
+        let data = try await performRequest(
+            URLRequest(
+                host: host,
+                port: port,
+                request: method,
+            )
+        )
+        let tokenResponse: OAuth.AccessTokenResponse
+        do {
+            tokenResponse = try method.extractResult(from: data)
+        } catch let error as OAuth.TokenError {
+            throw AuthenticationError.tokenError(error)
+        }
+        try await storeSession(
+            SessionInfo(
+                host: host,
+                port: port,
+                accessToken: tokenResponse.accessToken,
+                userID: tokenResponse.userID,
+            )
+        )
+    }
+
+    private func invokeMethod<Method: SmithereenAPIRequest>(
+        _ method: Method,
+        session: SessionInfo,
+    ) async throws -> Method.Result {
+        let urlRequest = try URLRequest(
+            host: session.host,
+            port: session.port,
+            request: method,
+            globalParameters: GlobalRequestParameters(
+                apiVersion: .v1_0,
+                accessToken: session.accessToken,
+                language: Locale.autoupdatingCurrent.identifier,
+            ),
+        )
+        return try await method.extractResult(from: performRequest(urlRequest))
     }
 
     func invokeMethod<Method: SmithereenAPIRequest>(
-        _ method: Method,
+        _ method: Method
     ) async throws -> Method.Result {
-        fatalError("Not supported")
+        guard let session else {
+            fatalError("Not authenticated")
+        }
+        return try await invokeMethod(method, session: session)
     }
 
-    private struct ResponseAdapter<Body>: ResponseProtocol {
-        var statusCode: HTTPStatusCode
-        var body: Body
-    }
+    func logOut() async {
+        guard let session else {
+            return
+        }
+        try? await storeSession(nil)
 
-    private func saveCSRF(_ document: Document) {
+        // Don't wait for the response.
+        // If it fails, we don't care, we'll log out anyway.
         do {
-            let logoutListItem = try document.select(".mainMenu .actionList > li").last()
-            guard let logoutUrl = try logoutListItem?.select("a").attr("href"),
-                  let components = URLComponents(string: logoutUrl)
-            else {
-                return
-            }
-            self.csrf = components.queryItems?.first { $0.name == "csrf" }
+            try await invokeMethod(Account.RevokeToken(), session: session)
         } catch {}
-    }
-
-    func authenticate(instance: URL, email: String, password: String) async throws {
-        do {
-            try await send(
-                LogInRequest(username: email, password: password),
-                instance: instance,
-            )
-        } catch let error as AuthenticationError {
-            throw error
-        } catch {
-            let nsError = error as NSError
-            if nsError.domain == NSURLErrorDomain
-                && nsError.code == NSURLErrorCannotFindHost
-            {
-                throw AuthenticationError.instanceNotFound(instance.absoluteString)
-            }
-            throw AuthenticationError.other(error)
-        }
-        await self.authenticationState.setAuthenticated(instance: instance)
-    }
-
-    @MainActor
-    func logOut() {
-        Task {
-            // Don't wait for the response.
-            // If it fails, we don't care, we'll log out anyway.
-            do {
-                try await send(LogOutRequest())
-            } catch {}
-        }
-        if let psidCookie = HTTPCookieStorage.shared.psidCookie {
-            HTTPCookieStorage.shared.deleteCookie(psidCookie)
-        }
-        if let jsessionCookie = HTTPCookieStorage.shared.jsessionCookie {
-            HTTPCookieStorage.shared.deleteCookie(jsessionCookie)
-        }
-        authenticationState.setAuthenticated(instance: nil)
     }
 }

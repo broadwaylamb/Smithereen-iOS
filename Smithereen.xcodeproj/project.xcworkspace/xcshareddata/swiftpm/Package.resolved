@@ -1,5 +1,5 @@
 {
-  "originHash" : "edf580564264bfaf8ed565cc5716b9c521f37cbf1404ed34630fa5d89fcbd839",
+  "originHash" : "b988678b020a00f344db5bb7403544ff2d34c1c6605e1d58529e6c01ad0a9c32",
   "pins" : [
     {
       "identity" : "hammond",
@@ -50,7 +50,7 @@
       "location" : "https://github.com/broadwaylamb/smithereen-api-swift.git",
       "state" : {
         "branch" : "main",
-        "revision" : "5099ffa4cbb8869d65d93ab14ae65c04fb99eb0d"
+        "revision" : "cf6db4b1bcb4b9261f40ff1887117dcc97c95e39"
       }
     },
     {
