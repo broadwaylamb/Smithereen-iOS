@@ -17,5 +17,7 @@
 	</array>
 	<key>SMITHEREEN_CLIENT_ID</key>
 	<string>${SMITHEREEN_CLIENT_ID}</string>
+	<key>SMITHEREEN_BUG_REPORT_EMAIL</key>
+	<string>$(SMITHEREEN_BUG_REPORT_EMAIL)</string>
 </dict>
 </plist>

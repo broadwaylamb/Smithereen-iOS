@@ -43,13 +43,53 @@ final class ErrorObserver: ObservableObject {
     }
 }
 
+private struct ErrorObserverViewModifier: ViewModifier {
+    @ObservedObject var errorObserver: ErrorObserver
+
+    @State private var technicalError: (any TechnicalError)?
+
+    func body(content: Content) -> some View {
+        content
+            .alert(
+                isPresented: errorObserver.errorAlertShown,
+                error: errorObserver.error.map(AnyLocalizedError.init),
+            ) { error in
+                if let technicalError = error.error as? TechnicalError {
+                    Button(MailComposeView.canSendEmail ? "Report a bug" : "Show technical data") {
+                        self.technicalError = technicalError
+                    }
+                }
+                Button("OK", action: {})
+            } message: { _ in
+            }
+            .sheet(item: $technicalError, onDismiss: { technicalError = nil }) { error in
+                if MailComposeView.canSendEmail {
+                    MailComposeView(
+                        recipients: [Constants.bugReportEmail],
+                        subject: "Smithereen for iOS: bug report",
+                        body: error.technicalInfo,
+                    )
+                } else {
+                    NavigationView {
+                        TechnicalDataTextView(error.technicalInfo)
+                            .preferredColorScheme(.light)
+                            .navigationTitle("Technical data")
+                            .navigationBarStyleSmithereen()
+                            .toolbar {
+                                ToolbarItem(placement: .topBarTrailing) {
+                                    Button("Done") {
+                                        technicalError = nil
+                                    }
+                                }
+                            }
+                    }
+                }
+            }
+    }
+}
+
 extension View {
     func alert(_ errorObserver: ErrorObserver) -> some View {
-        alert(
-            isPresented: errorObserver.errorAlertShown,
-            error: errorObserver.error.map(AnyLocalizedError.init)
-        ) {
-            Button("OK", action: {})
-        }
+        modifier(ErrorObserverViewModifier(errorObserver: errorObserver))
     }
 }

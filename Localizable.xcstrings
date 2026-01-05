@@ -923,7 +923,38 @@
       }
     },
     "%lld years old" : {
-
+      "localizations" : {
+        "ru" : {
+          "variations" : {
+            "plural" : {
+              "few" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld года"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld лет"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld год"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld лет"
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "%lld years old, %@" : {
       "localizations" : {
@@ -931,6 +962,36 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "%1$lld years old, %2$@"
+          }
+        },
+        "ru" : {
+          "variations" : {
+            "plural" : {
+              "few" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld года, %2$@"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld лет, %2$@"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld год, %2$@"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld лет, %2$@"
+                }
+              }
+            }
           }
         }
       }
@@ -1075,7 +1136,14 @@
       }
     },
     "Could not authenticate because of state mismatch." : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось войти из-за несовпадения состояния."
+          }
+        }
+      }
     },
     "Could not find a Smithereen instance at %@" : {
       "comment" : "An error message on the login screen",
@@ -1213,7 +1281,14 @@
       }
     },
     "Invalid redirection URL." : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Некорректный адрес перенаправления."
+          }
+        }
+      }
     },
     "last seen %@" : {
 
@@ -1363,6 +1438,16 @@
         }
       }
     },
+    "Please report this error to the application developer" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пожалуйста, сообщите об этой ошибке разработчику приложения"
+          }
+        }
+      }
+    },
     "Post settings" : {
       "localizations" : {
         "ru" : {
@@ -1375,6 +1460,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Налаштування запису"
+          }
+        }
+      }
+    },
+    "Report a bug" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сообщить об ошибке"
           }
         }
       }
@@ -1411,6 +1506,16 @@
         }
       }
     },
+    "Show technical data" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать технические данные"
+          }
+        }
+      }
+    },
     "Sign out" : {
       "localizations" : {
         "ru" : {
@@ -1430,6 +1535,16 @@
     "Smithereen" : {
       "shouldTranslate" : false
     },
+    "Technical data" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Технические данные"
+          }
+        }
+      }
+    },
     "What's new?" : {
       "localizations" : {
         "ru" : {
@@ -1442,24 +1557,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Що у вас нового?"
-          }
-        }
-      }
-    },
-    "Wrong email/username or password" : {
-      "comment" : "An error message on the login screen",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Неверные данные для входа"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Невірні дані для входу"
           }
         }
       }

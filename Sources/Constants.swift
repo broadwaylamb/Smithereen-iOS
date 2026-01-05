@@ -24,6 +24,9 @@ enum Constants {
         .object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
 
     static let userAgent = "\(Bundle.main.bundleIdentifier!)/\(appVersion)"
+
+    static let bugReportEmail = Bundle.main
+        .object(forInfoDictionaryKey: "SMITHEREEN_BUG_REPORT_EMAIL") as! String
 }
 
 extension Permission {

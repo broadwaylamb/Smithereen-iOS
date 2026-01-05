@@ -140,3 +140,29 @@ extension View {
         }
     }
 }
+
+private struct Wrapper<T>: Identifiable {
+    var wrapped: T
+
+    struct ID: Hashable {}
+
+    var id: ID { ID() }
+}
+
+extension View {
+    func sheet<Item, Content: View>(
+        item: Binding<Item?>,
+        onDismiss: (() -> Void)? = nil,
+        @ViewBuilder content: @escaping (Item) -> Content,
+    ) -> some View {
+        let wrappedBinding = Binding {
+            item.wrappedValue.map(Wrapper.init)
+        } set: { newValue in
+            item.wrappedValue = newValue?.wrapped
+        }
+
+        return sheet(item: wrappedBinding, onDismiss: onDismiss) { wrapper in
+            content(wrapper.wrapped)
+        }
+    }
+}

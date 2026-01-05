@@ -99,9 +99,7 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
                 newState = .notAuthenticated
             }
         } catch {
-            if let session = self.session {
-                try? keychain.clear()
-            }
+            try? keychain.clear()
             self.session = nil
             newState = .notAuthenticated
         }
@@ -109,8 +107,13 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
     }
 
     private struct Response: ResponseProtocol {
+        var request: URLRequest
+        var response: HTTPURLResponse
         var body: Data
-        var statusCode: HTTPStatusCode
+
+        var statusCode: HTTPStatusCode {
+            response.statusCode
+        }
     }
 
     private func performRequest(
@@ -118,8 +121,12 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
     ) async throws -> Response {
         var urlRequest = urlRequest
         urlRequest.addValue(Constants.userAgent, forHTTPHeaderField: "User-Agent")
-        let (data, response) = try await URLSession.shared.data(for: urlRequest)
-        return Response(body: data, statusCode: response.statusCode)
+        let (body, response) = try await URLSession.shared.data(for: urlRequest)
+        return Response(
+            request: urlRequest,
+            response: response as! HTTPURLResponse,
+            body: body,
+        )
     }
 
     private func apiVersionOfHost(
@@ -156,7 +163,7 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
         // For now, make sure that the host exists and is actually a Smithereen instance.
         _ = try await apiVersionOfHost(host, port: port)
 
-        let data = try await performRequest(
+        let response = try await performRequest(
             URLRequest(
                 host: host,
                 port: port,
@@ -165,9 +172,16 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
         )
         let tokenResponse: OAuth.AccessTokenResponse
         do {
-            tokenResponse = try method.extractResult(from: data)
+            tokenResponse = try method.extractResult(from: response)
         } catch let error as OAuth.TokenError {
             throw AuthenticationError.tokenError(error)
+        } catch let error as DecodingError {
+            throw ExtendedDecodingError(
+                request: response.request,
+                response: response.response,
+                responseData: response.body,
+                error: error,
+            )
         }
         try await storeSession(
             SessionInfo(
@@ -193,7 +207,17 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
                 language: Locale.autoupdatingCurrent.identifier,
             ),
         )
-        return try await method.extractResult(from: performRequest(urlRequest))
+        let response = try await performRequest(urlRequest)
+        do {
+            return try method.extractResult(from: response)
+        } catch let error as DecodingError {
+            throw ExtendedDecodingError(
+                request: response.request,
+                response: response.response,
+                responseData: response.body,
+                error: error,
+            )
+        }
     }
 
     func invokeMethod<Method: SmithereenAPIRequest>(

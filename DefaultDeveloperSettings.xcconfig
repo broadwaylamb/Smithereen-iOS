@@ -9,5 +9,6 @@ CODE_SIGN_STYLE=Automatic
 // See https://stackoverflow.com/a/36297483 if you're wondering about the $() thing.
 SMITHEREEN_CLIENT_ID=https:/$()/smithereen.my2007.net/apps/1
 SMITHEREEN_URL_SCHEME=smithereen
+SMITHEREEN_BUG_REPORT_EMAIL=jaskiewiczs@icloud.com
 
 #include? "DeveloperSettings.xcconfig"
