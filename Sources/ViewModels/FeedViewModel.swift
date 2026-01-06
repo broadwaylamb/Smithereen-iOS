@@ -23,8 +23,9 @@ final class FeedViewModel: ObservableObject {
         // TODO: Don't replace existing posts, mutate them instead.
         posts = response.items.compactMap { update in
             switch update.item {
-            case .post(let post):
-                PostViewModel(api: api, post: post, feed: self)
+            case .post(let postUpdate):
+                // TODO: Respect postUpdate.matchedFilters
+                PostViewModel(api: api, post: postUpdate.post, feed: self)
             default:
                 nil
             }
