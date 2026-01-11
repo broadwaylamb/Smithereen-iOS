@@ -218,6 +218,9 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
                 responseData: response.body,
                 error: error,
             )
+        } catch let error as SmithereenAPIError where error.code == .userAuthorizationFailed {
+            try? await storeSession(nil)
+            throw CancellationError()
         }
     }
 
