@@ -24,8 +24,11 @@ struct RootView: View {
     @ScaledMetric(relativeTo: .body)
     private var profilePictureSize = 37
 
-    @State private var userFirstName: String = "…"
-    @State private var userProfilePicture: ImageLocation?
+    private var profilePicture: ImageLocation? {
+        currentUserProfileViewModel
+            .squareProfilePictureSizes
+            .sizeThatFits(square: profilePictureSize)
+    }
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
@@ -42,9 +45,9 @@ struct RootView: View {
                 )
             } label: {
                 Label {
-                    Text(verbatim: userFirstName)
+                    Text(verbatim: currentUserProfileViewModel.firstName)
                 } icon: {
-                    UserProfilePictureView(location: userProfilePicture)
+                    UserProfilePictureView(location: profilePicture)
                         .frame(width: profilePictureSize, height: profilePictureSize)
                 }
             }
