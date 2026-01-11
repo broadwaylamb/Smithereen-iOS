@@ -1,5 +1,6 @@
 import SmithereenAPI
 
 struct UserProfileNavigationItem: Hashable {
-    var userID: UserID
+    /// If `nil`, navigate to the current user profile
+    var userID: UserID?
 }

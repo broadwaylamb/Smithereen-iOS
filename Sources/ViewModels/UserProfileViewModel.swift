@@ -4,39 +4,26 @@ import SmithereenAPI
 @MainActor
 final class UserProfileViewModel: ObservableObject {
     private let api: any APIService
-    private let userID: UserID?
-    private let feedViewModel: FeedViewModel
+    let userID: UserID?
     @Published var user: User?
-    @Published private var posts: [PostViewModel] = []
-    @Published var wallMode: WallMode = .allPosts
+    @Published var wallMode: User.WallMode
 
-    init(
-        api: any APIService,
-        userID: UserID?,
-        feedViewModel: FeedViewModel,
-    ) {
+    /// `userID` being null means the current user.
+    init(api: any APIService, userID: UserID?, user: User? = nil) {
         self.api = api
         self.userID = userID
-        self.feedViewModel = feedViewModel
+        self.user = user
+        self.wallMode = user?.wallDefault ?? .all
     }
 
-    func updateAll() async throws {
-        // TODO: Use Execute to simultaneously load posts and profile and everything
-        // TODO: Specify fields
-        let user = try await api.invokeMethod(Users.Get(fields: nil)).first
-        let posts = try await api.invokeMethod(
-            Wall.Get(
-                ownerID: userID.map(ActorID.init),
-                offset: nil, // TODO: Pagination
-                count: nil, // TODO: Pagination
-            )
-        )
-        withAnimation {
-            self.user = user
-            self.posts = posts.map {
-                PostViewModel(api: api, post: $0, feed: feedViewModel)
-            }
-        }
+    func loadProfile() async throws {
+        user = try await api.invokeMethod(
+            Users.Get(userIDs: userID.map { [$0] }, fields: ActorStorage.userFields)
+        ).first
+    }
+
+    var isMe: Bool {
+        userID == nil
     }
 
     var fullName: String {
@@ -115,13 +102,23 @@ final class UserProfileViewModel: ObservableObject {
         return user.onlineMobile == true || user.lastSeen?.platform == .mobile
     }
 
-    var filteredPosts: [PostViewModel] {
-        switch wallMode {
-        case .allPosts:
-            return posts
-        case .ownPosts:
-            return posts // TODO: Filter
-        }
+    var squareProfilePictureSizes: ImageSizes {
+        guard let user else { return .init() }
+        var sizes = ImageSizes()
+        sizes.append(size: 50, url: user.photo50)
+        sizes.append(size: 100, url: user.photo100)
+        sizes.append(size: 200, url: user.photo200)
+        sizes.append(size: 400, url: user.photo400)
+        sizes.append(size: .infinity, url: user.photoMax)
+        return sizes
+    }
+
+    func toPostAuthor() -> PostAuthor {
+        return PostAuthor(
+            id: userID.map(ActorID.init),
+            displayedName: user?.nameComponents.formatted(.name(style: .medium)) ?? "…",
+            profilePictureSizes: squareProfilePictureSizes,
+        )
     }
 }
 

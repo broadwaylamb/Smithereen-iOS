@@ -70,6 +70,17 @@ struct LRUCache<Key: Hashable, Value>: ~Copyable {
         return node
     }
 
+    private mutating func save(key: Key, newValue: Value) {
+        if dict.count >= capacity, let tail {
+            // Evict the least recently used node
+            dict[tail.key] = nil
+            detach(tail)
+        }
+        let newNode = Node(key: key, value: newValue)
+        dict[key] = newNode
+        insert(newNode)
+    }
+
     subscript(key: Key) -> Value? {
         mutating get {
             lookUp(key)?.value
@@ -85,15 +96,19 @@ struct LRUCache<Key: Hashable, Value>: ~Copyable {
                     dict[key] = nil
                 }
             } else if let newValue {
-                if dict.count >= capacity, let tail {
-                    // Evict the least recently used node
-                    dict[tail.key] = nil
-                    detach(tail)
-                }
-                let newNode = Node(key: key, value: newValue)
-                dict[key] = newNode
-                insert(newNode)
+                save(key: key, newValue: newValue)
             }
+        }
+    }
+
+    subscript(key: Key, default defaultValue: @autoclosure () -> Value) -> Value {
+        mutating get {
+            if let existingValue = lookUp(key)?.value {
+                return existingValue
+            }
+            let value = defaultValue()
+            save(key: key, newValue: value)
+            return value
         }
     }
 }

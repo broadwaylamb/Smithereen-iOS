@@ -7,7 +7,6 @@ final class ComposePostViewModel: ObservableObject {
     private let api: any APIService
     private let wallOwner: ActorID?
     private let repostedPost: PostViewModel?
-    private let showNewPost: @MainActor (WallPost) -> Void
 
     @Published private(set) var showActivityIndicator: Bool = false
     @Published var text: String = ""
@@ -19,12 +18,10 @@ final class ComposePostViewModel: ObservableObject {
         wallOwner: ActorID?,
         isShown: Binding<Bool>,
         repostedPost: PostViewModel? = nil,
-        showNewPost: @MainActor @escaping (WallPost) -> Void,
     ) {
         self.errorObserver = errorObserver
         self.api = api
         self.wallOwner = wallOwner
-        self.showNewPost = showNewPost
         self.repostedPost = repostedPost
         self._isShown = isShown
     }
@@ -41,12 +38,9 @@ final class ComposePostViewModel: ObservableObject {
         showActivityIndicator = value
     }
 
-    private func done(_ newPost: WallPost?) {
+    private func done() {
         isShown = false
         setActivityIndicator(false)
-        if let newPost {
-            showNewPost(newPost)
-        }
     }
 
     func submit() {
@@ -83,7 +77,7 @@ final class ComposePostViewModel: ObservableObject {
                     throw error
                 }
                 // TODO: If this is a repost, update the repost count (#18)
-                await done(nil)
+                await done()
             }
         }
     }

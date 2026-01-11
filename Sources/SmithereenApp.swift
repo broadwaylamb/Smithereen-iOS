@@ -5,23 +5,15 @@ struct SmithereenApp: App {
     @StateObject private var api = RealAPIService()
 
     @StateObject private var paletteHolder = PaletteHolder()
-    @StateObject private var feedViewModel: FeedViewModel
-
-    init() {
-        let api = RealAPIService()
-        self._api = StateObject(wrappedValue: api)
-        let viewModel = FeedViewModel(api: api)
-        self._feedViewModel = StateObject(wrappedValue: viewModel)
-    }
 
     @ViewBuilder
     private var window: some View {
         // TODO: Animate the transitions
         switch api.state {
         case .loading:
-            Color.white // TODO: Show AuthView but without the inputs
-        case .authenticated:
-            RootView(api: api, feedViewModel: feedViewModel)
+            Color.white.ignoresSafeArea() // TODO: Show LaunchScreen
+        case .authenticated(let actorStorage):
+            RootView(api: api, actorStorage: actorStorage)
         case .notAuthenticated:
             AuthView(viewModel: AuthViewModel(api: api))
         }

@@ -5,21 +5,26 @@ import SmithereenAPI
 final class PostViewModel: ObservableObject, Identifiable {
     let id: WallPostID
     let api: any APIService
+    let actorStorage: ActorStorage
+    let authors: [UserID : UserProfileViewModel]
     private(set) var post: WallPost
-
-    // Needed so that we could push a repost of this post to it, thus updating the feed immediately
-    private weak var feedViewModel: FeedViewModel?
 
     @Published var commentCount: Int = 0
     @Published var repostCount: Int = 0
     @Published var likeCount: Int = 0
     @Published var liked: Bool = false
 
-    init(api: any APIService, post: WallPost, feed: FeedViewModel) {
+    init(
+        api: any APIService,
+        actorStorage: ActorStorage,
+        authors: [UserID : UserProfileViewModel],
+        post: WallPost,
+    ) {
         self.id = post.id
         self.api = api
+        self.actorStorage = actorStorage
+        self.authors = authors
         self.post = post
-        self.feedViewModel = feed
         update(from: post)
     }
 
@@ -48,8 +53,23 @@ final class PostViewModel: ObservableObject, Identifiable {
         post.isMastodonStyleRepost ?? false
     }
 
+    /// Returns the author of the post or of one of the reposted posts.
+    ///
+    /// - parameter id: If this is a repost, the identifier of a reposted post.
+    ///   If `nil`, returns the author of the post itself.
     func getAuthor(_ id: WallPostID? = nil) -> PostAuthor {
-        PostAuthor(id: ActorID(rawValue: 1), displayedName: "TEST", profilePictureSizes: .init())
+        let post = getPostIncludingReposted(id)
+        guard let authorID = post.fromID.userID else {
+            // TODO: Support posts from groups
+            fatalError("Posts from groups are not supported")
+        }
+        if let viewModel = authors[authorID] {
+            return viewModel.toPostAuthor()
+        }
+
+        // This can only happen if the server doesn't send us the correct array
+        // of users in the response.
+        return actorStorage.getUser(authorID).toPostAuthor()
     }
 
     private func getPostIncludingReposted(_ postID: WallPostID?) -> WallPost {
@@ -129,7 +149,6 @@ final class PostViewModel: ObservableObject, Identifiable {
             wallOwner: nil,
             isShown: isShown,
             repostedPost: self,
-            showNewPost: { self.feedViewModel?.addNewPost($0) }
         )
     }
 

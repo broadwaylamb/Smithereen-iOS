@@ -1,14 +1,13 @@
 import SwiftUI
 
 struct UserProfileView: View {
-    var isMe: Bool
     @StateObject var viewModel: UserProfileViewModel
 
     @EnvironmentObject private var errorObserver: ErrorObserver
 
     private func refreshProfile() async {
         await errorObserver.runCatching {
-            try await viewModel.updateAll()
+//            try await viewModel.updateAll()
         }
     }
 
@@ -16,7 +15,7 @@ struct UserProfileView: View {
         List {
             Section {
                 UserProfileHeaderView(
-                    profilePicture: viewModel.user?.squareProfilePictureSizes,
+                    profilePicture: viewModel.squareProfilePictureSizes,
                     fullName: viewModel.fullName,
                     onlineOrLastSeen: viewModel.onlineOrLastSeen,
                     ageAndPlace: viewModel.ageAndPlace,
@@ -50,7 +49,7 @@ struct UserProfileView: View {
 
             Section {
                 WallSelectorView(
-                    actor: isMe
+                    actor: viewModel.isMe
                         ? .me
                         : .user(
                             firstNameGenitive: viewModel.firstNameGenitive,
@@ -66,15 +65,15 @@ struct UserProfileView: View {
                 Color.clear.frame(height: 19)
                     .listRowInsets(EdgeInsets())
             }
-            ForEach(viewModel.filteredPosts) { postViewModel in
-                Section {
-                    CompactPostView(viewModel: postViewModel)
-                        .listRowInsets(
-                            EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
-                        )
-                        .listSectionSeparatorTint(Color(#colorLiteral(red: 0.7843137383, green: 0.7843137383, blue: 0.7843137383, alpha: 1)))
-                }
-            }
+//            ForEach(viewModel.filteredPosts) { postViewModel in
+//                Section {
+//                    CompactPostView(viewModel: postViewModel)
+//                        .listRowInsets(
+//                            EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
+//                        )
+//                        .listSectionSeparatorTint(Color(#colorLiteral(red: 0.7843137383, green: 0.7843137383, blue: 0.7843137383, alpha: 1)))
+//                }
+//            }
         }
         .task {
             await refreshProfile()
@@ -92,20 +91,18 @@ struct UserProfileView: View {
     }
 }
 
-#Preview {
-    NavigationView {
-        UserProfileView(
-            isMe: true,
-            viewModel: UserProfileViewModel(
-                api: MockApi(),
-                userID: nil,
-                feedViewModel: FeedViewModel(api: MockApi())
-            )
-        )
-    }
-    .navigationViewStyle(.stack)
-    .navigationBarBackground(.visible)
-    .navigationBarColorScheme(.dark)
-    .environmentObject(PaletteHolder())
-    .environmentObject(ErrorObserver())
-}
+//#Preview {
+//    NavigationView {
+//        UserProfileView(
+//            isMe: true,
+//            viewModel: UserProfileViewModel(
+//                user: User
+//            )
+//        )
+//    }
+//    .navigationViewStyle(.stack)
+//    .navigationBarBackground(.visible)
+//    .navigationBarColorScheme(.dark)
+//    .environmentObject(PaletteHolder())
+//    .environmentObject(ErrorObserver())
+//}

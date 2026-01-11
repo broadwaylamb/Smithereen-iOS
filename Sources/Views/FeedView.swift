@@ -85,7 +85,9 @@ struct FeedView: View {
 }
 
 #Preview {
-    FeedView(viewModel: FeedViewModel(api: MockApi()))
+    let api = MockApi()
+    let actorStorage = ActorStorage(api: api, currentUserID: .init(rawValue: 1))
+    FeedView(viewModel: FeedViewModel(api: api, actorStorage: actorStorage))
         .environmentObject(PaletteHolder())
         .environmentObject(ErrorObserver())
         .prefireIgnored()

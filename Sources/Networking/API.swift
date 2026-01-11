@@ -33,13 +33,13 @@ protocol AuthenticationService: Sendable {
     func logOut() async
 }
 
-protocol APIService: Sendable {
+protocol APIService: AnyObject, Sendable {
     func invokeMethod<Method: SmithereenAPIRequest & Sendable>(
         _ method: Method
     ) async throws -> Method.Result
 }
 
-struct MockApi: AuthenticationService, APIService {
+final class MockApi: AuthenticationService, APIService {
     func authenticate<Method: SmithereenOAuthTokenRequest>(
         host: String,
         port: Int?,
@@ -57,7 +57,7 @@ struct MockApi: AuthenticationService, APIService {
 
 enum AuthenticationState {
     case loading
-    case authenticated
+    case authenticated(ActorStorage)
     case notAuthenticated
 }
 
@@ -74,36 +74,37 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
         self.state = state
     }
 
+    @MainActor
+    private func setAuthenticated(_ session: SessionInfo) {
+        state = .authenticated(ActorStorage(api: self, currentUserID: session.userID))
+    }
+
     private func storeSession(_ session: SessionInfo?) async throws {
         try keychain.clear()
         self.session = nil
-        let newState: AuthenticationState
         if let session {
             try keychain.storeSession(session)
             self.session = session
-            newState = .authenticated
+            await setAuthenticated(session)
         } else {
-            newState = .notAuthenticated
+            await setUIState(.notAuthenticated)
         }
-        await setUIState(newState)
     }
 
     func loadAuthenticationState() async {
-        let newState: AuthenticationState
         do {
             if let session = try keychain.retrieveSession() {
                 self.session = session
-                newState = .authenticated
+                await setAuthenticated(session)
             } else {
                 self.session = nil
-                newState = .notAuthenticated
+                await setUIState(.notAuthenticated)
             }
         } catch {
             try? keychain.clear()
             self.session = nil
-            newState = .notAuthenticated
+            await setUIState(.notAuthenticated)
         }
-        await setUIState(newState)
     }
 
     private struct Response: ResponseProtocol {

@@ -149,7 +149,6 @@ private struct ComposePostAdapter: UIViewRepresentable {
             api: MockApi(),
             wallOwner: nil,
             isShown: .constant(true),
-            showNewPost: { _ in },
         )
     )
 }

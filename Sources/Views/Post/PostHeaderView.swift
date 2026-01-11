@@ -106,10 +106,12 @@ private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: Vie
     private func userProfileLink(@ViewBuilder label: () -> some View) -> some View {
         Button(
             action: {
-                author.id.map { userID in
+                if let userID = author.id?.userID {
                     pushToNavigationStack(UserProfileNavigationItem(userID: userID))
-                } groupID: { _ in
+                } else if let _ = author.id?.groupID {
                     // TODO: Navigate to group
+                } else {
+                    pushToNavigationStack(UserProfileNavigationItem(userID: nil))
                 }
             },
             label: label

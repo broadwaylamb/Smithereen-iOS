@@ -4,11 +4,13 @@ import SmithereenAPI
 @MainActor
 final class FeedViewModel: ObservableObject {
     private let api: APIService
+    private let actorStorage: ActorStorage
 
     @Published private(set) var posts: [PostViewModel] = []
 
-    init(api: APIService) {
+    init(api: APIService, actorStorage: ActorStorage) {
         self.api = api
+        self.actorStorage = actorStorage
     }
 
     func update() async throws {
@@ -20,22 +22,23 @@ final class FeedViewModel: ObservableObject {
                 fields: nil, // TODO: Fields
             )
         )
+        let userViewModels = actorStorage.cacheUsers(response.profiles)
+
         // TODO: Don't replace existing posts, mutate them instead.
         posts = response.items.compactMap { update in
             switch update.item {
             case .post(let postUpdate):
                 // TODO: Respect postUpdate.matchedFilters
-                PostViewModel(api: api, post: postUpdate.post, feed: self)
+                PostViewModel(
+                    api: api,
+                    actorStorage: actorStorage,
+                    authors: userViewModels,
+                    post: postUpdate.post,
+                )
             default:
                 nil
             }
         }
-    }
-
-    func addNewPost(_ post: WallPost) {
-        let postViewModel = PostViewModel(api: api, post: post, feed: self)
-        // TODO: Use deque?
-        posts.insert(postViewModel, at: 0)
     }
 
     func createComposePostViewModel(
@@ -47,7 +50,6 @@ final class FeedViewModel: ObservableObject {
             api: api,
             wallOwner: nil,
             isShown: isShown,
-            showNewPost: self.addNewPost,
         )
     }
 }

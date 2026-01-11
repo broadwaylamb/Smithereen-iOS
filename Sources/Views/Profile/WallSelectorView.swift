@@ -1,10 +1,6 @@
 import Placement
 import SwiftUI
-
-enum WallMode {
-    case allPosts
-    case ownPosts
-}
+import SmithereenAPI
 
 enum WallSelectorActor {
     case me
@@ -14,8 +10,8 @@ enum WallSelectorActor {
 
 private struct WallSelectorButton: View {
     var title: LocalizedStringKey
-    var mode: WallMode
-    @Binding var selectedMode: WallMode
+    var mode: User.WallMode
+    @Binding var selectedMode: User.WallMode
     var body: some View {
         Button {
             withAnimation(.easeInOut(duration: 0.1)) {
@@ -34,12 +30,12 @@ private struct WallSelectorButton: View {
 
 struct WallSelectorView: View {
     var actor: WallSelectorActor
-    @Binding var selectedMode: WallMode
+    @Binding var selectedMode: User.WallMode
     @EnvironmentObject private var palette: PaletteHolder
     @Namespace private var animationNamespace
 
     @ViewBuilder
-    private func selectorBackground(mode: WallMode) -> some View {
+    private func selectorBackground(mode: User.WallMode) -> some View {
         if selectedMode == mode {
             Color(#colorLiteral(red: 0.8902018666, green: 0.8901113868, blue: 0.8988136053, alpha: 1))
                 .cornerRadius(3)
@@ -50,7 +46,7 @@ struct WallSelectorView: View {
         }
     }
 
-    private func button(_ title: LocalizedStringKey, mode: WallMode) -> some View {
+    private func button(_ title: LocalizedStringKey, mode: User.WallMode) -> some View {
         WallSelectorButton(title: title, mode: mode, selectedMode: $selectedMode)
             .background {
                 selectorBackground(mode: mode)
@@ -60,7 +56,7 @@ struct WallSelectorView: View {
     private func buttonThatFits(
         longTitle: LocalizedStringKey,
         shortTitle: LocalizedStringKey,
-        mode: WallMode,
+        mode: User.WallMode,
     ) -> some View {
         PlacementThatFits(in: .horizontal, prefersViewThatFits: false) {
             WallSelectorButton(title: longTitle, mode: mode, selectedMode: $selectedMode)
@@ -75,23 +71,23 @@ struct WallSelectorView: View {
         HStack(spacing: 12) {
             switch actor {
             case .me:
-                button("All posts", mode: .allPosts)
-                button("My posts", mode: .ownPosts)
+                button("All posts", mode: .all)
+                button("My posts", mode: .owner)
             case .user(let firstNameGenitive, canPost: true):
-                button("All posts", mode: .allPosts)
+                button("All posts", mode: .all)
                 buttonThatFits(
                     longTitle: "\(firstNameGenitive)'s posts",
                     shortTitle: "Own posts",
-                    mode: .ownPosts
+                    mode: .owner
                 )
             case .user(let firstNameGenitive, canPost: false):
                 buttonThatFits(
                     longTitle: "\(firstNameGenitive)'s posts",
                     shortTitle: "All posts",
-                    mode: .allPosts
+                    mode: .all
                 )
             case .group:
-                button("All posts", mode: .allPosts)
+                button("All posts", mode: .all)
             }
         }
         .lineLimit(1)
@@ -101,7 +97,7 @@ struct WallSelectorView: View {
 
 @available(iOS 17.0, *)
 #Preview(traits: .sizeThatFitsLayout) {
-    @Previewable @State var mode = WallMode.allPosts
+    @Previewable @State var mode = User.WallMode.all
     WallSelectorView(
         actor: .user(firstNameGenitive: "Boromir", canPost: true),
         selectedMode: $mode,
