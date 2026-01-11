@@ -1,5 +1,5 @@
 import Foundation
-import SwiftSoup
+import SmithereenAPI
 
 // All the text formating supported by Smithereen in posts.
 // https://smithereen.software/docs/api/text-formatting/
@@ -11,19 +11,11 @@ struct PostText: Equatable {
         blocks = []
     }
 
-    init(_ element: Element) {
-        let parser = Parser()
-        element.traverse(parser)
-        blocks = parser.result
-    }
-
     init(html: String) {
-        do {
-            self.init(try SwiftSoup.parse(html))
-        } catch {
-            self.init()
-            blocks = [.paragraph(content: [.text(html)])]
-        }
+        let delegate = Parser()
+        let parser = HTMLParser(options: [])
+        parser.parse(html, delegate: delegate)
+        blocks = delegate.result
     }
 
     var isEmpty: Bool {
@@ -59,17 +51,18 @@ enum PostTextInlineNode: Sendable, Equatable {
     case strikethrough(children: [PostTextInlineNode])
     case `subscript`(children: [PostTextInlineNode])
     case superscript(children: [PostTextInlineNode])
-    case link(URL, children: [PostTextInlineNode])
+    case link(URL, mentionedUser: UserID?, children: [PostTextInlineNode])
 }
 
-private final class Parser: NodeVisitor {
-    typealias Error = Never
+private final class Parser: HTMLParserDelegate {
 
     private var codeBlockDepth = 0
     private var lastWasWhite = false
     private var stripLeadingWhitespace = true
 
     private var code = ""
+    private var linkURL: URL?
+    private var mentionedUserID: UserID?
     private var blocks: [[PostTextBlock]] = []
     private var inlineNodes: [[PostTextInlineNode]] = []
 
@@ -84,85 +77,92 @@ private final class Parser: NodeVisitor {
         return []
     }
 
-    func head(_ node: Node) {
-        if let element = node as? Element {
-            switch element.tagNameNormal() {
-            case "pre":
-                codeBlockDepth += 1
-                return
-            case "blockquote":
-                stripLeadingWhitespace = true
-                blocks.append([])
-            case "p":
-                stripLeadingWhitespace = true
-                inlineNodes = []
-            case "br":
-                stripLeadingWhitespace = true
-            case "a", "b", "i", "u", "s", "code", "sub", "sup":
-                inlineNodes.append([])
-            default:
-                break
+    func startElement(_ tagName: String, attributes: [String : String]) {
+        switch tagName.lowercased(with: .posix) {
+        case "pre":
+            codeBlockDepth += 1
+            return
+        case "blockquote":
+            stripLeadingWhitespace = true
+            blocks.append([])
+        case "p":
+            stripLeadingWhitespace = true
+            inlineNodes = []
+        case "br":
+            stripLeadingWhitespace = true
+        case "a":
+            linkURL = attributes["href"].flatMap(URL.init)
+            if attributes["class"] == "mention" {
+                mentionedUserID = attributes["data-user-id"]
+                    .flatMap(UserID.RawValue.init)
+                    .map(UserID.init)
             }
+            inlineNodes.append([])
+        case "b", "i", "u", "s", "code", "sub", "sup":
+            inlineNodes.append([])
+        default:
+            break
         }
     }
 
-    func tail(_ node: Node) {
-        if let textNode = node as? TextNode {
-            let text = textNode.getWholeText()
-            if codeBlockDepth > 0 {
-                code += text
-            } else {
-                appendInlineNode(.text(normalizedWhitespace(text)))
+    func foundCharacters(_ text: String) {
+        if codeBlockDepth > 0 {
+            code += text
+        } else {
+            appendInlineNode(.text(normalizedWhitespace(text)))
+        }
+    }
+
+    func endElement(_ tagName: String) {
+        switch tagName.lowercased(with: .posix) {
+        case "p":
+            if !inlineNodes.isEmpty {
+                let content = inlineNodes.removeLast()
+                inlineNodes = []
+                appendBlock(.paragraph(content: content))
             }
-        } else if let element = node as? Element {
-            let tagName = element.tagNameNormal()
-            switch tagName {
-            case "p":
-                if !inlineNodes.isEmpty {
-                    let content = inlineNodes.removeLast()
-                    inlineNodes = []
-                    appendBlock(.paragraph(content: content))
-                }
-            case "pre":
-                codeBlockDepth -= 1
-                if codeBlockDepth == 0 {
-                    appendBlock(.codeBlock(content: code))
-                    code = ""
-                }
-            case "blockquote":
-                var children = blocks.pop() ?? []
-                if children.isEmpty {
-                    let inlineNodes = self.inlineNodes.first ?? []
-                    self.inlineNodes = []
-                    children = [.paragraph(content: inlineNodes)]
-                }
-                appendBlock(.quote(children: children))
-            case "a":
-                let href = (try? element.attr("href")) ?? ""
-                if !href.isEmpty, let url = URL(string: href) {
-                    finalizeInlineNode { .link(url, children: $0) }
-                } else if !inlineNodes.isEmpty {
-                    inlineNodes.removeLast()
-                }
-            case "b":
-                finalizeInlineNode(PostTextInlineNode.strong)
-            case "i":
-                finalizeInlineNode(PostTextInlineNode.emphasis)
-            case "u":
-                finalizeInlineNode(PostTextInlineNode.underline)
-            case "s":
-                finalizeInlineNode(PostTextInlineNode.strikethrough)
-            case "code":
-                finalizeInlineNode(PostTextInlineNode.code)
-            case "sub":
-                finalizeInlineNode(PostTextInlineNode.subscript)
-            case "sup":
-                finalizeInlineNode(PostTextInlineNode.superscript)
-            case "br":
-                appendInlineNode(.lineBreak)
-            default:
-                break
+        case "pre":
+            codeBlockDepth -= 1
+            if codeBlockDepth == 0 {
+                appendBlock(.codeBlock(content: code))
+                code = ""
             }
+        case "blockquote":
+            var children = blocks.pop() ?? []
+            if children.isEmpty {
+                let inlineNodes = self.inlineNodes.first ?? []
+                self.inlineNodes = []
+                children = [.paragraph(content: inlineNodes)]
+            }
+            appendBlock(.quote(children: children))
+        case "a":
+            if let url = linkURL {
+                finalizeInlineNode {
+                    .link(url, mentionedUser: mentionedUserID, children: $0)
+                }
+            } else if !inlineNodes.isEmpty {
+                inlineNodes.removeLast()
+            }
+            linkURL = nil
+            mentionedUserID = nil
+        case "b":
+            finalizeInlineNode(PostTextInlineNode.strong)
+        case "i":
+            finalizeInlineNode(PostTextInlineNode.emphasis)
+        case "u":
+            finalizeInlineNode(PostTextInlineNode.underline)
+        case "s":
+            finalizeInlineNode(PostTextInlineNode.strikethrough)
+        case "code":
+            finalizeInlineNode(PostTextInlineNode.code)
+        case "sub":
+            finalizeInlineNode(PostTextInlineNode.subscript)
+        case "sup":
+            finalizeInlineNode(PostTextInlineNode.superscript)
+        case "br":
+            appendInlineNode(.lineBreak)
+        default:
+            break
         }
     }
 

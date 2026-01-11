@@ -49,7 +49,7 @@ final class PostViewModel: ObservableObject, Identifiable {
     }
 
     func getAuthor(_ id: WallPostID? = nil) -> PostAuthor {
-        fatalError("Not implemented yet")
+        PostAuthor(id: ActorID(rawValue: 1), displayedName: "TEST", profilePictureSizes: .init())
     }
 
     private func getPostIncludingReposted(_ postID: WallPostID?) -> WallPost {

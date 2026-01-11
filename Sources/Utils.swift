@@ -103,3 +103,7 @@ extension Data {
         return String(characters)
     }
 }
+
+extension Locale {
+    static let posix = Locale(identifier: "en_US_POSIX")
+}

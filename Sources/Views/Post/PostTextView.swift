@@ -1,4 +1,3 @@
-import SwiftSoup
 import SwiftUI
 import SmithereenAPI
 
@@ -182,7 +181,7 @@ extension AttributedString {
                         attributes: newAttributes,
                         subscriptDepth: subscriptDepth + 1,
                     )
-                case .link(let url, let children):
+                case .link(let url, _, let children):
                     var newAttributes = attributes
                     newAttributes.link = url
                     recurse(

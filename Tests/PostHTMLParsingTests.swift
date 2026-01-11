@@ -1,4 +1,3 @@
-import SwiftSoup
 import Testing
 
 @testable import Smithereen
@@ -15,9 +14,9 @@ struct PostHTMLParsingTests {
         #expect(
             postText.toHTML() == """
             <p>
-              Paragraph with
+              Paragraph with 
               <br/>
-              multiple
+              multiple 
               <br/>
               lines.
             </p>
@@ -153,11 +152,28 @@ struct PostHTMLParsingTests {
         #expect(
             postText.toHTML() == """
             <p>
-              &nbsp;&nbsp;▲
+              &nbsp;&nbsp;▲ 
               <br/>
-              ▲&nbsp;▲
+              ▲&nbsp;▲ 
               <br/>
-              . &nbsp; &nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.
+              . &nbsp; &nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;. 
+            </p>
+            """
+        )
+    }
+
+    @Test func testMention() {
+        let postText = PostText(
+            html: """
+            <p>
+            <a href="https://smithereen.local/users/1" class="mention" data-user-id="1">Hello!</a>
+            </p>
+            """
+        )
+        #expect(
+            postText.toHTML() == """
+            <p>
+              <a href="https://smithereen.local/users/1" class="mention" data-user-id="1">Hello!</a> 
             </p>
             """
         )
@@ -211,9 +227,7 @@ extension PostTextInlineNode {
     func toHTML(level: Int) -> String {
         switch self {
         case .text(let text):
-            return Entities.escape(text)
-                // Fixing a SwiftSoup bug https://github.com/scinfu/SwiftSoup/issues/313
-                .replacingOccurrences(of: "\u{A0}", with: "&nbsp;")
+            return text.replacingOccurrences(of: "\u{A0}", with: "&nbsp;")
         case .lineBreak:
             return "\n\(indent(level))<br/>\n\(indent(level))"
         case .code(let children):
@@ -230,8 +244,13 @@ extension PostTextInlineNode {
             return "<sub>\(children.toHTML(level: level))</sub>"
         case .superscript(let children):
             return "<sup>\(children.toHTML(level: level))</sup>"
-        case .link(let url, let children):
-            return "<a href=\"\(url)\">\(children.toHTML(level: level))</a>"
+        case .link(let url, let mentionedActorID, let children):
+            let mentionAttrs = if let mentionedActorID {
+                #" class="mention" data-user-id="\#(mentionedActorID)""#
+            } else {
+                ""
+            }
+            return "<a href=\"\(url)\"\(mentionAttrs)>\(children.toHTML(level: level))</a>"
         }
     }
 }
