@@ -4,8 +4,8 @@ import SmithereenAPI
 // All the text formating supported by Smithereen in posts.
 // https://smithereen.software/docs/api/text-formatting/
 
-struct PostText: Equatable {
-    var blocks: [PostTextBlock]
+struct RichText: Equatable {
+    var blocks: [Block]
 
     init() {
         blocks = []
@@ -21,9 +21,28 @@ struct PostText: Equatable {
     var isEmpty: Bool {
         blocks.isEmpty
     }
+
+    enum Block: Sendable, Equatable {
+        case paragraph(content: [InlineNode])
+        case quote(children: [Block])
+        case codeBlock(content: String)
+    }
+
+    enum InlineNode: Sendable, Equatable {
+        case text(String)
+        case lineBreak
+        case code(children: [InlineNode])
+        case strong(children: [InlineNode])
+        case emphasis(children: [InlineNode])
+        case underline(children: [InlineNode])
+        case strikethrough(children: [InlineNode])
+        case `subscript`(children: [InlineNode])
+        case superscript(children: [InlineNode])
+        case link(URL, mentionedUser: UserID?, children: [InlineNode])
+    }
 }
 
-extension PostText: ExpressibleByStringLiteral {
+extension RichText: ExpressibleByStringLiteral {
     typealias StringLiteralType = String
 
     typealias ExtendedGraphemeClusterLiteralType = String
@@ -35,25 +54,6 @@ extension PostText: ExpressibleByStringLiteral {
     }
 }
 
-enum PostTextBlock: Sendable, Equatable {
-    case paragraph(content: [PostTextInlineNode])
-    case quote(children: [PostTextBlock])
-    case codeBlock(content: String)
-}
-
-enum PostTextInlineNode: Sendable, Equatable {
-    case text(String)
-    case lineBreak
-    case code(children: [PostTextInlineNode])
-    case strong(children: [PostTextInlineNode])
-    case emphasis(children: [PostTextInlineNode])
-    case underline(children: [PostTextInlineNode])
-    case strikethrough(children: [PostTextInlineNode])
-    case `subscript`(children: [PostTextInlineNode])
-    case superscript(children: [PostTextInlineNode])
-    case link(URL, mentionedUser: UserID?, children: [PostTextInlineNode])
-}
-
 private final class Parser: HTMLParserDelegate {
 
     private var codeBlockDepth = 0
@@ -63,10 +63,10 @@ private final class Parser: HTMLParserDelegate {
     private var code = ""
     private var linkURL: URL?
     private var mentionedUserID: UserID?
-    private var blocks: [[PostTextBlock]] = []
-    private var inlineNodes: [[PostTextInlineNode]] = []
+    private var blocks: [[RichText.Block]] = []
+    private var inlineNodes: [[RichText.InlineNode]] = []
 
-    var result: [PostTextBlock] {
+    var result: [RichText.Block] {
         if let blocks = blocks.first {
             return blocks
         }
@@ -146,19 +146,19 @@ private final class Parser: HTMLParserDelegate {
             linkURL = nil
             mentionedUserID = nil
         case "b":
-            finalizeInlineNode(PostTextInlineNode.strong)
+            finalizeInlineNode(RichText.InlineNode.strong)
         case "i":
-            finalizeInlineNode(PostTextInlineNode.emphasis)
+            finalizeInlineNode(RichText.InlineNode.emphasis)
         case "u":
-            finalizeInlineNode(PostTextInlineNode.underline)
+            finalizeInlineNode(RichText.InlineNode.underline)
         case "s":
-            finalizeInlineNode(PostTextInlineNode.strikethrough)
+            finalizeInlineNode(RichText.InlineNode.strikethrough)
         case "code":
-            finalizeInlineNode(PostTextInlineNode.code)
+            finalizeInlineNode(RichText.InlineNode.code)
         case "sub":
-            finalizeInlineNode(PostTextInlineNode.subscript)
+            finalizeInlineNode(RichText.InlineNode.subscript)
         case "sup":
-            finalizeInlineNode(PostTextInlineNode.superscript)
+            finalizeInlineNode(RichText.InlineNode.superscript)
         case "br":
             appendInlineNode(.lineBreak)
         default:
@@ -166,7 +166,7 @@ private final class Parser: HTMLParserDelegate {
         }
     }
 
-    private func appendBlock(_ block: PostTextBlock) {
+    private func appendBlock(_ block: RichText.Block) {
         if blocks.isEmpty {
             blocks.append([])
         }
@@ -174,14 +174,14 @@ private final class Parser: HTMLParserDelegate {
     }
 
     private func finalizeInlineNode(
-        _ createNode: ([PostTextInlineNode]) -> PostTextInlineNode,
+        _ createNode: ([RichText.InlineNode]) -> RichText.InlineNode,
     ) {
         if let children = inlineNodes.pop() {
             appendInlineNode(createNode(children))
         }
     }
 
-    private func appendInlineNode(_ node: PostTextInlineNode) {
+    private func appendInlineNode(_ node: RichText.InlineNode) {
         if inlineNodes.isEmpty {
             inlineNodes.append([])
         }

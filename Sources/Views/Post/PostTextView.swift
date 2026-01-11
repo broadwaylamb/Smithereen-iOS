@@ -2,7 +2,7 @@ import SwiftUI
 import SmithereenAPI
 
 struct PostTextView: View {
-    var blocks: [PostTextBlock]
+    var blocks: [RichText.Block]
 
     private static let defaultBodyFont = UIFont
         .preferredFont(
@@ -28,7 +28,7 @@ struct PostTextView: View {
         defaultBodyFont.capHeight * (1 - subscriptFontSizeMultiplier / 2)
 
     @ViewBuilder
-    private func renderBlock(_ block: PostTextBlock) -> some View {
+    private func renderBlock(_ block: RichText.Block) -> some View {
         switch block {
         case .paragraph(let content):
             Text(
@@ -66,13 +66,13 @@ struct PostTextView: View {
 }
 
 extension PostTextView {
-    init(_ postText: PostText) {
+    init(_ postText: RichText) {
         blocks = postText.blocks
     }
 }
 
 private struct QuoteView: View {
-    var blocks: [PostTextBlock]
+    var blocks: [RichText.Block]
 
     @ScaledMetric(relativeTo: .body) private var verticalLineThickness = 2
     @ScaledMetric(relativeTo: .body) private var verticalTextPadding = 2
@@ -109,14 +109,14 @@ private struct CodeBlockView: View {
 extension AttributedString {
     @MainActor
     init(
-        _ nodes: [PostTextInlineNode],
+        _ nodes: [RichText.InlineNode],
         baseFontSize: CGFloat,
         subscriptBaselineOffset: CGFloat,
         superscriptBaselineOffset: CGFloat,
     ) {
         self.init()
         func recurse(
-            _ nodes: [PostTextInlineNode],
+            _ nodes: [RichText.InlineNode],
             attributes: AttributeContainer,
             subscriptDepth: Int,
         ) {
@@ -199,7 +199,7 @@ extension AttributedString {
 @available(iOS 17.0, *)
 #Preview("Basic", traits: .sizeThatFitsLayout) {
     PostTextView(
-        PostText(
+        RichText(
             html: """
             <p>
                 First paragraph, with <b>bold</b>, <i>italic</i>, <u>underlined</u>,

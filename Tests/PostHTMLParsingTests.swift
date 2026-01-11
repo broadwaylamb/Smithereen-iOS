@@ -2,9 +2,9 @@ import Testing
 
 @testable import Smithereen
 
-struct PostHTMLParsingTests {
+struct RichTextParsingTests {
     @Test func testBlocks() {
-        let postText = PostText(
+        let postText = RichText(
             html: """
             <p>Paragraph with <br/> multiple <br/> lines.</p>
             <blockquote><p>Quote</p></blockquote>
@@ -31,7 +31,7 @@ struct PostHTMLParsingTests {
     }
 
     @Test func testNestedParagraphs() {
-        let postText = PostText(
+        let postText = RichText(
             html: """
             <p>Outer<p>Inner</p>Outer</p>
             """
@@ -50,7 +50,7 @@ struct PostHTMLParsingTests {
     }
 
     @Test func testQuoteInsideParagraph() {
-        let postText = PostText(
+        let postText = RichText(
             html: """
             <p>1<blockquote>Quote</blockquote>2</p>
             """
@@ -71,7 +71,7 @@ struct PostHTMLParsingTests {
     }
 
     @Test func testNestedQuotes() {
-        let postText = PostText(
+        let postText = RichText(
             html: """
             <blockquote><p>Outer</p><blockquote><p>Inner</p></blockquote><p>Outer</p></blockquote>
             """
@@ -97,7 +97,7 @@ struct PostHTMLParsingTests {
     }
 
     @Test func testNestedCodeBlocks() {
-        let postText = PostText(
+        let postText = RichText(
             html: """
             <pre>code<pre>nested</pre>code</pre>
             """
@@ -111,7 +111,7 @@ struct PostHTMLParsingTests {
     }
 
     @Test func testPlainText() {
-        let postText = PostText(html: "Plain text")
+        let postText = RichText(html: "Plain text")
 
         #expect(
             postText.toHTML() == """
@@ -123,7 +123,7 @@ struct PostHTMLParsingTests {
     }
 
     @Test func testQuoteWithoutParagraphs() {
-        let postText = PostText(html: "<blockquote>Quote</blockquote>")
+        let postText = RichText(html: "<blockquote>Quote</blockquote>")
 
         #expect(
             postText.toHTML() == """
@@ -137,7 +137,7 @@ struct PostHTMLParsingTests {
     }
 
     @Test func testNonBreakingSpace() {
-        let postText = PostText(
+        let postText = RichText(
             html: """
             <p>
             &nbsp;&nbsp;▲
@@ -163,7 +163,7 @@ struct PostHTMLParsingTests {
     }
 
     @Test func testMention() {
-        let postText = PostText(
+        let postText = RichText(
             html: """
             <p>
             <a href="https://smithereen.local/users/1" class="mention" data-user-id="1">Hello!</a>
@@ -180,13 +180,13 @@ struct PostHTMLParsingTests {
     }
 }
 
-extension PostText {
+extension RichText {
     func toHTML() -> String {
         return blocks.toHTML(level: 0)
     }
 }
 
-extension PostTextBlock {
+extension RichText.Block {
     func toHTML(level: Int) -> String {
         switch self {
         case .paragraph(let content):
@@ -211,19 +211,19 @@ private func indent(_ level: Int) -> String {
     return String(repeating: " ", count: level * 2)
 }
 
-extension Sequence where Element == PostTextInlineNode {
+extension Sequence where Element == RichText.InlineNode {
     func toHTML(level: Int) -> String {
         map { $0.toHTML(level: level) }.joined()
     }
 }
 
-extension Sequence where Element == PostTextBlock {
+extension Sequence where Element == RichText.Block {
     func toHTML(level: Int) -> String {
         map { $0.toHTML(level: level) }.joined(separator: "\n")
     }
 }
 
-extension PostTextInlineNode {
+extension RichText.InlineNode {
     func toHTML(level: Int) -> String {
         switch self {
         case .text(let text):

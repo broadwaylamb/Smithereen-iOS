@@ -72,12 +72,12 @@ final class PostViewModel: ObservableObject, Identifiable {
         postDateFormatter.string(from: getPostIncludingReposted(postID).date)
     }
 
-    func getText(postID: WallPostID? = nil) -> PostText {
+    func getText(postID: WallPostID? = nil) -> RichText {
         // TODO: Cache parsed HTML?
         getPostIncludingReposted(postID)
             .text
-            .map(PostText.init(html:))
-            ?? PostText()
+            .map(RichText.init(html:))
+            ?? RichText()
     }
 
     func getAttachments(postID: WallPostID? = nil) -> [Attachment] {
