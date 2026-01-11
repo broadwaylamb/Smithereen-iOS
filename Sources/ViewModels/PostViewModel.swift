@@ -89,7 +89,7 @@ final class PostViewModel: ObservableObject, Identifiable {
     }
 
     func getPostDate(postID: WallPostID? = nil) -> String {
-        postDateFormatter.string(from: getPostIncludingReposted(postID).date)
+        AdaptiveDateFormatter.default.string(from: getPostIncludingReposted(postID).date)
     }
 
     func getText(postID: WallPostID? = nil) -> RichText {
@@ -156,11 +156,3 @@ final class PostViewModel: ObservableObject, Identifiable {
         withAnimation(.easeInOut(duration: 0.2), body)
     }
 }
-
-private let postDateFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.doesRelativeDateFormatting = true
-    formatter.dateStyle = .long
-    formatter.timeStyle = .short
-    return formatter
-}()

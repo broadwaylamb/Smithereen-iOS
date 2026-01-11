@@ -63,7 +63,14 @@ final class UserProfileViewModel: ObservableObject {
             return "online"
         }
         if let lastSeen = user.lastSeen {
-            return "last seen \(lastSeen.time, formatter: lastSeenDateFormatter)"
+            switch user.sex {
+            case .male:
+                return "last_seen_male \(lastSeen.time, formatter: AdaptiveDateFormatter.default)"
+            case .female:
+                return "last_seen_female \(lastSeen.time, formatter: AdaptiveDateFormatter.default)"
+            case .other, nil:
+                return "last_seen_other \(lastSeen.time, formatter: AdaptiveDateFormatter.default)"
+            }
         }
         return nil
     }
@@ -121,11 +128,3 @@ final class UserProfileViewModel: ObservableObject {
         )
     }
 }
-
-private let lastSeenDateFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.doesRelativeDateFormatting = true
-    formatter.dateStyle = .long
-    formatter.timeStyle = .short
-    return formatter
-}()
