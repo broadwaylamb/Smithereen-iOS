@@ -19,7 +19,7 @@ final class FeedViewModel: ObservableObject {
                 filters: nil, // TODO: Filter
                 startFrom: nil, // TODO: Pagination
                 count: nil, // TODO: Pagination
-                fields: nil, // TODO: Fields
+                fields: ActorStorage.actorFields,
             )
         )
         let userViewModels = actorStorage.cacheUsers(response.profiles)

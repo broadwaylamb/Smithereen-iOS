@@ -107,3 +107,16 @@ extension Data {
 extension Locale {
     static let posix = Locale(identifier: "en_US_POSIX")
 }
+
+extension Sequence where Element: Hashable {
+    func distinct() -> [Element] {
+        var result = [Element]()
+        var seen = Set<Element>()
+        for element in self {
+            if seen.insert(element).inserted {
+                result.append(element)
+            }
+        }
+        return result
+    }
+}

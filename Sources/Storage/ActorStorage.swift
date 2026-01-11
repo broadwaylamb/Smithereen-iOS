@@ -1,5 +1,4 @@
 import SmithereenAPI
-import SwiftUI
 
 @MainActor
 final class ActorStorage {
@@ -65,6 +64,12 @@ final class ActorStorage {
         .firstNameGen,
         .counters,
     ]
+
+    static let groupFields: [Group.Field] = [
+    ]
+
+    static let actorFields: [ActorField] =
+        (userFields.map(ActorField.init) + groupFields.map(ActorField.init)).distinct()
 
     func cacheUser(_ user: User) -> UserProfileViewModel {
         if user.id == currentUserViewModel.userID {
