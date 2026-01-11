@@ -40,9 +40,13 @@ private let profilePictureHeight: CGFloat = 85
 
 private struct ProfilePictureView: View {
     var profilePicture: ImageSizes?
+
+    @Environment(\.displayScale) private var displayScale
+
     var body: some View {
         UserProfilePictureView(
-            location: profilePicture?.sizeThatFits(square: profilePictureHeight)
+            location: profilePicture?
+                .sizeThatFits(square: profilePictureHeight, scale: displayScale)
         )
         .frame(width: profilePictureHeight, height: profilePictureHeight)
         .aspectRatio(1, contentMode: .fit)

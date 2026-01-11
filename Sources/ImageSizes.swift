@@ -1,5 +1,5 @@
-import Foundation
 import SmithereenAPI
+import UIKit
 
 struct ImageSizes {
     fileprivate var sizes: [(CGFloat, URL)] = []
@@ -10,8 +10,8 @@ struct ImageSizes {
         }
     }
 
-    func sizeThatFits(width: CGFloat, height: CGFloat) -> ImageLocation? {
-        let minSide = min(width, height)
+    func sizeThatFits(width: CGFloat, height: CGFloat, scale: CGFloat) -> ImageLocation? {
+        let minSide = min(width, height) * scale
         for (side, url) in sizes {
             if minSide < side {
                 return ImageLocation(url: url)
@@ -20,8 +20,8 @@ struct ImageSizes {
         return nil
     }
 
-    func sizeThatFits(square: CGFloat) -> ImageLocation? {
-        sizeThatFits(width: square, height: square)
+    func sizeThatFits(square: CGFloat, scale: CGFloat) -> ImageLocation? {
+        sizeThatFits(width: square, height: square, scale: scale)
     }
 }
 

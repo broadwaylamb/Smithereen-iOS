@@ -24,10 +24,12 @@ struct RootView: View {
     @ScaledMetric(relativeTo: .body)
     private var profilePictureSize = 37
 
+    @Environment(\.displayScale) private var displayScale
+
     private var profilePicture: ImageLocation? {
         currentUserProfileViewModel
             .squareProfilePictureSizes
-            .sizeThatFits(square: profilePictureSize)
+            .sizeThatFits(square: profilePictureSize, scale: displayScale)
     }
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass

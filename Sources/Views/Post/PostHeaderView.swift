@@ -74,6 +74,8 @@ private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: Vie
 
     @ScaledMetric private var imageSize: CGFloat
 
+    @Environment(\.displayScale) private var displayScale: CGFloat
+
     @Environment(\.pushToNavigationStack) private var pushToNavigationStack
 
     init(
@@ -123,7 +125,9 @@ private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: Vie
         HStack(spacing: 8) {
             userProfileLink {
                 UserProfilePictureView(
-                    location: author.profilePictureSizes.sizeThatFits(square: imageSize)
+                    location: author
+                        .profilePictureSizes
+                        .sizeThatFits(square: imageSize, scale: displayScale)
                 ).frame(width: imageSize, height: imageSize)
             }
             VStack(alignment: .leading, spacing: 2) {
