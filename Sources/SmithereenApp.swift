@@ -8,7 +8,6 @@ struct SmithereenApp: App {
 
     @ViewBuilder
     private var window: some View {
-        // TODO: Animate the transitions
         switch api.state {
         case .loading:
             Color.white.ignoresSafeArea() // TODO: Show LaunchScreen
@@ -19,9 +18,26 @@ struct SmithereenApp: App {
         }
     }
 
+    private struct AnimatableAuthenticationState: Equatable {
+        var state: AuthenticationState
+
+        static func == (lhs: Self, rhs: Self) -> Bool {
+            switch (lhs.state, rhs.state) {
+            case (.loading, .loading): return true
+            case (.authenticated, .authenticated): return true
+            case (.notAuthenticated, .notAuthenticated): return true
+            default: return false
+            }
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             window
+                .animation(
+                    .easeIn(duration: 0.15),
+                    value: AnimatableAuthenticationState(state: api.state)
+                )
                 .provideWebAuthenticationSession()
                 .provideWindow()
                 .tint(paletteHolder.accent)
