@@ -61,6 +61,7 @@ struct FeedView: View {
                 }
                 .tint(Color.white)
             }
+            .disableLiquidShit()
         }
         .sheet(isPresented: $composePostShown) {
             ComposePostView(

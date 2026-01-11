@@ -25,6 +25,7 @@ struct SMNavigationStack<Content: View>: View {
                             .tint(Color.white)
                         }
                     }
+                    .disableLiquidShit()
                     ToolbarItem(placement: .topBarTrailing) {
                         if isModal {
                             Button(action: dismiss.callAsFunction) {
@@ -33,6 +34,7 @@ struct SMNavigationStack<Content: View>: View {
                             .tint(Color.white)
                         }
                     }
+                    .disableLiquidShit()
                 }
         }
         .environment(\.pushToNavigationStack) { item in

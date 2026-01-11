@@ -166,3 +166,13 @@ extension View {
         }
     }
 }
+
+extension ToolbarContent {
+    func disableLiquidShit() -> some ToolbarContent {
+        if #available(iOS 26.0, *) {
+            return sharedBackgroundVisibility(.hidden)
+        } else {
+            return self
+        }
+    }
+}

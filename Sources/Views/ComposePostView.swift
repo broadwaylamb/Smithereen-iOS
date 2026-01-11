@@ -31,28 +31,32 @@ struct ComposePostView: View {
                     }
                 }
                 .navigationBarTitleDisplayMode(.inline)
+                .navigationBarBackground(.white)
+                .navigationBarBackground(.visible)
+                .navigationBarColorScheme(.light)
                 .navigationTitle(titleKey)
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         Button("Cancel", role: .cancel) {
                             viewModel.isShown = false
                         }
-                        .buttonStyle(.borderless)
                     }
+                    .disableLiquidShit()
                     ToolbarItem(placement: .topBarTrailing) {
                         Button(action: viewModel.submit) {
                             Text("Done").bold()
                         }
                         .disabled(!viewModel.canSubmit)
-                        .buttonStyle(.borderless)
                     }
+                    .disableLiquidShit()
                     ToolbarItem(placement: .keyboard) {
                         // TODO: Attachments
                     }
+                    .disableLiquidShit()
                 }
+                .ignoresSafeArea(.container, edges: .bottom)
         }
         .colorScheme(.light)
-        .tint(nil)
     }
 }
 
