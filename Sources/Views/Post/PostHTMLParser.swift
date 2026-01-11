@@ -13,7 +13,7 @@ struct PostText: Equatable {
 
     init(html: String) {
         let delegate = Parser()
-        let parser = HTMLParser(options: [])
+        let parser = HTMLParser()
         parser.parse(html, delegate: delegate)
         blocks = delegate.result
     }

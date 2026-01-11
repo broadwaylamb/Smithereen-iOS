@@ -10,17 +10,6 @@ protocol HTMLParserDelegate: AnyObject {
 }
 
 struct HTMLParser {
-    var options: Options = []
-
-    struct Options: OptionSet {
-        var rawValue: htmlParserOption.RawValue
-        init(rawValue: htmlParserOption.RawValue) {
-            self.rawValue = rawValue
-        }
-
-        static let noBlanks = Self(rawValue: HTML_PARSE_NOBLANKS.rawValue)
-    }
-
     func parse(_ html: String, delegate: any HTMLParserDelegate) {
         guard let context = htmlNewParserCtxt() else {
             fatalError("Could not allocate HTML parser context")
@@ -29,7 +18,6 @@ struct HTMLParser {
             context.pointee.sax = nil
             htmlFreeParserCtxt(context)
         }
-        htmlCtxtUseOptions(context, Int32(options.rawValue))
         context.pointee.userData = Unmanaged
             .passUnretained(delegate as AnyObject)
             .toOpaque()
