@@ -1404,6 +1404,16 @@
         }
       }
     },
+    "Login attempt rejected" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Попытка входа отклонена"
+          }
+        }
+      }
+    },
     "My posts" : {
       "localizations" : {
         "ru" : {

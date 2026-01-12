@@ -2,6 +2,7 @@ import SmithereenAPI
 import Combine
 import Foundation
 import Security
+import AuthenticationServices
 
 @MainActor
 final class AuthViewModel: ObservableObject {
@@ -67,10 +68,27 @@ final class AuthViewModel: ObservableObject {
             state: state,
             pkceCodeChallenge: codeVerifier.sha256(),
         )
-        let callback = try await session
-            .authenticate(using: url, callbackURLScheme: Constants.appURLScheme)
-        let authorizationCode = try OAuth
-            .extractAuthorizationCode(from: callback, expectedState: state)
+
+        let callback: URL
+        do {
+            callback = try await session
+                .authenticate(using: url, callbackURLScheme: Constants.appURLScheme)
+        } catch let error as ASWebAuthenticationSessionError where error.code == .canceledLogin {
+            // The user has dismissed the authentication web view.
+            return
+        }
+        let authorizationCode: OAuth.AuthorizationCode
+        do {
+            authorizationCode = try OAuth
+                .extractAuthorizationCode(from: callback, expectedState: state)
+        } catch .rejected(let error) where error.code == .accessDenied {
+            // The user has rejected authentication from the web interface.
+            return
+        } catch {
+            // This seemingly redundant catch block prevents a Swift compiler crash.
+            // Try to remove it and see if it's still needed.
+            throw error
+        }
 
         try await api.authenticate(
             host: host,

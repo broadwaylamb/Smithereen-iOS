@@ -18,6 +18,8 @@ extension OAuth.AuthorizationCodeError: @retroactive LocalizedError {
             description = "Could not authenticate because of state mismatch."
         case .invalidURL:
             description = "Invalid redirection URL."
+        case .rejected:
+            description = "Login attempt rejected"
         }
         return String(localized: description)
     }
