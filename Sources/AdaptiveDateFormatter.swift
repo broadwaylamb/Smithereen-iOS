@@ -13,14 +13,6 @@ final class AdaptiveDateFormatter: Formatter {
         return formatter
     }()
 
-    private static let absoluteWithYearDateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.formattingContext = .middleOfSentence
-        formatter.dateStyle = .long
-        formatter.timeStyle = .short
-        return formatter
-    }()
-
     override func string(for obj: Any?) -> String? {
         guard let date = obj as? Date else { return nil }
         return string(from: date)
