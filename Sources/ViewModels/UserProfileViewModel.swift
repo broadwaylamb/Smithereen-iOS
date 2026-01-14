@@ -50,9 +50,9 @@ final class UserProfileViewModel: ObservableObject {
                 friends: 0,
                 groups: 0,
                 onlineFriends: 0,
-                mutualFriends: 0,
+                mutualFriends: user?.mutualCount ?? 0,
                 userPhotos: 0,
-                followers: 0,
+                followers: user?.followersCount ?? 0,
                 subscriptions: 0,
             )
     }
