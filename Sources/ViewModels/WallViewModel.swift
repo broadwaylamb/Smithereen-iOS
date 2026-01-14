@@ -9,25 +9,40 @@ final class WallViewModel: ObservableObject {
 
     @Published private var posts: [PostViewModel] = []
 
-    init(api: any APIService, actorStorage: ActorStorage, ownerID: ActorID?) {
+    @Published var wallMode: User.WallMode
+
+    init(
+        api: any APIService,
+        actorStorage: ActorStorage,
+        ownerID: ActorID?,
+        wallMode: User.WallMode,
+    ) {
         self.api = api
         self.actorStorage = actorStorage
         self.ownerID = ownerID
+        self.wallMode = wallMode
     }
 
     func reload() async throws {
+        let filter: Wall.Get.Filter
+        switch wallMode {
+        case .owner:
+            filter = .owner
+        case .all:
+            filter = .all
+        }
         let wall = try await api.invokeMethod(
             Execute.wallWithProfile(
                 ownerID: ownerID,
                 offset: nil, // TODO: Pagination
                 count: nil, // TODO: Pagination
-                filter: .all, // TODO: Use the correct filters
+                filter: filter,
                 fields: ActorStorage.actorFields,
             )
         )
         withAnimation(.easeIn) {
             let authors = actorStorage.cacheUsers(wall.profiles)
-            posts = wall.items.map {
+            posts = wall.map {
                 PostViewModel(
                     api: api,
                     actorStorage: actorStorage,
@@ -39,6 +54,13 @@ final class WallViewModel: ObservableObject {
     }
 
     var filteredPosts: [PostViewModel] {
-        return posts // TODO: Actually filter
+        switch wallMode {
+        case .owner:
+            return posts.filter {
+                $0.post.fromID == ownerID ?? ActorID(actorStorage.currentUserID)
+            }
+        case .all:
+            return posts
+        }
     }
 }

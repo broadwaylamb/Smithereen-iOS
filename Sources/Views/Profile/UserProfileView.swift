@@ -54,9 +54,9 @@ struct UserProfileView: View {
                         ? .me
                         : .user(
                             firstNameGenitive: viewModel.firstNameGenitive,
-                            canPost: viewModel.canPostOnWall,
+                            canSeeAllPosts: viewModel.canSeeAllPosts,
                         ),
-                    selectedMode: $viewModel.wallMode,
+                    selectedMode: $wallViewModel.wallMode,
                 )
                 .padding(.vertical, 8)
                 .listRowInsets(
@@ -80,6 +80,9 @@ struct UserProfileView: View {
             await refreshProfile()
         }
         .refreshable {
+            await refreshProfile()
+        }
+        .task(id: wallViewModel.wallMode) {
             await refreshProfile()
         }
         .listStyle(.grouped)

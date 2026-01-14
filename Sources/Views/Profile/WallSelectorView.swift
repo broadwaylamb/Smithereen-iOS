@@ -4,7 +4,7 @@ import SmithereenAPI
 
 enum WallSelectorActor {
     case me
-    case user(firstNameGenitive: String, canPost: Bool)
+    case user(firstNameGenitive: String, canSeeAllPosts: Bool)
     case group
 }
 
@@ -73,18 +73,18 @@ struct WallSelectorView: View {
             case .me:
                 button("All posts", mode: .all)
                 button("My posts", mode: .owner)
-            case .user(let firstNameGenitive, canPost: true):
+            case .user(let firstNameGenitive, canSeeAllPosts: true):
                 button("All posts", mode: .all)
                 buttonThatFits(
                     longTitle: "\(firstNameGenitive)'s posts",
                     shortTitle: "Own posts",
                     mode: .owner
                 )
-            case .user(let firstNameGenitive, canPost: false):
+            case .user(let firstNameGenitive, canSeeAllPosts: false):
                 buttonThatFits(
                     longTitle: "\(firstNameGenitive)'s posts",
                     shortTitle: "All posts",
-                    mode: .all
+                    mode: .owner
                 )
             case .group:
                 button("All posts", mode: .all)
@@ -99,7 +99,7 @@ struct WallSelectorView: View {
 #Preview(traits: .sizeThatFitsLayout) {
     @Previewable @State var mode = User.WallMode.all
     WallSelectorView(
-        actor: .user(firstNameGenitive: "Boromir", canPost: true),
+        actor: .user(firstNameGenitive: "Boromir", canSeeAllPosts: true),
         selectedMode: $mode,
     )
     .environmentObject(PaletteHolder())

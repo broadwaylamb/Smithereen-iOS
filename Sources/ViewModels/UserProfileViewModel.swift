@@ -6,14 +6,12 @@ final class UserProfileViewModel: ObservableObject {
     private let api: any APIService
     let userID: UserID?
     @Published var user: User?
-    @Published var wallMode: User.WallMode
 
     /// `userID` being null means the current user.
     init(api: any APIService, userID: UserID?, user: User? = nil) {
         self.api = api
         self.userID = userID
         self.user = user
-        self.wallMode = user?.wallDefault ?? .all
     }
 
     func loadProfile() async throws {
@@ -38,8 +36,8 @@ final class UserProfileViewModel: ObservableObject {
         user?.firstNameGen ?? firstName
     }
 
-    var canPostOnWall: Bool {
-        user?.canPost ?? false
+    var canSeeAllPosts: Bool {
+        user?.canSeeAllPosts ?? false
     }
 
     var counters: User.Counters {
@@ -129,10 +127,17 @@ final class UserProfileViewModel: ObservableObject {
     }
 
     func createWallViewModel(actorStorage: ActorStorage) -> WallViewModel {
-        WallViewModel(
+        let wallMode: User.WallMode
+        if let user, let wallDefault = user.wallDefault {
+            wallMode = wallDefault
+        } else {
+            wallMode = canSeeAllPosts ? .all : .owner
+        }
+        return WallViewModel(
             api: api,
             actorStorage: actorStorage,
-            ownerID: userID.map(ActorID.init)
+            ownerID: userID.map(ActorID.init),
+            wallMode: wallMode,
         )
     }
 }
