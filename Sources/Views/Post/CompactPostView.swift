@@ -63,7 +63,7 @@ struct CompactPostView: View {
                 singleRepost(
                     postID: repostID,
                     isMastodonStyleRepost: i == 0 && viewModel.isMastodonStyleRepost,
-                    headerOnly: i == repostIDs.count - 1,
+                    headerOnly: repostIDs.count > 1 && i == repostIDs.count - 1,
                 )
                 .padding(.top, hasTopPadding ? attachmentBlockTopPadding : 0)
             }
