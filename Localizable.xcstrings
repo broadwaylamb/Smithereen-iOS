@@ -1247,6 +1247,16 @@
     "Hue: %lf" : {
       "shouldTranslate" : false
     },
+    "Incorrect request format. Please report this error to the application developer." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Неверный формат запроса. Пожалуйста, сообщите об этой ошибке разработчику приложения."
+          }
+        }
+      }
+    },
     "Information" : {
       "comment" : "User/group profile info button label",
       "localizations" : {

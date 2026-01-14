@@ -39,6 +39,8 @@ struct RootView: View {
             SMSideMenuItem(value: .profile) {
                 UserProfileView(
                     viewModel: currentUserProfileViewModel,
+                    wallViewModel: currentUserProfileViewModel
+                        .createWallViewModel(actorStorage: actorStorage)
                 )
                 .commonNavigationDestinations(
                     api: api,
@@ -91,7 +93,11 @@ extension View {
         feedViewModel: FeedViewModel,
     ) -> some View {
         navigationDestinationPolyfill(for: UserProfileNavigationItem.self) { item in
-            UserProfileView(viewModel: actorStorage.getUser(item.userID))
+            let userVM = actorStorage.getUser(item.userID)
+            UserProfileView(
+                viewModel: userVM,
+                wallViewModel: userVM.createWallViewModel(actorStorage: actorStorage)
+            )
         }
     }
 }

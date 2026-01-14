@@ -127,4 +127,12 @@ final class UserProfileViewModel: ObservableObject {
             profilePictureSizes: squareProfilePictureSizes,
         )
     }
+
+    func createWallViewModel(actorStorage: ActorStorage) -> WallViewModel {
+        WallViewModel(
+            api: api,
+            actorStorage: actorStorage,
+            ownerID: userID.map(ActorID.init)
+        )
+    }
 }

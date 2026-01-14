@@ -207,6 +207,9 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
                 accessToken: session.accessToken,
                 language: Locale.autoupdatingCurrent.identifier,
             ),
+            // FIXME: Use JSON when https://github.com/grishka/Smithereen/issues/239
+            //   is fixed
+            encodeBodyAs: .urlEncodedForm,
         )
         let response = try await performRequest(urlRequest)
         do {
@@ -221,6 +224,13 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
         } catch let error as SmithereenAPIError where error.code == .userAuthorizationFailed {
             try? await storeSession(nil)
             throw CancellationError()
+        } catch let error as SmithereenAPIError
+                    where
+                    error.code == .invalidMethodParameters ||
+                        error.code == .executeFailedToCompile ||
+                        error.code == .executeRuntimeError
+        {
+            throw InvalidRequestError(urlRequest: response.request, error: error)
         }
     }
 

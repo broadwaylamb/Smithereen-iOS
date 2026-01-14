@@ -6,7 +6,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/broadwaylamb/Hammond.git",
       "state" : {
-        "revision" : "d94c1c0adef230a0cd29ab0803e499c9d03830de"
+        "revision" : "f55009b14ce32c98127466cea2bcc51f22f6c751"
       }
     },
     {
@@ -50,7 +50,7 @@
       "location" : "https://github.com/broadwaylamb/smithereen-api-swift.git",
       "state" : {
         "branch" : "main",
-        "revision" : "b775db8a9382048154b502eaac2722ae79f450f1"
+        "revision" : "d7ac9c22de826c8fcfbc7d8b4d96947db380b777"
       }
     },
     {

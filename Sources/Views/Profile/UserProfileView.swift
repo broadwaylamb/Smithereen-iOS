@@ -1,13 +1,14 @@
 import SwiftUI
 
 struct UserProfileView: View {
-    @StateObject var viewModel: UserProfileViewModel
+    @ObservedObject var viewModel: UserProfileViewModel
+    @ObservedObject var wallViewModel: WallViewModel
 
     @EnvironmentObject private var errorObserver: ErrorObserver
 
     private func refreshProfile() async {
         await errorObserver.runCatching {
-//            try await viewModel.updateAll()
+            try await wallViewModel.reload()
         }
     }
 
@@ -65,15 +66,15 @@ struct UserProfileView: View {
                 Color.clear.frame(height: 19)
                     .listRowInsets(EdgeInsets())
             }
-//            ForEach(viewModel.filteredPosts) { postViewModel in
-//                Section {
-//                    CompactPostView(viewModel: postViewModel)
-//                        .listRowInsets(
-//                            EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
-//                        )
-//                        .listSectionSeparatorTint(Color(#colorLiteral(red: 0.7843137383, green: 0.7843137383, blue: 0.7843137383, alpha: 1)))
-//                }
-//            }
+            ForEach(wallViewModel.filteredPosts) { postViewModel in
+                Section {
+                    CompactPostView(viewModel: postViewModel)
+                        .listRowInsets(
+                            EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
+                        )
+                        .listSectionSeparatorTint(Color(#colorLiteral(red: 0.7843137383, green: 0.7843137383, blue: 0.7843137383, alpha: 1)))
+                }
+            }
         }
         .task {
             await refreshProfile()
