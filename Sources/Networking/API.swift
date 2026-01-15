@@ -207,9 +207,6 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
                 accessToken: session.accessToken,
                 language: Locale.autoupdatingCurrent.identifier,
             ),
-            // FIXME: Use JSON when https://github.com/grishka/Smithereen/issues/239
-            //   is fixed
-            encodeBodyAs: .urlEncodedForm,
         )
         let response = try await performRequest(urlRequest)
         do {
