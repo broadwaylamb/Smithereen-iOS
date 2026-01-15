@@ -10,6 +10,7 @@ struct UserProfilePictureView: View {
     private var image: some View {
         CacheableAsyncImage(
             location,
+            aspectRatio: 1,
             content: { $0.resizable() },
             placeholder: { palette.loadingImagePlaceholder },
         )

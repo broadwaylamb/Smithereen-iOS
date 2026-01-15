@@ -24,23 +24,26 @@ struct PostAttachmentsView: View {
             Spacer(minLength: 0)
             MediaGridLayout(spacing: 2) {
                 ForEach(photos.indexed(), id: \.offset) { (_, photo) in
-                    // TODO: Show blurhash
                     let placeholder = palette.loadingImagePlaceholder
                     let cornerRadius = horizontalSizeClass == .regular ? 2.5 : 0
-
+                    let aspectRatio = photo.aspectRatio
                     // We put the image into an overlay because otherwise it won't be
                     // clipped inside the grid.
                     Color.clear
                         .overlay {
                             // TODO: Use the correct URL based on the size
-                            CacheableAsyncImage(nil) { image in
+                            CacheableAsyncImage(
+                                nil,
+                                blurHash: photo.blurhash,
+                                aspectRatio: aspectRatio,
+                            ) { image in
                                 image.resizable()
                             } placeholder: {
                                 placeholder
                             }
                             .aspectRatio(photo.aspectRatio, contentMode: .fill)
                         }
-                        .aspectRatioForGridLayout(photo.aspectRatio)
+                        .aspectRatioForGridLayout(aspectRatio)
                         .cornerRadius(cornerRadius)
                         .clipped()
                 }

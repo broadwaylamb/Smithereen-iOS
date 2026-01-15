@@ -1,4 +1,5 @@
 import SwiftUI
+import SmithereenAPI
 
 enum CacheableAsyncImageError: Error {
     case invalidResponse
@@ -7,9 +8,9 @@ enum CacheableAsyncImageError: Error {
 
 private enum CacheableAsyncImagePhase {
     case success(Image)
-    case failure(any Error)
-    case pending(URLRequest)
-    case empty
+    case failure(any Error, blurhash: Image?)
+    case pending(URLRequest, blurhash: Image?)
+    case empty(blurhash: Image?)
 }
 
 @MainActor
@@ -22,23 +23,41 @@ private final class PhaseHolder: ObservableObject {
 }
 
 struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
+    private var aspectRatio: CGFloat
     private var scale: CGFloat
-
+    private var blurHash: BlurHash?
     private var content: (Image) -> Content
-
     private var placeholder: () -> Placeholder
 
     @ObservedObject private var phaseHolder: PhaseHolder
 
     init(
         _ location: ImageLocation?,
+        blurHash: BlurHash? = nil,
+        aspectRatio: CGFloat,
         scale: CGFloat = 2,
         @ViewBuilder content: @escaping (Image) -> Content,
         @ViewBuilder placeholder: @escaping () -> Placeholder,
     ) {
+        self.aspectRatio = aspectRatio
         self.scale = scale
+        self.blurHash = blurHash
         self.content = content
         self.placeholder = placeholder
+
+        func loadBlurHash() -> Image? {
+            guard let blurHash else { return nil }
+            let resolution: CGFloat = 32
+            return UIImage(
+                blurHash: blurHash,
+                resolution: CGSize(
+                    width: aspectRatio > 1 ? resolution * aspectRatio : resolution,
+                    height: aspectRatio > 1 ? resolution : resolution / aspectRatio,
+                ),
+                punch: 1.1,
+            ).map(Image.init(uiImage:))
+        }
+
         let phase: CacheableAsyncImagePhase
         switch location {
         case .remote(let url):
@@ -50,17 +69,20 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
             {
                 phase = .success(image)
             } else {
-                phase = .pending(urlRequest)
+                phase = .pending(urlRequest, blurhash: loadBlurHash())
             }
         case .bundled(let resource):
             phase = .success(Image(resource))
         case nil:
-            phase = .empty
+            phase = .empty(blurhash: loadBlurHash())
         }
         _phaseHolder = ObservedObject(wrappedValue: PhaseHolder(phase: phase))
     }
 
-    private func loadImage(_ urlRequest: URLRequest) async {
+    private func loadImage(
+        _ urlRequest: URLRequest,
+        blurhash: Image?
+    ) async {
         do {
             let (data, response) = try await URLSession
                 .cacheableMediaURLSession
@@ -68,12 +90,22 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
             if response.statusCode.category == .success {
                 phaseHolder.phase = imageFromData(data, scale: scale)
                     .map(CacheableAsyncImagePhase.success)
-                    ?? .failure(CacheableAsyncImageError.invalidData)
+                    ?? .failure(CacheableAsyncImageError.invalidData, blurhash: blurhash)
             } else {
-                phaseHolder.phase = .failure(CacheableAsyncImageError.invalidResponse)
+                phaseHolder.phase =
+                    .failure(CacheableAsyncImageError.invalidResponse, blurhash: blurhash)
             }
         } catch {
-            phaseHolder.phase = .failure(error)
+            phaseHolder.phase = .failure(error, blurhash: blurhash)
+        }
+    }
+
+    @ViewBuilder
+    private func blurHashOrPlaceholder(_ blurhash: Image?) -> some View {
+        if let blurhash {
+            content(blurhash)
+        } else {
+            placeholder()
         }
     }
 
@@ -81,12 +113,15 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
         switch phaseHolder.phase {
         case .success(let image):
             content(image)
-        case .failure(_):
-            placeholder()
-        case .pending(let urlRequest):
-            placeholder().task { await loadImage(urlRequest) }
-        case .empty:
-            placeholder()
+        case .failure(_, let blurhash):
+            blurHashOrPlaceholder(blurhash)
+        case .pending(let urlRequest, let blurhash):
+            blurHashOrPlaceholder(blurhash)
+                .task {
+                    await loadImage(urlRequest, blurhash: blurhash)
+                }
+        case .empty(let blurhash):
+            blurHashOrPlaceholder(blurhash)
         }
     }
 }
