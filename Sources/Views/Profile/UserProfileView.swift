@@ -2,7 +2,7 @@ import SwiftUI
 
 struct UserProfileView: View {
     @ObservedObject var viewModel: UserProfileViewModel
-    @ObservedObject var wallViewModel: WallViewModel
+    @StateObject var wallViewModel: WallViewModel
 
     @EnvironmentObject private var errorObserver: ErrorObserver
 
