@@ -46,7 +46,9 @@ final class PostViewModel: ObservableObject, Identifiable {
 
     func hasContent(postID: WallPostID? = nil) -> Bool {
         let post = getPostIncludingReposted(postID)
-        return !(post.text?.isEmpty ?? true) && !(post.attachments ?? []).isEmpty
+        let hasText = !(post.text?.isEmpty ?? true)
+        let hasAttachments = !(post.attachments?.isEmpty ?? true)
+        return hasText || hasAttachments
     }
 
     var isMastodonStyleRepost: Bool {
