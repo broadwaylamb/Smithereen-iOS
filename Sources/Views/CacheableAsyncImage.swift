@@ -23,13 +23,12 @@ private final class PhaseHolder: ObservableObject {
 }
 
 struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
-    private var aspectRatio: CGFloat
     private var scale: CGFloat
     private var blurHash: BlurHash?
     private var content: (Image) -> Content
     private var placeholder: () -> Placeholder
 
-    @ObservedObject private var phaseHolder: PhaseHolder
+    @StateObject private var phaseHolder: PhaseHolder
 
     init(
         _ location: ImageLocation?,
@@ -39,7 +38,6 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
         @ViewBuilder content: @escaping (Image) -> Content,
         @ViewBuilder placeholder: @escaping () -> Placeholder,
     ) {
-        self.aspectRatio = aspectRatio
         self.scale = scale
         self.blurHash = blurHash
         self.content = content
@@ -58,25 +56,27 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
             ).map(Image.init(uiImage:))
         }
 
-        let phase: CacheableAsyncImagePhase
-        switch location {
-        case .remote(let url):
-            let urlRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad)
-            if let cachedResponse = URLCache
-                .smithereenMediaCache
-                .cachedResponse(for: urlRequest),
-               let image = imageFromData(cachedResponse.data, scale: scale)
-            {
-                phase = .success(image)
-            } else {
-                phase = .pending(urlRequest, blurhash: loadBlurHash())
+        func initializePhase() -> CacheableAsyncImagePhase {
+            switch location {
+            case .remote(let url):
+                let urlRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad)
+                if let cachedResponse = URLCache
+                    .smithereenMediaCache
+                    .cachedResponse(for: urlRequest),
+                   let image = imageFromData(cachedResponse.data, scale: scale)
+                {
+                    return .success(image)
+                } else {
+                    return .pending(urlRequest, blurhash: loadBlurHash())
+                }
+            case .bundled(let resource):
+                return .success(Image(resource))
+            case nil:
+                return .empty(blurhash: loadBlurHash())
             }
-        case .bundled(let resource):
-            phase = .success(Image(resource))
-        case nil:
-            phase = .empty(blurhash: loadBlurHash())
         }
-        _phaseHolder = ObservedObject(wrappedValue: PhaseHolder(phase: phase))
+
+        _phaseHolder = StateObject(wrappedValue: PhaseHolder(phase: initializePhase()))
     }
 
     private func loadImage(
