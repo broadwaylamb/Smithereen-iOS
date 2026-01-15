@@ -26,12 +26,15 @@ struct CompactPostView: View {
             if !headerOnly {
                 let text = viewModel.getText(postID: postID)
                 PostTextView(text)
-                    .padding(.horizontal, 4)
+                    .padding(.horizontal, horizontalContentPadding)
 
                 let attachments = viewModel.getAttachments(postID: postID)
                 if !attachments.isEmpty {
-                    PostAttachmentsView(attachments: attachments)
-                        .padding(.top, text.isEmpty ? 0 : attachmentBlockTopPadding)
+                    PostAttachmentsView(
+                        attachments,
+                        unsupportedMessagePadding: horizontalContentPadding,
+                    )
+                    .padding(.top, text.isEmpty ? 0 : attachmentBlockTopPadding)
                 }
             }
         }
@@ -50,9 +53,12 @@ struct CompactPostView: View {
 
             let attachments = viewModel.getAttachments()
             if !attachments.isEmpty {
-                PostAttachmentsView(attachments: attachments)
-                    .padding(.horizontal, 0)
-                    .padding(.top, text.isEmpty ? 0 : attachmentBlockTopPadding)
+                PostAttachmentsView(
+                    attachments,
+                    unsupportedMessagePadding: horizontalContentPadding,
+                )
+                .padding(.horizontal, 0)
+                .padding(.top, text.isEmpty ? 0 : attachmentBlockTopPadding)
             }
 
             let repostIDs = viewModel.repostIDs

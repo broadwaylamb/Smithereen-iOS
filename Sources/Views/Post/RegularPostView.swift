@@ -33,7 +33,7 @@ struct RegularPostView: View {
 
                 let attachments = viewModel.getAttachments(postID: postID)
                 if !attachments.isEmpty {
-                    PostAttachmentsView(attachments: attachments)
+                    PostAttachmentsView(attachments)
                         .padding(.top, text.isEmpty ? 0 : attachmentBlockTopPadding)
                 }
             }
@@ -85,7 +85,7 @@ struct RegularPostView: View {
 
             let attachments = viewModel.getAttachments()
             if !attachments.isEmpty {
-                PostAttachmentsView(attachments: attachments)
+                PostAttachmentsView(attachments)
                     .padding(.horizontal, horizontalContentPadding)
                     .padding(.top, text.isEmpty ? 0 : attachmentBlockTopPadding)
             }

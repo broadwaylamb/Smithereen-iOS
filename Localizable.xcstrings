@@ -1061,6 +1061,16 @@
         }
       }
     },
+    "Audio attachments are not supported yet" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Аудиовложения пока не поддерживаются"
+          }
+        }
+      }
+    },
     "Cache" : {
       "comment" : "Section title in settings",
       "localizations" : {
@@ -1547,6 +1557,16 @@
         }
       }
     },
+    "Polls are not supported yet" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Опросы пока не поддерживаются"
+          }
+        }
+      }
+    },
     "Post settings" : {
       "localizations" : {
         "ru" : {
@@ -1640,6 +1660,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Технические данные"
+          }
+        }
+      }
+    },
+    "Video attachments are not supported yet" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видеовложения пока не поддерживаются"
           }
         }
       }
