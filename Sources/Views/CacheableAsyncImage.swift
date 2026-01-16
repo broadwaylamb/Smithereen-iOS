@@ -24,7 +24,6 @@ private final class PhaseHolder: ObservableObject {
 
 struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
     private var scale: CGFloat
-    private var blurHash: BlurHash?
     private var content: (Image) -> Content
     private var placeholder: () -> Placeholder
 
@@ -39,7 +38,6 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
         @ViewBuilder placeholder: @escaping () -> Placeholder,
     ) {
         self.scale = scale
-        self.blurHash = blurHash
         self.content = content
         self.placeholder = placeholder
 

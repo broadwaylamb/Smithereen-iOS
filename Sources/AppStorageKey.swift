@@ -13,10 +13,6 @@ extension AppStorage where Value == Bool {
     }
 }
 
-extension AppStorageKey<String> {
-    static let smithereenInstance = Self(name: "smithereenInstance", defaultValue: "")
-}
-
 extension AppStorageKey<Bool> {
     static let roundProfilePictures = Self(
         name: "smithereen.roundProfilePictures",

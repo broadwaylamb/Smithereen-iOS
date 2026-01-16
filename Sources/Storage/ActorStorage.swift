@@ -96,28 +96,6 @@ final class ActorStorage {
         return result
     }
 
-    private func fetch(
-        userID: UserID?,
-        into viewModel: UserProfileViewModel,
-    ) async throws {
-        let users = try await api.invokeMethod(
-            Users.Get(
-                userIDs: userID.map { [$0] },
-                fields: Self.userFields,
-                relationCase: .default
-            )
-        )
-
-        guard let user = users.first else {
-            throw DecodingError.valueNotFound(
-                User.self,
-                DecodingError.Context(codingPath: [], debugDescription: "Empty user list")
-            )
-        }
-
-        viewModel.user = user
-    }
-
     func isCurrentUser(_ userID: UserID) -> Bool {
         currentUserID == userID
     }

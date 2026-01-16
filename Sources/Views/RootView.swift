@@ -45,7 +45,6 @@ struct RootView: View {
                 .commonNavigationDestinations(
                     api: api,
                     actorStorage: actorStorage,
-                    feedViewModel: feedViewModel,
                 )
             } label: {
                 Label {
@@ -62,7 +61,6 @@ struct RootView: View {
                     .commonNavigationDestinations(
                         api: api,
                         actorStorage: actorStorage,
-                        feedViewModel: feedViewModel,
                     )
             }
 
@@ -90,7 +88,6 @@ extension View {
     func commonNavigationDestinations(
         api: APIService,
         actorStorage: ActorStorage,
-        feedViewModel: FeedViewModel,
     ) -> some View {
         navigationDestinationPolyfill(for: UserProfileNavigationItem.self) { item in
             let userVM = actorStorage.getUser(item.userID)
