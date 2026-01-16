@@ -10,6 +10,10 @@ struct ImageSizes {
         }
     }
 
+    func sizeThatFits(_ size: CGSize, scale: CGFloat) -> ImageLocation? {
+        return sizeThatFits(width: size.width, height: size.height, scale: scale)
+    }
+
     func sizeThatFits(width: CGFloat, height: CGFloat, scale: CGFloat) -> ImageLocation? {
         let minSide = min(width, height) * scale
         for (side, url) in sizes {
@@ -17,7 +21,7 @@ struct ImageSizes {
                 return ImageLocation(url: url)
             }
         }
-        return nil
+        return sizes.last.map { (_ , url) in ImageLocation(url: url) }
     }
 
     func sizeThatFits(square: CGFloat, scale: CGFloat) -> ImageLocation? {
@@ -44,5 +48,15 @@ extension Group {
             sizes.sizes.append((.infinity, url))
         }
         return sizes
+    }
+}
+
+extension Photo {
+    var imageSizes: ImageSizes {
+        ImageSizes(
+            sizes: sizes.map {
+                (CGFloat($0.type.maxSize), $0.url)
+            }
+        )
     }
 }
