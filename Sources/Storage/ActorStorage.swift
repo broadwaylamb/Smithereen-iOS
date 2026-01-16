@@ -72,7 +72,7 @@ final class ActorStorage {
         (userFields.map(ActorField.init) + groupFields.map(ActorField.init)).distinct()
 
     func cacheUser(_ user: User) -> UserProfileViewModel {
-        if user.id == currentUserViewModel.userID {
+        if user.id == currentUserID {
             currentUserViewModel.user = user
             return currentUserViewModel
         }
