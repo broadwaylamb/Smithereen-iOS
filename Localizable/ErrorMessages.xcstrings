@@ -1,0 +1,36 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Access denied." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отказано в доступе."
+          }
+        }
+      }
+    },
+    "Too many requests per second." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Слишком много запросов в секунду."
+          }
+        }
+      }
+    },
+    "You are performing the same action too often. Please try again later." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы выполняете одно и то же действие слишком часто. Пожалуйста, попробуйте позднее."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}

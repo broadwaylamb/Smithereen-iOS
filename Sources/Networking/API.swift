@@ -218,16 +218,21 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
                 responseData: response.body,
                 error: error,
             )
-        } catch let error as SmithereenAPIError where error.code == .userAuthorizationFailed {
-            try? await storeSession(nil)
-            throw CancellationError()
-        } catch let error as SmithereenAPIError
-                    where
-                    error.code == .invalidMethodParameters ||
-                        error.code == .executeFailedToCompile ||
-                        error.code == .executeRuntimeError
-        {
-            throw InvalidRequestError(urlRequest: response.request, error: error)
+        } catch let error as SmithereenAPIError {
+            switch error.code {
+            case .userAuthorizationFailed:
+                try? await storeSession(nil)
+                throw CancellationError()
+            case .invalidMethodParameters,
+                .executeFailedToCompile,
+                .executeRuntimeError,
+                .unknownMethodPassed,
+                .invalidRequest,
+                .internalServerError:
+                throw InvalidRequestError(urlRequest: response.request, error: error)
+            default:
+                throw UserFriendlySmithereenAPIError(error: error)
+            }
         }
     }
 

@@ -33,6 +33,7 @@
 		8793F4462E63619400662021 /* SlideableMenu in Frameworks */ = {isa = PBXBuildFile; productRef = 8793F4452E63619400662021 /* SlideableMenu */; };
 		87B0C99B2DC41A4200D5DB87 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 87B0C99A2DC41A4200D5DB87 /* Prefire */; };
 		87D346562F002A0600CD09FF /* SmithereenAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 87D346552F002A0600CD09FF /* SmithereenAPI */; };
+		87EF4C2A2F1AF1B70083DC75 /* ErrorMessages.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 87EF4C292F1AF1B70083DC75 /* ErrorMessages.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		872205E42DB9753F00B65CBA /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
 		874291BF2DC2ACD400571022 /* .prefire.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .prefire.yml; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.yaml; };
 		87EA5F702F055C2900B41B2F /* Smithereen-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Smithereen-Info.plist"; sourceTree = "<group>"; };
+		87EF4C292F1AF1B70083DC75 /* ErrorMessages.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = ErrorMessages.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -116,8 +118,8 @@
 		01E20AB12DB7926D00CC0EBE = {
 			isa = PBXGroup;
 			children = (
+				87EF4C2B2F1AF2350083DC75 /* Localizable */,
 				87EA5F702F055C2900B41B2F /* Smithereen-Info.plist */,
-				870D40EC2DF8FFA80026AB8A /* Localizable.xcstrings */,
 				874291BF2DC2ACD400571022 /* .prefire.yml */,
 				872205E42DB9753F00B65CBA /* README.md */,
 				01E20ABC2DB7926D00CC0EBE /* Sources */,
@@ -142,6 +144,15 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		87EF4C2B2F1AF2350083DC75 /* Localizable */ = {
+			isa = PBXGroup;
+			children = (
+				87EF4C292F1AF1B70083DC75 /* ErrorMessages.xcstrings */,
+				870D40EC2DF8FFA80026AB8A /* Localizable.xcstrings */,
+			);
+			path = Localizable;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -263,6 +274,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				870D40ED2DF8FFA80026AB8A /* Localizable.xcstrings in Resources */,
+				87EF4C2A2F1AF1B70083DC75 /* ErrorMessages.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
