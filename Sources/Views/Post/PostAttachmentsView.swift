@@ -28,7 +28,7 @@ struct PostAttachmentsView: View {
                 images.append(
                     ImageAttachment(
                         aspectRatio: CGFloat(graffiti.width) / CGFloat(graffiti.height),
-                        sizes: ImageSizes() // TODO: Pass actual sizes
+                        sizes: graffiti.imageSizes,
                     )
                 )
             case .video:

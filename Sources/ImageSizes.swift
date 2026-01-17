@@ -46,7 +46,16 @@ extension Photo {
         ImageSizes(
             sizes: sizes.map {
                 (CGSize(width: $0.width, height: $0.height), $0.url)
-            }
+            }.sorted { a, b in a.0.width < b.0.width }
         )
+    }
+}
+
+extension Graffiti {
+    var imageSizes: ImageSizes {
+        var sizes = ImageSizes()
+        sizes.append(size: 320, url: previewUrl)
+        sizes.append(size: 2560, url: url)
+        return sizes
     }
 }
