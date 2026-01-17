@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct UserProfileHeaderView: View {
-    var profilePicture: ImageSizes?
+    var profilePicture: ImageSizes
     var fullName: String
     var onlineOrLastSeen: LocalizedStringKey?
     var ageAndPlace: LocalizedStringKey?
@@ -19,7 +19,7 @@ struct UserProfileHeaderView: View {
 }
 
 struct GroupProfileHeaderView: View {
-    var profilePicture: ImageSizes?
+    var profilePicture: ImageSizes
     var name: String
     var groupKind: LocalizedStringKey
     var place: LocalizedStringKey?
@@ -39,17 +39,12 @@ struct GroupProfileHeaderView: View {
 private let profilePictureHeight: CGFloat = 85
 
 private struct ProfilePictureView: View {
-    var profilePicture: ImageSizes?
-
-    @Environment(\.displayScale) private var displayScale
+    var profilePicture: ImageSizes
 
     var body: some View {
-        UserProfilePictureView(
-            location: profilePicture?
-                .sizeThatFits(square: profilePictureHeight, scale: displayScale)
-        )
-        .frame(width: profilePictureHeight, height: profilePictureHeight)
-        .aspectRatio(1, contentMode: .fit)
+        UserProfilePictureView(sizes: profilePicture)
+            .frame(width: profilePictureHeight, height: profilePictureHeight)
+            .aspectRatio(1, contentMode: .fit)
     }
 }
 
@@ -102,7 +97,7 @@ private struct ProfileHeaderInfoView: View {
 @available(iOS 17.0, *)
 #Preview("User profile header", traits: .sizeThatFitsLayout) {
     UserProfileHeaderView(
-        profilePicture: nil, // TODO: Use picture
+        profilePicture: ImageSizes(), // TODO: Use picture
         fullName: "Boromir",
         onlineOrLastSeen: "last seen 5 minutes ago".excludedFromLocalization,
         ageAndPlace: "40 years, Gondor".excludedFromLocalization,
@@ -113,7 +108,7 @@ private struct ProfileHeaderInfoView: View {
 @available(iOS 17.0, *)
 #Preview("User profile header with very long name", traits: .fixedLayout(width: 320, height: 640)) {
     UserProfileHeaderView(
-        profilePicture: nil, // TODO: Use picture
+        profilePicture: ImageSizes(), // TODO: Use picture
         fullName: "Grzegorz Brzęczyszczykiewicz",
         onlineOrLastSeen: "online",
         ageAndPlace: "27 years, Chrząszczyżewoszyce powiat Łękołody".excludedFromLocalization,
@@ -124,7 +119,7 @@ private struct ProfileHeaderInfoView: View {
 @available(iOS 17.0, *)
 #Preview("Group profile header", traits: .sizeThatFitsLayout) {
     GroupProfileHeaderView(
-        profilePicture: nil, // TODO: Use picture
+        profilePicture: ImageSizes(), // TODO: Use picture
         name: "Birdwatchers of the Fediverse",
         groupKind: "open group",
         place: "Planet Earth".excludedFromLocalization,

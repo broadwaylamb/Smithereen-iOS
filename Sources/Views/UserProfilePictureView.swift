@@ -1,19 +1,21 @@
 import SwiftUI
 
 struct UserProfilePictureView: View {
-    var location: ImageLocation?
+    var sizes: ImageSizes
 
     @EnvironmentObject private var palette: PaletteHolder
 
     @AppStorage(.roundProfilePictures) private var roundProfilePictures
 
     private var image: some View {
-        CacheableAsyncImage(
-            location,
-            aspectRatio: 1,
-            content: { $0.resizable() },
-            placeholder: { palette.loadingImagePlaceholder },
-        )
+        GeometryReader { proxy in
+            CacheableAsyncImage(
+                size: proxy.size,
+                sizes: sizes,
+                content: { $0.resizable() },
+                placeholder: { palette.loadingImagePlaceholder },
+            )
+        }
     }
 
     var body: some View {
@@ -26,6 +28,6 @@ struct UserProfilePictureView: View {
 }
 
 #Preview {
-    UserProfilePictureView()
+    UserProfilePictureView(sizes: ImageSizes())
         .environmentObject(PaletteHolder())
 }

@@ -2,9 +2,17 @@ import SmithereenAPI
 import UIKit
 
 struct ImageSizes {
-    fileprivate var sizes: [(CGFloat, URL)] = []
+    fileprivate var sizes: [(CGSize, URL)] = []
+
+    var aspectRatio: CGFloat {
+        sizes.last?.0.aspectRatio ?? 1
+    }
 
     mutating func append(size: CGFloat, url: URL?) {
+        append(size: CGSize(width: size, height: size), url: url)
+    }
+
+    mutating func append(size: CGSize, url: URL?) {
         if let url {
             sizes.append((size, url))
         }
@@ -15,9 +23,13 @@ struct ImageSizes {
     }
 
     func sizeThatFits(width: CGFloat, height: CGFloat, scale: CGFloat) -> ImageLocation? {
-        let minSide = min(width, height) * scale
-        for (side, url) in sizes {
-            if minSide < side {
+        let proposedAspectRatio = width / height
+
+        for (size, url) in sizes {
+            if proposedAspectRatio > size.aspectRatio && size.width >= width * scale {
+                return ImageLocation(url: url)
+            }
+            if proposedAspectRatio < size.aspectRatio && size.height >= height * scale {
                 return ImageLocation(url: url)
             }
         }
@@ -29,33 +41,11 @@ struct ImageSizes {
     }
 }
 
-extension Group {
-    var squareProfilePictureSizes: ImageSizes {
-        var sizes = ImageSizes()
-        if let url = photo50 {
-            sizes.sizes.append((50, url))
-        }
-        if let url = photo100 {
-            sizes.sizes.append((100, url))
-        }
-        if let url = photo200 {
-            sizes.sizes.append((200, url))
-        }
-        if let url = photo400 {
-            sizes.sizes.append((400, url))
-        }
-        if let url = photoMax {
-            sizes.sizes.append((.infinity, url))
-        }
-        return sizes
-    }
-}
-
 extension Photo {
     var imageSizes: ImageSizes {
         ImageSizes(
             sizes: sizes.map {
-                (CGFloat($0.type.maxSize), $0.url)
+                (CGSize(width: $0.width, height: $0.height), $0.url)
             }
         )
     }

@@ -21,12 +21,14 @@ struct PostAttachmentsView: View {
                     ImageAttachment(
                         aspectRatio: photo.aspectRatio,
                         blurHash: photo.blurhash,
+                        sizes: photo.imageSizes,
                     )
                 )
             case .graffiti(let graffiti):
                 images.append(
                     ImageAttachment(
                         aspectRatio: CGFloat(graffiti.width) / CGFloat(graffiti.height),
+                        sizes: ImageSizes() // TODO: Pass actual sizes
                     )
                 )
             case .video:
@@ -50,23 +52,24 @@ struct PostAttachmentsView: View {
                         let aspectRatio = image.aspectRatio
                         // We put the image into an overlay because otherwise it won't be
                         // clipped inside the grid.
-                        Color.clear
-                            .overlay {
-                                // TODO: Use the correct URL based on the size
-                                CacheableAsyncImage(
-                                    nil,
-                                    blurHash: image.blurHash,
-                                    aspectRatio: aspectRatio,
-                                ) { image in
-                                    image.resizable()
-                                } placeholder: {
-                                    placeholder
+                        GeometryReader { proxy in
+                            Color.clear
+                                .overlay {
+                                    CacheableAsyncImage(
+                                        size: proxy.size,
+                                        sizes: image.sizes,
+                                        blurHash: image.blurHash,
+                                    ) { image in
+                                        image.resizable()
+                                    } placeholder: {
+                                        placeholder
+                                    }
+                                    .aspectRatio(aspectRatio, contentMode: .fill)
                                 }
-                                .aspectRatio(image.aspectRatio, contentMode: .fill)
-                            }
-                            .aspectRatioForGridLayout(aspectRatio)
-                            .cornerRadius(cornerRadius)
-                            .clipped()
+                        }
+                        .aspectRatioForGridLayout(aspectRatio)
+                        .cornerRadius(cornerRadius)
+                        .clipped()
                     }
                 }
                 Spacer(minLength: 0)
@@ -98,6 +101,7 @@ struct PostAttachmentsView: View {
 private struct ImageAttachment {
     var aspectRatio: CGFloat
     var blurHash: BlurHash?
+    var sizes: ImageSizes
 }
 
 extension Photo {
