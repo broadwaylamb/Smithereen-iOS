@@ -252,4 +252,5 @@ extension AttributedString {
         )
     )
     .padding(8)
+    .environmentObject(PaletteHolder())
 }

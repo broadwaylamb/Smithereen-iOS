@@ -78,4 +78,5 @@ struct AuthView: View {
     AuthView(viewModel: AuthViewModel(api: MockApi()))
         .defaultAppStorage(UserDefaults())
         .snapshot(perceptualPrecision: 0.98)
+        .environmentObject(PaletteHolder())
 }
