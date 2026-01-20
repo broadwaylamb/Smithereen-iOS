@@ -31,6 +31,7 @@ extension Optional where Wrapped: OptionSet, Wrapped.Element == Wrapped {
         existing.insert(newValue)
         self = .some(existing)
     }
+
 }
 
 extension URLResponse {
