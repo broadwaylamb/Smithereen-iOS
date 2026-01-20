@@ -4,6 +4,4 @@ test_configuration:
     - SmithereenAPI
   - test_target_path: ${PROJECT_DIR}/Tests
   - template_file_path: XCTestPreviewTests.stencil
-  - simulator_device: "iPhone17,3"
-  - snapshot_devices:
-      - iPhone 16
+
