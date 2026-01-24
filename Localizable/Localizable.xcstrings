@@ -1664,6 +1664,54 @@
         }
       }
     },
+    "updated her profile picture %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "обновила фотогравию %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "оновила фотографію %@"
+          }
+        }
+      }
+    },
+    "updated his profile picture %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "обновил фотографию %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "оновив фотографію %@"
+          }
+        }
+      }
+    },
+    "updated their profile picture %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "обновлена фотография %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "оновлена фотографія %@"
+          }
+        }
+      }
+    },
     "Video attachments are not supported yet" : {
       "localizations" : {
         "ru" : {

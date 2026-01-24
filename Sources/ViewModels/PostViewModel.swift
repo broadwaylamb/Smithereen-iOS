@@ -91,7 +91,22 @@ final class PostViewModel: ObservableObject, Identifiable {
     }
 
     func getPostDate(postID: WallPostID? = nil) -> String {
-        AdaptiveDateFormatter.default.string(from: getPostIncludingReposted(postID).date)
+        let post = getPostIncludingReposted(postID)
+        let formattedDate = AdaptiveDateFormatter.default.string(from: post.date)
+        switch post.postSource?.action {
+        case .profilePictureUpdate:
+            let gender = post.fromID.userID.flatMap { authors[$0] }?.user?.sex
+            switch gender {
+            case .female:
+                return String(localized: "updated her profile picture \(formattedDate)")
+            case .male:
+                return String(localized: "updated his profile picture \(formattedDate)")
+            case .other, nil:
+                return String(localized: "updated their profile picture \(formattedDate)")
+            }
+        case nil:
+            return formattedDate
+        }
     }
 
     func getText(postID: WallPostID? = nil) -> RichText {
