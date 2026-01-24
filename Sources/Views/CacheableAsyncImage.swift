@@ -57,8 +57,30 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
             ).map(Image.init(uiImage:))
         }
 
+        let scale = Environment(\.displayScale).wrappedValue
+
+        func initializePhase() -> CacheableAsyncImagePhase {
+            switch sizes.sizeThatFits(size, scale: scale) {
+            case .remote(let url):
+                let urlRequest = URLRequest(url: url)
+                if let cachedResponse = URLCache
+                    .smithereenMediaCache
+                    .cachedResponse(for: urlRequest),
+                   let image = imageFromData(cachedResponse.data, scale: scale)
+                {
+                    return .success(image)
+                } else {
+                    return .pending(blurhash: loadBlurHash())
+                }
+            case .bundled(let resource):
+                return .success(Image(resource))
+            case nil:
+                return .empty(blurhash: loadBlurHash())
+            }
+        }
+
         _phaseHolder = StateObject(
-            wrappedValue: PhaseHolder(phase: .pending(blurhash: loadBlurHash()))
+            wrappedValue: PhaseHolder(phase: initializePhase())
         )
     }
 
@@ -124,8 +146,7 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
         }
     }
 
-    @ViewBuilder
-    private var image: some View {
+    var body: some View {
         switch phaseHolder.phase {
         case .success(let image):
             content(image)
@@ -133,16 +154,12 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
             blurHashOrPlaceholder(blurhash)
         case .pending(let blurhash):
             blurHashOrPlaceholder(blurhash)
+                .task(id: location) {
+                    await loadImage()
+                }
         case .empty(let blurhash):
             blurHashOrPlaceholder(blurhash)
         }
-    }
-
-    var body: some View {
-        image
-            .task(id: location) {
-                await loadImage()
-            }
     }
 }
 
