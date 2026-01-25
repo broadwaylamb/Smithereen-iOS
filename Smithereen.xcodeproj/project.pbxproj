@@ -26,6 +26,7 @@
 		870D40ED2DF8FFA80026AB8A /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 870D40EC2DF8FFA80026AB8A /* Localizable.xcstrings */; };
 		874291B92DC29C7F00571022 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 874291B82DC29C7F00571022 /* SnapshotTesting */; };
 		8755183A2E11B03B006EDF63 /* Hammond in Frameworks */ = {isa = PBXBuildFile; productRef = 875518392E11B03B006EDF63 /* Hammond */; };
+		875A5D342F2639EA00EC9B76 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 875A5D332F2639EA00EC9B76 /* GRDB */; };
 		876659422DC8E76E00D62CCA /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 876659412DC8E76E00D62CCA /* SwiftUIIntrospect */; };
 		87864EDF2E28520600D8ACE0 /* MediaGridLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 87864EDE2E28520600D8ACE0 /* MediaGridLayout */; };
 		8787F0532E32B89600D2715A /* Placement in Frameworks */ = {isa = PBXBuildFile; productRef = 8787F0522E32B89600D2715A /* Placement */; };
@@ -96,6 +97,7 @@
 				8792C5C62DCA9F1200C58B79 /* Prefire in Frameworks */,
 				876659422DC8E76E00D62CCA /* SwiftUIIntrospect in Frameworks */,
 				87D346562F002A0600CD09FF /* SmithereenAPI in Frameworks */,
+				875A5D342F2639EA00EC9B76 /* GRDB in Frameworks */,
 				8755183A2E11B03B006EDF63 /* Hammond in Frameworks */,
 				8787F0532E32B89600D2715A /* Placement in Frameworks */,
 				87864EDF2E28520600D8ACE0 /* MediaGridLayout in Frameworks */,
@@ -182,6 +184,7 @@
 				8787F0522E32B89600D2715A /* Placement */,
 				8793F4452E63619400662021 /* SlideableMenu */,
 				87D346552F002A0600CD09FF /* SmithereenAPI */,
+				875A5D332F2639EA00EC9B76 /* GRDB */,
 			);
 			productName = Smithereen;
 			productReference = 01E20ABA2DB7926D00CC0EBE /* Smithereen.app */;
@@ -255,6 +258,7 @@
 				8787F0512E32B89600D2715A /* XCRemoteSwiftPackageReference "Placement" */,
 				8793F4442E63619400662021 /* XCRemoteSwiftPackageReference "SlideableMenu" */,
 				87D346542F002A0600CD09FF /* XCRemoteSwiftPackageReference "smithereen-api-swift" */,
+				875A5D322F2639EA00EC9B76 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 01E20ABB2DB7926D00CC0EBE /* Products */;
@@ -668,6 +672,14 @@
 				minimumVersion = 1.18.3;
 			};
 		};
+		875A5D322F2639EA00EC9B76 /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 7.9.0;
+			};
+		};
 		876659402DC8E76E00D62CCA /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/siteline/swiftui-introspect";
@@ -727,6 +739,11 @@
 		875518392E11B03B006EDF63 /* Hammond */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Hammond;
+		};
+		875A5D332F2639EA00EC9B76 /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 875A5D322F2639EA00EC9B76 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			productName = GRDB;
 		};
 		876659412DC8E76E00D62CCA /* SwiftUIIntrospect */ = {
 			isa = XCSwiftPackageProductDependency;
