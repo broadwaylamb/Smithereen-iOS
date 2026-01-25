@@ -38,7 +38,7 @@ struct RegularPostFooterView: View {
                     composeRepostIsShown = true
                 } label: {
                     HStack(spacing: 8) {
-                        Image(.repostOutline)
+                        Image(viewModel.reposted ? .repostFilled : .repostOutline)
                         if viewModel.repostCount != 0 {
                             Text(
                                 "\(viewModel.repostCount)",

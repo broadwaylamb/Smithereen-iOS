@@ -27,7 +27,7 @@ struct CompactPostFooterView: View {
                     .resizable()
                     .frame(width: 15, height: 14),
                 count: viewModel.repostCount,
-                highlighted: false,
+                highlighted: viewModel.reposted,
                 action: {
                     composeRepostIsShown = true
                 },

@@ -13,6 +13,7 @@ final class PostViewModel: ObservableObject, Identifiable {
     @Published var repostCount: Int = 0
     @Published var likeCount: Int = 0
     @Published var liked: Bool = false
+    @Published var reposted = false
 
     init(
         api: any APIService,
@@ -30,10 +31,11 @@ final class PostViewModel: ObservableObject, Identifiable {
 
     func update(from post: WallPost) {
         self.post = post
-        commentCount = post.comments?.count ?? 0
-        repostCount = post.reposts?.count ?? 0
-        likeCount = post.likes?.count ?? 0
-        liked = post.likes?.userLikes ?? false
+        commentCount = post.postForInteractions.comments?.count ?? 0
+        repostCount = post.postForInteractions.reposts?.count ?? 0
+        reposted = post.postForInteractions.reposts?.userReposted ?? false
+        likeCount = post.postForInteractions.likes?.count ?? 0
+        liked = post.postForInteractions.likes?.userLikes ?? false
     }
 
     var originalPostURL: URL {
@@ -171,5 +173,15 @@ final class PostViewModel: ObservableObject, Identifiable {
 
     private func withLikeAnimation(_ body: () -> Void) {
         withAnimation(.easeInOut(duration: 0.2), body)
+    }
+}
+
+extension WallPost {
+    var postForInteractions: WallPost {
+        if isMastodonStyleRepost == true {
+            return repostHistory?.first ?? self
+        } else {
+            return self
+        }
     }
 }

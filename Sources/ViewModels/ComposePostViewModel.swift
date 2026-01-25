@@ -33,16 +33,21 @@ final class ComposePostViewModel: ObservableObject {
         !text.isBlank || repostedPost != nil
     }
 
-    private func done() {
+    private func done(repostResult: RepostWithCounters? = nil) {
         isShown = false
+        if let repostedPost, let repostResult {
+            repostedPost.reposted = true
+            repostedPost.repostCount = repostResult.repostsCount
+            repostedPost.likeCount = repostResult.repostsCount
+        }
     }
 
     func submit() {
         Task {
             await errorObserver.runCatching {
                 if let repostedPost {
-                    _ = try await api.invokeMethod(
-                        Wall.Repost(
+                    let result = try await api.invokeMethod(
+                        Execute.repostWithCounters(
                             postID: repostedPost.id,
                             message: text,
                             textFormat: .plain,
@@ -51,10 +56,11 @@ final class ComposePostViewModel: ObservableObject {
                             guid: nil // FIXME: Pass GUID
                         )
                     )
+                    await done(repostResult: result)
                 } else {
                     _ = try await api.invokeMethod(
                         Wall.Post(
-                            ownerID: wallOwner, // TODO: Support posts on group walls
+                            ownerID: wallOwner,
                             message: text,
                             textFormat: .plain,
                             attachments: nil, // TODO: Support attachments
@@ -62,9 +68,8 @@ final class ComposePostViewModel: ObservableObject {
                             guid: nil, // FIXME: Pass GUID
                         )
                     )
+                    await done()
                 }
-                // TODO: If this is a repost, update the repost count (#18)
-                await done()
             }
         }
     }
