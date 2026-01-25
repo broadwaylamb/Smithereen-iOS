@@ -38,7 +38,7 @@ struct Palette {
         loadingImagePlaceholder: #colorLiteral(red: 0.9420066476, green: 0.9368781447, blue: 0.9587077498, alpha: 1),
         postFooterSeparator: #colorLiteral(red: 0.7706074119, green: 0.8046882749, blue: 0.8388215899, alpha: 1),
         compactPostButtonTint: #colorLiteral(red: 0.6374332905, green: 0.6473867297, blue: 0.6686993241, alpha: 1),
-        compactPostButtonHighlightedTint: #colorLiteral(red: 0.1697994363, green: 0.371793279, blue: 0.6778445559, alpha: 1),
+        compactPostButtonHighlightedTint: #colorLiteral(red: 0.3381240964, green: 0.5885308981, blue: 0.8735457659, alpha: 1),
         regularPostCommentButton: #colorLiteral(red: 0.5574500561, green: 0.5769813657, blue: 0.5896793604, alpha: 1),
         regularPostLikeAndRepostButton: #colorLiteral(red: 0.2966219783, green: 0.5122557282, blue: 0.7484264374, alpha: 1),
         regularPostLikeText: #colorLiteral(red: 0.4756277204, green: 0.6297383308, blue: 0.8118918538, alpha: 1),
