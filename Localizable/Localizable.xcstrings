@@ -1145,6 +1145,22 @@
         }
       }
     },
+    "Copy Link to Post" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировать ссылку на запись"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопіювати посилання на запис"
+          }
+        }
+      }
+    },
     "Could not authenticate because of state mismatch." : {
       "localizations" : {
         "ru" : {
@@ -1168,6 +1184,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Не вдалося знайти сервер Smithereen за адресою %@"
+          }
+        }
+      }
+    },
+    "Delete Post" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить запись"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видалити запис"
           }
         }
       }
@@ -1250,6 +1282,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Показати повністю…"
+          }
+        }
+      }
+    },
+    "Hide News" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скрывать новости"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Приховати з новин"
           }
         }
       }
@@ -1530,6 +1578,22 @@
         }
       }
     },
+    "Open in Browser" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть в браузере"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Відкрити у браузері"
+          }
+        }
+      }
+    },
     "Own posts" : {
       "comment" : "Wall mode selector. Shows only user's own posts on their wall. When the name is not too long, \"%@'s posts\" is used instead.",
       "localizations" : {
@@ -1543,6 +1607,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Тільки свої"
+          }
+        }
+      }
+    },
+    "Pin Post" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Закрепить запись"
           }
         }
       }
@@ -1579,6 +1653,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Налаштування запису"
+          }
+        }
+      }
+    },
+    "Report" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пожаловаться"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поскаржитись"
           }
         }
       }

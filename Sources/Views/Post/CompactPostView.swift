@@ -42,7 +42,7 @@ struct CompactPostView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            PostHeaderView(author: viewModel.getAuthor(), date: viewModel.getPostDate())
+            PostHeaderView(viewModel)
                 .padding(.horizontal, horizontalContentPadding)
                 .padding(.top, 7)
                 .padding(.bottom, 13)

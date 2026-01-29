@@ -4,7 +4,24 @@ import SmithereenAPI
 struct PostHeaderView: View {
     var author: PostAuthor
     var date: String
+    var originalURL: URL
+    var canDelete: Bool
+    var canEdit: Bool
+    var canPin: Bool
+    var isOwnPost: Bool
+
+    init(_ viewModel: PostViewModel) {
+        author = viewModel.getAuthor()
+        date = viewModel.getPostDate()
+        originalURL = viewModel.originalPostURL
+        canDelete = viewModel.post.canDelete
+        canEdit = viewModel.post.canEdit
+        canPin = viewModel.post.canPin ?? false
+        isOwnPost = viewModel.isOwnPost
+    }
+
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
         GenericPostHeaderView(
@@ -16,10 +33,36 @@ struct PostHeaderView: View {
                 EmptyView()
             },
             detailsButton: {
-                Button(action: { /* TODO */ }) {
+                Menu {
+                    Button("Open in Browser") {
+                        openURL(originalURL)
+                    }
+                    Button("Copy Link to Post") {
+                        UIPasteboard.general.url = originalURL
+                        // TODO: Show a message that the link has been copied
+                    }
+                    if canPin {
+                        Button("Pin Post") {
+                            // TODO: Pin post
+                        }
+                    }
+                    if canDelete {
+                        Button("Delete Post", role: .destructive) {
+                            // TODO: Delete post
+                        }
+                    }
+                    if !isOwnPost {
+                        Button("Report") {
+                            // TODO: Reports
+                        }
+                        Button("Hide News") {
+                            // TODO: Hide news
+                        }
+                    }
+                } label: {
                     Image(.ellipsis)
                 }
-                .buttonStyle(.borderless)
+                .menuStyle(.borderlessButton)
                 .accessibilityLabel("Post settings")
             },
         )

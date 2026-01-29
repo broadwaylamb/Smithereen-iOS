@@ -42,6 +42,10 @@ final class PostViewModel: ObservableObject, Identifiable {
         post.url
     }
 
+    var isOwnPost: Bool {
+        post.fromID.userID == actorStorage.currentUserID
+    }
+
     var repostIDs: [WallPostID] {
         post.repostHistory?.map(\.id) ?? []
     }

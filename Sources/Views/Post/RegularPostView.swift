@@ -75,7 +75,7 @@ struct RegularPostView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            PostHeaderView(author: viewModel.getAuthor(), date: viewModel.getPostDate())
+            PostHeaderView(viewModel)
                 .padding(.horizontal, horizontalContentPadding)
                 .padding(.vertical, 13)
 
