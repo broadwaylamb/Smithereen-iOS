@@ -3,8 +3,18 @@ import SwiftUIIntrospect
 
 struct SettingsView: View {
     let api: any AuthenticationService
+    let db: SmithereenDatabase
     @EnvironmentObject private var paletteHolder: PaletteHolder
     @AppStorage(.roundProfilePictures) private var roundProfilePictures: Bool
+    @EnvironmentObject private var errorObserver: ErrorObserver
+
+    private func eraseCache() async {
+        // TODO: Spinner?
+        await errorObserver.runCatching {
+            try await db.erase()
+            URLCache.smithereenMediaCache.removeAllCachedResponses()
+        }
+    }
 
     var body: some View {
         List {
@@ -14,13 +24,17 @@ struct SettingsView: View {
                     confirmationTitle: "Erase",
                     confirmationRole: .destructive,
                 ) {
-                    URLCache.smithereenMediaCache.removeAllCachedResponses()
+                    Task {
+                        await eraseCache()
+                    }
                 }
             } header: {
                 Text("Cache", comment: "Section title in settings")
             } footer: {
                 Text(
-                    "Deletes all media from cache",
+                    """
+                    All Smithereen data cached on this device will be deleted.
+                    """,
                     comment: "Explainer section footer in settings"
                 )
             }
@@ -41,6 +55,7 @@ struct SettingsView: View {
                     confirmationRole: .destructive
                 ) {
                     Task {
+                        await eraseCache()
                         await api.logOut()
                     }
                 }
@@ -79,6 +94,6 @@ private struct AreYouSureButton: View {
 }
 
 #Preview("Settings") {
-    SettingsView(api: MockApi())
+    SettingsView(api: MockApi(), db: try! .createInMemory())
         .environmentObject(PaletteHolder())
 }

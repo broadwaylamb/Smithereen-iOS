@@ -57,7 +57,7 @@ final class MockApi: AuthenticationService, APIService {
 
 enum AuthenticationState {
     case loading
-    case authenticated(ActorStorage)
+    case authenticated(SmithereenDatabase)
     case notAuthenticated
 }
 
@@ -75,8 +75,8 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
     }
 
     @MainActor
-    private func setAuthenticated(_ session: SessionInfo) {
-        state = .authenticated(ActorStorage(api: self, currentUserID: session.userID))
+    private func setAuthenticated(_ session: SessionInfo) throws {
+        state = .authenticated(try .createPersistent(currentUserID: session.userID))
     }
 
     private func storeSession(_ session: SessionInfo?) async throws {
@@ -85,7 +85,7 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
         if let session {
             try keychain.storeSession(session)
             self.session = session
-            await setAuthenticated(session)
+            try await setAuthenticated(session)
         } else {
             await setUIState(.notAuthenticated)
         }
@@ -95,7 +95,7 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
         do {
             if let session = try keychain.retrieveSession() {
                 self.session = session
-                await setAuthenticated(session)
+                try await setAuthenticated(session)
             } else {
                 self.session = nil
                 await setUIState(.notAuthenticated)

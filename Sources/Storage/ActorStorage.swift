@@ -1,19 +1,6 @@
 import SmithereenAPI
 
-@MainActor
-final class ActorStorage {
-    private unowned let api: any APIService
-
-    let currentUserID: UserID
-    let currentUserViewModel: UserProfileViewModel
-    private var userCache = LRUCache<UserID, UserProfileViewModel>(capacity: 1000)
-
-    init(api: any APIService, currentUserID: UserID) {
-        self.api = api
-        self.currentUserID = currentUserID
-        self.currentUserViewModel = UserProfileViewModel(api: api, userID: nil)
-    }
-
+enum ActorStorage {
     static let userFields: [User.Field] = [
         .status,
         .url,
@@ -39,6 +26,7 @@ final class ActorStorage {
         .personal,
         .online,
         .lastSeen,
+        .blocked,
         .blockedByMe,
         .canPost,
         .canSeeAllPosts,
@@ -47,6 +35,7 @@ final class ActorStorage {
         .mutualCount,
         .friendStatus,
         .isFriend,
+        .isFavorite,
         .isHiddenFromFeed,
         .followersCount,
         .wallDefault,
@@ -60,7 +49,6 @@ final class ActorStorage {
         .photoMaxOrig,
         .photoID,
         .hasPhoto,
-        .cropPhoto,
         .firstNameGen,
         .counters,
     ]
@@ -70,43 +58,4 @@ final class ActorStorage {
 
     static let actorFields: [ActorField] =
         (userFields.map(ActorField.init) + groupFields.map(ActorField.init)).distinct()
-
-    func cacheUser(_ user: User) -> UserProfileViewModel {
-        if user.id == currentUserID {
-            currentUserViewModel.user = user
-            return currentUserViewModel
-        }
-        if let existingViewModel = userCache[user.id] {
-            existingViewModel.user = user
-            return existingViewModel
-        }
-
-        let newViewModel = UserProfileViewModel(api: api, userID: user.id, user: user)
-        userCache[user.id] = newViewModel
-        return newViewModel
-    }
-
-    func cacheUsers<Users: Sequence<User>>(
-        _ users: Users
-    ) -> [UserID : UserProfileViewModel] {
-        var result = [UserID : UserProfileViewModel]()
-        for user in users {
-            result[user.id] = cacheUser(user)
-        }
-        return result
-    }
-
-    func isCurrentUser(_ userID: UserID) -> Bool {
-        currentUserID == userID
-    }
-
-    func getUser(_ userID: UserID?) -> UserProfileViewModel {
-        guard let userID else {
-            return currentUserViewModel
-        }
-        if isCurrentUser(userID) {
-            return currentUserViewModel
-        }
-        return userCache[userID, default: UserProfileViewModel(api: api, userID: userID)]
-    }
 }

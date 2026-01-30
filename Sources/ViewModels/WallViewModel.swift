@@ -4,7 +4,7 @@ import SwiftUI
 @MainActor
 final class WallViewModel: ObservableObject {
     let api: any APIService
-    let actorStorage: ActorStorage
+    let db: SmithereenDatabase
     let ownerID: ActorID?
 
     @Published private var posts: [PostViewModel] = []
@@ -13,12 +13,12 @@ final class WallViewModel: ObservableObject {
 
     init(
         api: any APIService,
-        actorStorage: ActorStorage,
+        db: SmithereenDatabase,
         ownerID: ActorID?,
         wallMode: User.WallMode,
     ) {
         self.api = api
-        self.actorStorage = actorStorage
+        self.db = db
         self.ownerID = ownerID
         self.wallMode = wallMode
     }
@@ -40,14 +40,14 @@ final class WallViewModel: ObservableObject {
                 fields: ActorStorage.actorFields,
             )
         )
+        try db.cacheUsers(wall.profiles)
         withAnimation(.easeIn) {
-            let authors = actorStorage.cacheUsers(wall.profiles)
             posts = wall.map {
                 PostViewModel(
                     api: api,
-                    actorStorage: actorStorage,
-                    authors: authors,
+                    db: db,
                     post: $0,
+                    profiles: wall.profiles,
                 )
             }
         }
@@ -57,7 +57,7 @@ final class WallViewModel: ObservableObject {
         switch wallMode {
         case .owner:
             return posts.filter {
-                $0.post.fromID == ownerID ?? ActorID(actorStorage.currentUserID)
+                $0.post.fromID == ownerID ?? ActorID(db.currentUserID)
             }
         case .all:
             return posts

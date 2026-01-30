@@ -1,3 +1,4 @@
+import GRDB
 import SwiftUI
 import SmithereenAPI
 
@@ -5,37 +6,58 @@ import SmithereenAPI
 final class PostViewModel: ObservableObject, Identifiable {
     let id: WallPostID
     let api: any APIService
-    let actorStorage: ActorStorage
-    let authors: [UserID : UserProfileViewModel]
-    @Published var post: WallPost
+    let db: SmithereenDatabase
+    @Published private(set) var post: WallPost
 
     @Published var commentCount: Int = 0
     @Published var repostCount: Int = 0
     @Published var likeCount: Int = 0
     @Published var liked: Bool = false
     @Published var reposted = false
+    @Published private var authors: [UserID : User] = [:]
+
+    private var authorsObservation: AnyDatabaseCancellable?
 
     init(
         api: any APIService,
-        actorStorage: ActorStorage,
-        authors: [UserID : UserProfileViewModel],
+        db: SmithereenDatabase,
         post: WallPost,
+        profiles: [User],
     ) {
         self.id = post.id
         self.api = api
-        self.actorStorage = actorStorage
-        self.authors = authors
+        self.db = db
         self.post = post
-        update(from: post)
+        update(from: post, profiles: profiles)
     }
 
-    func update(from post: WallPost) {
+    private func observeAuthors(_ post: WallPost) {
+        authorsObservation = db.observe { db in
+            try User.fetchAll(db, ids: post.authorIDs)
+        } onChange: { [unowned self] in
+            self.setAuthors($0)
+        }
+    }
+
+    private func setAuthors(_ newAuthors: [User]) {
+        var newAuthorsDict = [UserID : User]()
+        newAuthorsDict.reserveCapacity(newAuthors.count)
+        for newAuthor in newAuthors {
+            newAuthorsDict[newAuthor.id] = newAuthor
+        }
+        authors = newAuthorsDict
+    }
+
+    func update(from post: WallPost, profiles: [User]) {
         self.post = post
         commentCount = post.postForInteractions.comments?.count ?? 0
         repostCount = post.postForInteractions.reposts?.count ?? 0
         reposted = post.postForInteractions.reposts?.userReposted ?? false
         likeCount = post.postForInteractions.likes?.count ?? 0
         liked = post.postForInteractions.likes?.userLikes ?? false
+        let authorIDs = post.authorIDs
+        setAuthors(profiles.filter { authorIDs.contains($0.id) })
+        observeAuthors(post)
     }
 
     var originalPostURL: URL {
@@ -43,7 +65,7 @@ final class PostViewModel: ObservableObject, Identifiable {
     }
 
     var isOwnPost: Bool {
-        post.fromID.userID == actorStorage.currentUserID
+        post.fromID.userID == db.currentUserID
     }
 
     var canComment: Bool {
@@ -95,13 +117,32 @@ final class PostViewModel: ObservableObject, Identifiable {
             // TODO: Support posts from groups
             fatalError("Posts from groups are not supported")
         }
-        if let viewModel = authors[authorID] {
-            return viewModel.toPostAuthor()
+        if let user = authors[authorID] {
+            return user.toPostAuthor()
         }
 
         // This can only happen if the server doesn't send us the correct array
         // of users in the response.
-        return actorStorage.getUser(authorID).toPostAuthor()
+        fetchAuthorsTask = Task {
+            let request = Users.Get(
+                userIDs: post.authorIDs,
+                fields: ActorStorage.userFields,
+            )
+            let users = try await api.invokeMethod(request)
+            setAuthors(users)
+        }
+
+        return PostAuthor(
+            id: ActorID(authorID),
+            displayedName: "…",
+            profilePictureSizes: ImageSizes(),
+        )
+    }
+
+    private var fetchAuthorsTask: Task<Void, any Error>?
+
+    deinit {
+        fetchAuthorsTask?.cancel()
     }
 
     private func getPostIncludingReposted(_ postID: WallPostID?) -> WallPost {
@@ -125,7 +166,7 @@ final class PostViewModel: ObservableObject, Identifiable {
         let formattedDate = AdaptiveDateFormatter.default.string(from: post.date)
         switch post.postSource?.action {
         case .profilePictureUpdate:
-            let gender = post.fromID.userID.flatMap { authors[$0] }?.user?.sex
+            let gender = post.fromID.userID.flatMap { authors[$0] }?.sex
             switch gender {
             case .female:
                 return String(localized: "updated her profile picture \(formattedDate)")
@@ -211,5 +252,39 @@ extension WallPost {
         } else {
             return self
         }
+    }
+
+    var authorIDs: [UserID] {
+        var r = [UserID]()
+        r.reserveCapacity(1 + (repostHistory?.count ?? 0))
+        if let userID = fromID.userID {
+            r.append(userID)
+        }
+        for repost in repostHistory ?? [] {
+            if let userID = repost.fromID.userID {
+                r.append(userID)
+            }
+        }
+        return r.distinct()
+    }
+}
+
+extension User {
+    func toPostAuthor() -> PostAuthor {
+        PostAuthor(
+            id: ActorID(id),
+            displayedName: nameComponents.formatted(.name(style: .medium)),
+            profilePictureSizes: squareProfilePictureSizes,
+        )
+    }
+
+    var squareProfilePictureSizes: ImageSizes {
+        var sizes = ImageSizes()
+        sizes.append(size: 50, url: photo50)
+        sizes.append(size: 100, url: photo100)
+        sizes.append(size: 200, url: photo200)
+        sizes.append(size: 400, url: photo400)
+        sizes.append(size: .infinity, url: photoMax)
+        return sizes
     }
 }

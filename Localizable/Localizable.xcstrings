@@ -1029,6 +1029,17 @@
         }
       }
     },
+    "All Smithereen data cached on this device will be deleted." : {
+      "comment" : "Explainer section footer in settings",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Все данные Smithereen, сохранённые на этом устройстве, будут удалены."
+          }
+        }
+      }
+    },
     "Appearance" : {
       "localizations" : {
         "ru" : {
@@ -1200,23 +1211,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Видалити запис"
-          }
-        }
-      }
-    },
-    "Deletes all media from cache" : {
-      "comment" : "Explainer section footer in settings",
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Будут удалены все изображения из кэша"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Будут видаленi все зображення з кешу"
           }
         }
       }
@@ -1653,6 +1647,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Налаштування запису"
+          }
+        }
+      }
+    },
+    "Profile" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Страница"
           }
         }
       }

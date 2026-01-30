@@ -1,23 +1,29 @@
 import SwiftUI
 import SmithereenAPI
+import GRDB
 
 @MainActor
 final class UserProfileViewModel: ObservableObject {
     private let api: any APIService
+    private let db: SmithereenDatabase
     let userID: UserID?
+
     @Published var user: User?
 
-    /// `userID` being null means the current user.
-    init(api: any APIService, userID: UserID?, user: User? = nil) {
+    private var observation: AnyDatabaseCancellable?
+
+    /// `userID` being `nil` means the current user.
+    init(api: any APIService, userID: UserID?, db: SmithereenDatabase) {
         self.api = api
         self.userID = userID
-        self.user = user
-    }
+        self.db = db
+        self.user = try? db.getUser(userID)
 
-    func loadProfile() async throws {
-        user = try await api.invokeMethod(
-            Users.Get(userIDs: userID.map { [$0] }, fields: ActorStorage.userFields)
-        ).first
+        let userIDForObservation = userID ?? db.currentUserID
+        observation = db
+            .observe(assignOn: self, \.user) { db in
+                try User.fetchOne(db, id: userIDForObservation)
+            }
     }
 
     var isMe: Bool {
@@ -107,26 +113,7 @@ final class UserProfileViewModel: ObservableObject {
         return user.onlineMobile == true || user.lastSeen?.platform == .mobile
     }
 
-    var squareProfilePictureSizes: ImageSizes {
-        guard let user else { return .init() }
-        var sizes = ImageSizes()
-        sizes.append(size: 50, url: user.photo50)
-        sizes.append(size: 100, url: user.photo100)
-        sizes.append(size: 200, url: user.photo200)
-        sizes.append(size: 400, url: user.photo400)
-        sizes.append(size: .infinity, url: user.photoMax)
-        return sizes
-    }
-
-    func toPostAuthor() -> PostAuthor {
-        return PostAuthor(
-            id: userID.map(ActorID.init),
-            displayedName: user?.nameComponents.formatted(.name(style: .medium)) ?? "…",
-            profilePictureSizes: squareProfilePictureSizes,
-        )
-    }
-
-    func createWallViewModel(actorStorage: ActorStorage) -> WallViewModel {
+    func createWallViewModel(db: SmithereenDatabase) -> WallViewModel {
         let wallMode: User.WallMode
         if let user, let wallDefault = user.wallDefault {
             wallMode = wallDefault
@@ -135,7 +122,7 @@ final class UserProfileViewModel: ObservableObject {
         }
         return WallViewModel(
             api: api,
-            actorStorage: actorStorage,
+            db: db,
             ownerID: userID.map(ActorID.init),
             wallMode: wallMode,
         )

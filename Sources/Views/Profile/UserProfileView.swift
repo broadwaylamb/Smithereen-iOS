@@ -1,8 +1,26 @@
+import SmithereenAPI
 import SwiftUI
 
 struct UserProfileView: View {
-    @ObservedObject var viewModel: UserProfileViewModel
-    @StateObject var wallViewModel: WallViewModel
+    @StateObject private var viewModel: UserProfileViewModel
+    @StateObject private var wallViewModel: WallViewModel
+
+    
+
+    init(userID: UserID?, api: any APIService, db: SmithereenDatabase) {
+        _viewModel = StateObject(
+            wrappedValue: UserProfileViewModel(api: api, userID: userID, db: db)
+        )
+        let wallMode = (try? db.getUser(userID)?.wallDefault) ?? .owner
+        _wallViewModel = StateObject(
+            wrappedValue: WallViewModel(
+                api: api,
+                db: db,
+                ownerID: userID.map(ActorID.init),
+                wallMode: wallMode,
+            )
+        )
+    }
 
     @EnvironmentObject private var errorObserver: ErrorObserver
 
@@ -16,7 +34,7 @@ struct UserProfileView: View {
         List {
             Section {
                 UserProfileHeaderView(
-                    profilePicture: viewModel.squareProfilePictureSizes,
+                    profilePicture: viewModel.user?.squareProfilePictureSizes ?? .init(), 
                     fullName: viewModel.fullName,
                     onlineOrLastSeen: viewModel.onlineOrLastSeen,
                     ageAndPlace: viewModel.ageAndPlace,

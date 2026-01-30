@@ -11,8 +11,8 @@ struct SmithereenApp: App {
         switch api.state {
         case .loading:
             Color.white.ignoresSafeArea() // TODO: Show LaunchScreen
-        case .authenticated(let actorStorage):
-            RootView(api: api, actorStorage: actorStorage)
+        case .authenticated(let db):
+            RootView(api: api, db: db)
         case .notAuthenticated:
             AuthView(viewModel: AuthViewModel(api: api))
         }

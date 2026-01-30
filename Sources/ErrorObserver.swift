@@ -1,3 +1,4 @@
+import GRDB
 import SwiftUI
 
 @MainActor
@@ -17,6 +18,10 @@ final class ErrorObserver: ObservableObject {
     nonisolated func runCatching(_ block: @Sendable () async throws -> Void) async {
         do {
             return try await block()
+        } catch let error as GRDB.DatabaseError {
+            await MainActor.run {
+                self.error = DatabaseError(wrapped: error)
+            }
         } catch {
             if !error.isCancellationError {
                 await MainActor.run {
@@ -31,7 +36,11 @@ final class ErrorObserver: ObservableObject {
         onError: @MainActor (any Error) -> Void
     ) async {
         do {
-            return try await block()
+            do {
+                return try await block()
+            } catch let error as GRDB.DatabaseError {
+                throw DatabaseError(wrapped: error)
+            }
         } catch {
             await MainActor.run {
                 onError(error)

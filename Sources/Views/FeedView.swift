@@ -13,7 +13,7 @@ struct FeedView: View {
 
     private func refreshFeed() async {
         await errorObserver.runCatching {
-            try await viewModel.update()
+            try await viewModel.update(errorObserver: errorObserver)
         }
     }
 
@@ -87,8 +87,8 @@ struct FeedView: View {
 
 #Preview {
     let api = MockApi()
-    let actorStorage = ActorStorage(api: api, currentUserID: .init(rawValue: 1))
-    FeedView(viewModel: FeedViewModel(api: api, actorStorage: actorStorage))
+    let vm = FeedViewModel(api: api, db: try! .createInMemory())
+    FeedView(viewModel: vm)
         .environmentObject(PaletteHolder())
         .environmentObject(ErrorObserver())
         .prefireIgnored()

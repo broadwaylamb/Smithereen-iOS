@@ -11,6 +11,16 @@
         }
       }
     },
+    "Database integrity error. Please report this bug to the application developer." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка целостности базы данных. Пожалуйста, сообщите об этой ошибке разработчику приложения."
+          }
+        }
+      }
+    },
     "Too many requests per second." : {
       "localizations" : {
         "ru" : {
