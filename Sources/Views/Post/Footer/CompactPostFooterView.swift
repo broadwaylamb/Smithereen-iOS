@@ -8,40 +8,48 @@ struct CompactPostFooterView: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            CompactPostFooterButton(
-                alignment: .firstTextBaseline,
-                image:
-                    Image(.commentFilled)
+            if viewModel.displayCommentButton {
+                CompactPostFooterButton(
+                    alignment: .firstTextBaseline,
+                    image:
+                        Image(.commentFilled)
                         .resizable()
                         .frame(width: 15, height: 14)
                         .alignmentGuide(.firstTextBaseline) { $0.height - 3.5 },
-                count: viewModel.commentCount,
-                highlighted: false,
-                action: { /* TODO */ },
-            )
+                    count: viewModel.commentCount,
+                    highlighted: false,
+                    action: { /* TODO */ },
+                )
+            }
             Spacer()
-            CompactPostFooterButton(
-                alignment: .center,
-                image:
-                    Image(.repostFilled)
-                    .resizable()
-                    .frame(width: 15, height: 14),
-                count: viewModel.repostCount,
-                highlighted: viewModel.reposted,
-                action: {
-                    composeRepostIsShown = true
-                },
-            )
-            CompactPostFooterButton(
-                alignment: .center,
-                image: Image(.likeFilled)
-                    .resizable()
-                    .frame(width: 15, height: 13),
-                count: viewModel.likeCount,
-                highlighted: viewModel.liked,
-                action: viewModel.like,
-            )
-            .likeButtonFeedback(liked: viewModel.liked)
+            if viewModel.displayRepostButton {
+                CompactPostFooterButton(
+                    alignment: .center,
+                    image:
+                        Image(.repostFilled)
+                        .resizable()
+                        .frame(width: 15, height: 14),
+                    count: viewModel.repostCount,
+                    highlighted: viewModel.reposted,
+                    action: {
+                        composeRepostIsShown = true
+                    },
+                )
+                .disabled(!viewModel.canRepost)
+            }
+            if viewModel.displayLikeButton {
+                CompactPostFooterButton(
+                    alignment: .center,
+                    image: Image(.likeFilled)
+                        .resizable()
+                        .frame(width: 15, height: 13),
+                    count: viewModel.likeCount,
+                    highlighted: viewModel.liked,
+                    action: viewModel.like,
+                )
+                .likeButtonFeedback(liked: viewModel.liked)
+                .disabled(!viewModel.canLike)
+            }
         }
         .font(.caption)
         .sheet(isPresented: $composeRepostIsShown) {

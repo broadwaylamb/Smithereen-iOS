@@ -7,7 +7,7 @@ final class PostViewModel: ObservableObject, Identifiable {
     let api: any APIService
     let actorStorage: ActorStorage
     let authors: [UserID : UserProfileViewModel]
-    private(set) var post: WallPost
+    @Published var post: WallPost
 
     @Published var commentCount: Int = 0
     @Published var repostCount: Int = 0
@@ -44,6 +44,30 @@ final class PostViewModel: ObservableObject, Identifiable {
 
     var isOwnPost: Bool {
         post.fromID.userID == actorStorage.currentUserID
+    }
+
+    var canComment: Bool {
+        post.comments?.canComment ?? false
+    }
+
+    var displayCommentButton: Bool {
+        canComment || (post.comments?.count ?? 0) > 0
+    }
+
+    var canRepost: Bool {
+        post.likes?.canLike ?? false
+    }
+
+    var displayRepostButton: Bool {
+        canRepost || (post.reposts?.count ?? 0) > 0
+    }
+
+    var canLike: Bool {
+        post.likes?.canLike ?? false
+    }
+
+    var displayLikeButton: Bool {
+        canLike || (post.likes?.count ?? 0) > 0
     }
 
     var repostIDs: [WallPostID] {
