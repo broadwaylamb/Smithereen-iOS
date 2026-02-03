@@ -20,6 +20,68 @@ private final class PhaseHolder: ObservableObject {
     init(phase: CacheableAsyncImagePhase) {
         self.phase = phase
     }
+
+    private func setPhaseAnimated(_ newPhase: CacheableAsyncImagePhase) {
+        withAnimation(.easeIn(duration: 0.2)) {
+            phase = newPhase
+        }
+    }
+
+    private func setErrorState(_ error: Error) {
+        switch phase {
+        case .success:
+            return // Do nothing, leave the existing image
+        case .failure(_, let blurhash),
+                .pending(let blurhash),
+                .empty(let blurhash):
+            setPhaseAnimated(
+                .failure(
+                    CacheableAsyncImageError.invalidData,
+                    blurhash: blurhash,
+                )
+            )
+        }
+    }
+
+    func loadImage(location: ImageLocation?, displayScale: CGFloat) async {
+        switch location {
+        case .remote(let url):
+            do {
+                let urlRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad)
+                let (data, response) = try await URLSession
+                    .cacheableMediaURLSession
+                    .data(for: urlRequest)
+                if response.statusCode.category == .success {
+                    if let image = imageFromData(data, scale: displayScale) {
+                        setPhaseAnimated(.success(image))
+                        return
+                    }
+                    setErrorState(CacheableAsyncImageError.invalidData)
+                } else {
+                    setErrorState(CacheableAsyncImageError.invalidResponse)
+                }
+            } catch {
+                setErrorState(error)
+            }
+        case .bundled(let resource):
+            setPhaseAnimated(.success(Image(resource)))
+        case nil:
+            return
+        }
+    }
+
+    private var loadingTask: Task<Void, Never>?
+
+    func loadImage(location: ImageLocation?, displayScale: CGFloat) {
+        loadingTask = Task { [unowned self] in
+            await self.loadImage(location: location, displayScale: displayScale)
+            self.loadingTask = nil
+        }
+    }
+
+    deinit {
+        loadingTask?.cancel()
+    }
 }
 
 struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
@@ -88,55 +150,6 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
         sizes.sizeThatFits(viewportSize, scale: displayScale)
     }
 
-    private func setPhaseAnimated(_ newPhase: CacheableAsyncImagePhase) {
-        withAnimation(.easeIn(duration: 0.2)) {
-            phaseHolder.phase = newPhase
-        }
-    }
-
-    private func setErrorState(_ error: Error) {
-        switch phaseHolder.phase {
-        case .success:
-            return // Do nothing, leave the existing image
-        case .failure(_, let blurhash),
-                .pending(let blurhash),
-                .empty(let blurhash):
-            setPhaseAnimated(
-                .failure(
-                    CacheableAsyncImageError.invalidData,
-                    blurhash: blurhash,
-                )
-            )
-        }
-    }
-
-    private func loadImage() async {
-        switch location {
-        case .remote(let url):
-            do {
-                let urlRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad)
-                let (data, response) = try await URLSession
-                    .cacheableMediaURLSession
-                    .data(for: urlRequest)
-                if response.statusCode.category == .success {
-                    if let image = imageFromData(data, scale: displayScale) {
-                        setPhaseAnimated(.success(image))
-                        return
-                    }
-                    setErrorState(CacheableAsyncImageError.invalidData)
-                } else {
-                    setErrorState(CacheableAsyncImageError.invalidResponse)
-                }
-            } catch {
-                setErrorState(error)
-            }
-        case .bundled(let resource):
-            setPhaseAnimated(.success(Image(resource)))
-        case nil:
-            return
-        }
-    }
-
     @ViewBuilder
     private func blurHashOrPlaceholder(_ blurhash: Image?) -> some View {
         if let blurhash {
@@ -150,15 +163,25 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
         switch phaseHolder.phase {
         case .success(let image):
             content(image)
+                .onChange(of: location) {
+                    phaseHolder.loadImage(location: $0, displayScale: displayScale)
+                }
         case .failure(_, let blurhash):
             blurHashOrPlaceholder(blurhash)
+                .onChange(of: location) {
+                    phaseHolder.loadImage(location: $0, displayScale: displayScale)
+                }
         case .pending(let blurhash):
             blurHashOrPlaceholder(blurhash)
                 .task(id: location) {
-                    await loadImage()
+                    await phaseHolder
+                        .loadImage(location: location, displayScale: displayScale)
                 }
         case .empty(let blurhash):
             blurHashOrPlaceholder(blurhash)
+                .onChange(of: location) {
+                    phaseHolder.loadImage(location: $0, displayScale: displayScale)
+                }
         }
     }
 }
