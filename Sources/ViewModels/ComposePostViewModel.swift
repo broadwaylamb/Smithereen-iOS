@@ -38,7 +38,7 @@ final class ComposePostViewModel: ObservableObject {
         if let repostedPost, let repostResult {
             repostedPost.reposted = true
             repostedPost.repostCount = repostResult.repostsCount
-            repostedPost.likeCount = repostResult.repostsCount
+            repostedPost.likeCount = repostResult.likesCount
         }
     }
 

@@ -9,10 +9,10 @@ final class PostViewModel: ObservableObject, Identifiable {
     let db: SmithereenDatabase
     @Published private(set) var post: WallPost
 
-    @Published var commentCount: Int = 0
+    @Published private(set) var commentCount: Int = 0
     @Published var repostCount: Int = 0
     @Published var likeCount: Int = 0
-    @Published var liked: Bool = false
+    @Published private(set) var liked: Bool = false
     @Published var reposted = false
     @Published private var authors: [UserID : User] = [:]
 
@@ -61,7 +61,7 @@ final class PostViewModel: ObservableObject, Identifiable {
     }
 
     var originalPostURL: URL {
-        post.url
+        post.postForInteractions.url
     }
 
     var isOwnPost: Bool {
@@ -69,27 +69,27 @@ final class PostViewModel: ObservableObject, Identifiable {
     }
 
     var canComment: Bool {
-        post.comments?.canComment ?? false
+        post.postForInteractions.comments?.canComment ?? false
     }
 
     var displayCommentButton: Bool {
-        canComment || (post.comments?.count ?? 0) > 0
+        canComment || (post.postForInteractions.comments?.count ?? 0) > 0
     }
 
     var canRepost: Bool {
-        post.likes?.canLike ?? false
+        post.postForInteractions.likes?.canLike ?? false
     }
 
     var displayRepostButton: Bool {
-        canRepost || (post.reposts?.count ?? 0) > 0
+        canRepost || (post.postForInteractions.reposts?.count ?? 0) > 0
     }
 
     var canLike: Bool {
-        post.likes?.canLike ?? false
+        post.postForInteractions.likes?.canLike ?? false
     }
 
     var displayLikeButton: Bool {
-        canLike || (post.likes?.count ?? 0) > 0
+        canLike || (post.postForInteractions.likes?.count ?? 0) > 0
     }
 
     var repostIDs: [WallPostID] {
