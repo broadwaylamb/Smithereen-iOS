@@ -485,7 +485,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_ASSET_PATHS = "\"Sources/Preview Content/Preview Assets.xcassets\"";
+				DEVELOPMENT_ASSET_PATHS = "Sources/Preview\\ Content/Preview\\ Assets.xcassets Sources/Networking/TestResponses";
 				DEVELOPMENT_TEAM = N4X84VA3BB;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -527,7 +527,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_ASSET_PATHS = "\"Sources/Preview Content/Preview Assets.xcassets\"";
+				DEVELOPMENT_ASSET_PATHS = "Sources/Preview\\ Content/Preview\\ Assets.xcassets Sources/Networking/TestResponses";
 				DEVELOPMENT_TEAM = N4X84VA3BB;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;

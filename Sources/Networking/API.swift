@@ -39,22 +39,6 @@ protocol APIService: AnyObject, Sendable {
     ) async throws -> Method.Result
 }
 
-final class MockApi: AuthenticationService, APIService {
-    func authenticate<Method: SmithereenOAuthTokenRequest>(
-        host: String,
-        port: Int?,
-        method: Method,
-    ) async throws {}
-
-    func logOut() {}
-
-    func invokeMethod<Method: SmithereenAPIRequest>(
-        _ method: Method
-    ) async throws -> Method.Result {
-        fatalError("Not implemented yet")
-    }
-}
-
 enum AuthenticationState {
     case loading
     case authenticated(SmithereenDatabase)
