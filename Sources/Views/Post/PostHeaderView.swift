@@ -41,9 +41,15 @@ struct PostHeaderView: View {
                         UIPasteboard.general.url = originalURL
                         // TODO: Show a message that the link has been copied
                     }
+                    Divider()
                     if canPin {
                         Button("Pin Post") {
                             // TODO: Pin post
+                        }
+                    }
+                    if canEdit {
+                        Button("Edit Post") {
+                            // TODO: Edit post
                         }
                     }
                     if canDelete {
@@ -52,6 +58,7 @@ struct PostHeaderView: View {
                         }
                     }
                     if !isOwnPost {
+                        Divider()
                         Button("Report") {
                             // TODO: Reports
                         }

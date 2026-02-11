@@ -1231,6 +1231,22 @@
         }
       }
     },
+    "Edit Post" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Редактировать запись"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Редагувати запис"
+          }
+        }
+      }
+    },
     "Erase" : {
       "localizations" : {
         "ru" : {
@@ -1657,6 +1673,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Страница"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сторінка"
           }
         }
       }
