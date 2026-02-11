@@ -61,6 +61,10 @@ struct PostHeaderView: View {
                     }
                 } label: {
                     Image(.ellipsis)
+                        // Pad the touch area to 32x32
+                        .padding(
+                            EdgeInsets(top: 12.5, leading: 6, bottom: 12.5, trailing: 6)
+                        )
                 }
                 .menuStyle(.borderlessButton)
                 .accessibilityLabel("Post settings")

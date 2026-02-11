@@ -1,7 +1,7 @@
 import SwiftUI
 import SmithereenAPI
 
-private let horizontalContentPadding: CGFloat = 4
+private let horizontalContentPadding: CGFloat = 8
 private let attachmentBlockTopPadding: CGFloat = 6
 
 struct CompactPostView: View {
@@ -43,13 +43,13 @@ struct CompactPostView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             PostHeaderView(viewModel)
-                .padding(.horizontal, horizontalContentPadding)
+                .padding(.leading, horizontalContentPadding)
                 .padding(.top, 7)
                 .padding(.bottom, 13)
 
             let text = viewModel.getText()
             PostTextView(text)
-                .padding(.horizontal, horizontalContentPadding)
+                .padding(.leading, horizontalContentPadding)
 
             let attachments = viewModel.getAttachments()
             if !attachments.isEmpty {
@@ -57,7 +57,7 @@ struct CompactPostView: View {
                     attachments,
                     unsupportedMessagePadding: horizontalContentPadding,
                 )
-                .padding(.horizontal, 0)
+                .padding(.horizontal, 4)
                 .padding(.top, text.isEmpty ? 0 : attachmentBlockTopPadding)
             }
 

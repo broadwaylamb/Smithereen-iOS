@@ -36,9 +36,7 @@ struct FeedView: View {
                         )
                 } else {
                     CompactPostView(viewModel: postViewModel)
-                        .listRowInsets(
-                            EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
-                        )
+                        .listRowInsets(EdgeInsets())
                         .listSectionSeparatorTint(Color(#colorLiteral(red: 0.7843137383, green: 0.7843137383, blue: 0.7843137383, alpha: 1)))
                 }
             } header: {
