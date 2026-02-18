@@ -15,9 +15,11 @@ private enum CacheableAsyncImagePhase {
 
 @MainActor
 private final class PhaseHolder: ObservableObject {
+    private let cachePolicy: NSURLRequest.CachePolicy
     @Published var phase: CacheableAsyncImagePhase
 
-    init(phase: CacheableAsyncImagePhase) {
+    init(phase: CacheableAsyncImagePhase, cachePolicy: NSURLRequest.CachePolicy) {
+        self.cachePolicy = cachePolicy
         self.phase = phase
     }
 
@@ -47,7 +49,7 @@ private final class PhaseHolder: ObservableObject {
         switch location {
         case .remote(let url):
             do {
-                let urlRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad)
+                let urlRequest = URLRequest(url: url, cachePolicy: cachePolicy)
                 let (data, response) = try await URLSession
                     .cacheableMediaURLSession
                     .data(for: urlRequest)
@@ -97,6 +99,7 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
         size: CGSize,
         sizes: ImageSizes,
         blurHash: BlurHash? = nil,
+        cachePolicy: NSURLRequest.CachePolicy = .returnCacheDataElseLoad,
         @ViewBuilder content: @escaping (Image) -> Content,
         @ViewBuilder placeholder: @escaping () -> Placeholder,
     ) {
@@ -125,7 +128,8 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
             switch sizes.sizeThatFits(size, scale: scale) {
             case .remote(let url):
                 let urlRequest = URLRequest(url: url)
-                if let cachedResponse = URLCache
+                if cachePolicy != .reloadIgnoringLocalCacheData,
+                   let cachedResponse = URLCache
                     .smithereenMediaCache
                     .cachedResponse(for: urlRequest),
                    let image = imageFromData(cachedResponse.data, scale: scale)
@@ -142,7 +146,7 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
         }
 
         _phaseHolder = StateObject(
-            wrappedValue: PhaseHolder(phase: initializePhase())
+            wrappedValue: PhaseHolder(phase: initializePhase(), cachePolicy: cachePolicy)
         )
     }
 
@@ -183,6 +187,20 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
                     phaseHolder.loadImage(location: $0, displayScale: displayScale)
                 }
         }
+    }
+}
+
+extension CacheableAsyncImage {
+    init(
+        size: CGSize,
+        url: URL,
+        cachePolicy: NSURLRequest.CachePolicy = .returnCacheDataElseLoad,
+        @ViewBuilder content: @escaping (Image) -> Content,
+        @ViewBuilder placeholder: @escaping () -> Placeholder,
+    ) {
+        var sizes = ImageSizes()
+        sizes.append(size: .infinity, url: url)
+        self.init(size: size, sizes: sizes, content: content, placeholder: placeholder)
     }
 }
 

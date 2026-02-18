@@ -90,6 +90,7 @@ private struct ErrorObserverViewModifier: ViewModifier {
                                         technicalError = nil
                                     }
                                 }
+                                .disableLiquidShit()
                             }
                     }
                 }

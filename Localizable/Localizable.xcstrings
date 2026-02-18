@@ -1040,6 +1040,22 @@
         }
       }
     },
+    "API" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API"
+          }
+        }
+      }
+    },
     "Appearance" : {
       "localizations" : {
         "ru" : {
@@ -1111,6 +1127,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Скасувати"
+          }
+        }
+      }
+    },
+    "captcha_code" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Code"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Код"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Код"
           }
         }
       }
@@ -1211,6 +1249,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Видалити запис"
+          }
+        }
+      }
+    },
+    "Development" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разработка"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Розробка"
           }
         }
       }
@@ -1776,6 +1830,32 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Технические данные"
+          }
+        }
+      }
+    },
+    "Test Captcha" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тест капчи"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тест капчі"
+          }
+        }
+      }
+    },
+    "The action is being performed too often" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Действие выполняется слишком часто"
           }
         }
       }

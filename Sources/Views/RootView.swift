@@ -63,6 +63,19 @@ struct RootView: View {
                 SettingsView(api: api, db: db)
                     .navigationTitle("Settings")
             }
+
+#if DEBUG
+            SMSideMenuItem(value: .development) {
+                DevelopmentView(api: api)
+                    .navigationTitle("Development")
+            } label: {
+                Label {
+                    Text("Development")
+                } icon: {
+                    Color.clear
+                }
+            }
+#endif
         }
         .task {
             await errorObserver.runCatching {

@@ -23,6 +23,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		018E5C752F4609F200D35D47 /* CustomAlert in Frameworks */ = {isa = PBXBuildFile; productRef = 018E5C742F4609F200D35D47 /* CustomAlert */; };
 		870D40ED2DF8FFA80026AB8A /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 870D40EC2DF8FFA80026AB8A /* Localizable.xcstrings */; };
 		874291B92DC29C7F00571022 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 874291B82DC29C7F00571022 /* SnapshotTesting */; };
 		8755183A2E11B03B006EDF63 /* Hammond in Frameworks */ = {isa = PBXBuildFile; productRef = 875518392E11B03B006EDF63 /* Hammond */; };
@@ -101,6 +102,7 @@
 				8755183A2E11B03B006EDF63 /* Hammond in Frameworks */,
 				8787F0532E32B89600D2715A /* Placement in Frameworks */,
 				87864EDF2E28520600D8ACE0 /* MediaGridLayout in Frameworks */,
+				018E5C752F4609F200D35D47 /* CustomAlert in Frameworks */,
 				8793F4462E63619400662021 /* SlideableMenu in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -185,6 +187,7 @@
 				8793F4452E63619400662021 /* SlideableMenu */,
 				87D346552F002A0600CD09FF /* SmithereenAPI */,
 				875A5D332F2639EA00EC9B76 /* GRDB */,
+				018E5C742F4609F200D35D47 /* CustomAlert */,
 			);
 			productName = Smithereen;
 			productReference = 01E20ABA2DB7926D00CC0EBE /* Smithereen.app */;
@@ -259,6 +262,7 @@
 				8793F4442E63619400662021 /* XCRemoteSwiftPackageReference "SlideableMenu" */,
 				87D346542F002A0600CD09FF /* XCRemoteSwiftPackageReference "smithereen-api-swift" */,
 				875A5D322F2639EA00EC9B76 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+				018E5C732F4609F200D35D47 /* XCRemoteSwiftPackageReference "CustomAlert" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 01E20ABB2DB7926D00CC0EBE /* Products */;
@@ -664,6 +668,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		018E5C732F4609F200D35D47 /* XCRemoteSwiftPackageReference "CustomAlert" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/divadretlaw/CustomAlert.git";
+			requirement = {
+				kind = exactVersion;
+				version = 6.0.1;
+			};
+		};
 		874291B72DC29C7F00571022 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing";
@@ -731,6 +743,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		018E5C742F4609F200D35D47 /* CustomAlert */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 018E5C732F4609F200D35D47 /* XCRemoteSwiftPackageReference "CustomAlert" */;
+			productName = CustomAlert;
+		};
 		874291B82DC29C7F00571022 /* SnapshotTesting */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 874291B72DC29C7F00571022 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;

@@ -13,6 +13,7 @@ struct SmithereenApp: App {
             Color.white.ignoresSafeArea() // TODO: Show LaunchScreen
         case .authenticated(let db):
             RootView(api: api, db: db)
+                .captchaPrompt($api.captchaPrompt)
         case .notAuthenticated:
             AuthView(viewModel: AuthViewModel(api: api))
         }

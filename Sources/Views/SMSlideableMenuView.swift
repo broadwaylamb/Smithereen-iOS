@@ -32,6 +32,7 @@ enum SideMenuValue: Hashable {
     case profile
     case news
     case settings
+    case development
 }
 
 private struct SideMenuRow<Label: View>: View {

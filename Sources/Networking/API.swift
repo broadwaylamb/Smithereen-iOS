@@ -45,6 +45,30 @@ enum AuthenticationState {
     case notAuthenticated
 }
 
+@MainActor
+final class CaptchaPrompt: Identifiable {
+    let captcha: Captcha
+    fileprivate var continuation: CheckedContinuation<CaptchaAnswer, any Error>?
+
+    init(
+        captcha: Captcha,
+        continuation: CheckedContinuation<CaptchaAnswer, any Error>,
+    ) {
+        self.captcha = captcha
+        self.continuation = continuation
+    }
+
+    func submit(_ answer: String) {
+        continuation?.resume(returning: CaptchaAnswer(sid: captcha.sid, answer: answer))
+        continuation = nil
+    }
+
+    func cancel() {
+        continuation?.resume(throwing: CancellationError())
+        continuation = nil
+    }
+}
+
 actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableObject {
     let keychain = KeychainAccess(service: Bundle.main.bundleIdentifier!)
 
@@ -52,6 +76,9 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
 
     @MainActor
     @Published var state: AuthenticationState = .loading
+
+    @MainActor
+    @Published var captchaPrompt: CaptchaPrompt?
 
     @MainActor
     private func setUIState(_ state: AuthenticationState) {
@@ -182,41 +209,61 @@ actor RealAPIService: AuthenticationService, APIService, @MainActor ObservableOb
         _ method: Method,
         session: SessionInfo,
     ) async throws -> Method.Result {
-        let urlRequest = try URLRequest(
-            host: session.host,
-            port: session.port,
-            request: method,
-            globalParameters: GlobalRequestParameters(
-                apiVersion: .v1_0,
-                accessToken: session.accessToken,
-                language: Locale.autoupdatingCurrent.identifier,
-            ),
-        )
-        let response = try await performRequest(urlRequest)
-        do {
-            return try method.extractResult(from: response)
-        } catch let error as DecodingError {
-            throw ExtendedDecodingError(
-                request: response.request,
-                response: response.response,
-                responseData: response.body,
-                error: error,
+        var method = method
+        while true {
+            let urlRequest = try URLRequest(
+                host: session.host,
+                port: session.port,
+                request: method,
+                globalParameters: GlobalRequestParameters(
+                    apiVersion: .v1_0,
+                    accessToken: session.accessToken,
+                    language: Locale.autoupdatingCurrent.languageCode,
+                ),
             )
-        } catch let error as SmithereenAPIError {
-            switch error.code {
-            case .userAuthorizationFailed:
-                try? await storeSession(nil)
-                throw CancellationError()
-            case .invalidMethodParameters,
-                .executeFailedToCompile,
-                .executeRuntimeError,
-                .unknownMethodPassed,
-                .invalidRequest,
-                .internalServerError:
-                throw InvalidRequestError(urlRequest: response.request, error: error)
-            default:
-                throw UserFriendlySmithereenAPIError(error: error)
+            let response = try await performRequest(urlRequest)
+            do {
+                return try method.extractResult(from: response)
+            } catch let error as DecodingError {
+                throw ExtendedDecodingError(
+                    request: response.request,
+                    response: response.response,
+                    responseData: response.body,
+                    error: error,
+                )
+            } catch let error as SmithereenAPIError {
+                switch error.code {
+                case .userAuthorizationFailed:
+                    try? await storeSession(nil)
+                    throw CancellationError()
+                case .invalidMethodParameters,
+                        .executeFailedToCompile,
+                        .executeRuntimeError,
+                        .unknownMethodPassed,
+                        .invalidRequest,
+                        .internalServerError:
+                    throw InvalidRequestError(urlRequest: response.request, error: error)
+                case .captchaNeeded:
+                    guard let captcha = error.captcha else {
+                        throw UserFriendlySmithereenAPIError(error: error)
+                    }
+                    method.captchaAnswer = try await captchaPrompt(captcha)
+                    continue // Retry calling the API method with the captcha answer
+                default:
+                    throw UserFriendlySmithereenAPIError(error: error)
+                }
             }
+        }
+    }
+
+    @MainActor
+    private func captchaPrompt(_ captcha: Captcha) async throws -> CaptchaAnswer {
+        defer {
+            captchaPrompt = nil
+        }
+        captchaPrompt?.cancel()
+        return try await withCheckedThrowingContinuation { continuation in
+            captchaPrompt = CaptchaPrompt(captcha: captcha, continuation: continuation)
         }
     }
 
