@@ -65,7 +65,10 @@ struct RootView: View {
             }
 
 #if DEBUG
-            SMSideMenuItem(value: .development) {
+            SMSideMenuItem(
+                value: .development,
+                isModal: horizontalSizeClass == .regular,
+            ) {
                 DevelopmentView(api: api)
                     .navigationTitle("Development")
             } label: {
