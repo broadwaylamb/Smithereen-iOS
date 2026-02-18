@@ -45,6 +45,10 @@ struct RootView: View {
                 }
             }
 
+            SMSideMenuItem("Friends", icon: .friends, value: .friends) {
+
+            }
+
             SMSideMenuItem("News", icon: .news, value: .news) {
                 FeedView(viewModel: viewModel.feedViewModel)
                     .navigationTitle("News")

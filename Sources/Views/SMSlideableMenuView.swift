@@ -30,6 +30,7 @@ struct SMSlideableMenuView<Rows, Content>: View {
 
 enum SideMenuValue: Hashable {
     case profile
+    case friends
     case news
     case settings
     case development
