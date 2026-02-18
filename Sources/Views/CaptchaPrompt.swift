@@ -28,12 +28,14 @@ private struct CaptchaPromptViewModifier: ViewModifier {
                 item: $captchaPrompt,
             ) { prompt in
                 let captcha = prompt.captcha
+
+                let aspectRatio = CGFloat(captcha.width) / CGFloat(captcha.height)
+                let captchaWidth: CGFloat = 260
+                let captchaHeight = captchaWidth / aspectRatio
+
                 Text(verbatim: captcha.hint)
                 CacheableAsyncImage(
-                    size: CGSize(
-                        width: captcha.width,
-                        height: captcha.height,
-                    ),
+                    size: CGSize(width: captchaWidth, height: captchaHeight),
                     url: captcha.url,
                     cachePolicy: .reloadIgnoringLocalCacheData,
                     content: { image in
@@ -46,15 +48,12 @@ private struct CaptchaPromptViewModifier: ViewModifier {
                         Color.clear
                     },
                 )
-                // Account for https://github.com/grishka/Smithereen/issues/255
-                .frame(
-                    width: CGFloat(captcha.width) * 2,
-                    height: CGFloat(captcha.height) * 2,
-                )
+                .frame(width: captchaWidth, height: captchaHeight)
                 .padding()
                 CaptchaTextField(answer: $answer) {
                     submit(prompt)
                 }
+                .frame(width: captchaWidth)
             } actions: { prompt in
                 MultiButton {
                     Button("Cancel", role: .cancel) {
@@ -82,7 +81,6 @@ private struct CaptchaTextField: View {
             .textFieldStyle(.roundedBorder)
             .multilineTextAlignment(.center)
             .font(.body.monospaced())
-            .padding(4)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
             .keyboardType(.asciiCapable)
