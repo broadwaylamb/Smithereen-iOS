@@ -14,6 +14,7 @@ extension View {
                     nc.navigationBar.backgroundColor = uiColor
                     let appearance = nc.navigationBar.standardAppearance
                     appearance.backgroundColor = uiColor
+                    nc.navigationBar.standardAppearance = appearance
                     nc.navigationBar.compactAppearance = appearance
                     nc.navigationBar.scrollEdgeAppearance = appearance
                     nc.navigationBar.compactScrollEdgeAppearance = appearance
@@ -50,7 +51,12 @@ extension View {
                     @unknown default:
                         .label
                     }
-                nc.navigationBar.titleTextAttributes?[.foregroundColor] = textColor
+                let appearance = nc.navigationBar.standardAppearance
+                appearance.titleTextAttributes[.foregroundColor] = textColor
+                nc.navigationBar.standardAppearance = appearance
+                nc.navigationBar.compactAppearance = appearance
+                nc.navigationBar.scrollEdgeAppearance = appearance
+                nc.navigationBar.compactScrollEdgeAppearance = appearance
             }
         }
     }
