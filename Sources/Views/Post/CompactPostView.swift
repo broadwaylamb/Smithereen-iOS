@@ -1,6 +1,7 @@
 import SwiftUI
 import SmithereenAPI
 
+private let horizontalAttachmentPadding: CGFloat = 4
 private let horizontalContentPadding: CGFloat = 8
 private let attachmentBlockTopPadding: CGFloat = 6
 
@@ -21,7 +22,7 @@ struct CompactPostView: View {
                     entity: .post, // TODO: Use the actual entity
                 ),
             )
-            .padding(.horizontal, 4)
+            .padding(.horizontal, horizontalContentPadding)
 
             if !headerOnly {
                 let text = viewModel.getText(postID: postID)
@@ -32,8 +33,9 @@ struct CompactPostView: View {
                 if !attachments.isEmpty {
                     PostAttachmentsView(
                         attachments,
-                        unsupportedMessagePadding: horizontalContentPadding,
+                        unsupportedMessagePadding: horizontalAttachmentPadding,
                     )
+                    .padding(.horizontal, horizontalAttachmentPadding)
                     .padding(.top, text.isEmpty ? 0 : attachmentBlockTopPadding)
                 }
             }
@@ -55,9 +57,9 @@ struct CompactPostView: View {
             if !attachments.isEmpty {
                 PostAttachmentsView(
                     attachments,
-                    unsupportedMessagePadding: horizontalContentPadding,
+                    unsupportedMessagePadding: horizontalAttachmentPadding,
                 )
-                .padding(.horizontal, 4)
+                .padding(.horizontal, horizontalAttachmentPadding)
                 .padding(.top, text.isEmpty ? 0 : attachmentBlockTopPadding)
             }
 
