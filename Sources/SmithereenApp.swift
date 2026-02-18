@@ -42,11 +42,6 @@ struct SmithereenApp: App {
                 .provideWebAuthenticationSession()
                 .provideWindow()
                 .tint(paletteHolder.accent)
-                .overlay(alignment: .bottom) {
-                    if false { // Flip to true if you want to experiment with colors
-                        ColorSchemeCustomizer()
-                    }
-                }
                 .environmentObject(paletteHolder)
                 .task {
                     await api.loadAuthenticationState()

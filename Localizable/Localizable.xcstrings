@@ -1153,7 +1153,7 @@
         }
       }
     },
-    "Chroma: %lf" : {
+    "Chroma: %@" : {
       "shouldTranslate" : false
     },
     "Color theme" : {
@@ -1366,7 +1366,7 @@
         }
       }
     },
-    "Hue: %lf" : {
+    "Hue: %@" : {
       "shouldTranslate" : false
     },
     "Incorrect request format. Please report this error to the application developer." : {
