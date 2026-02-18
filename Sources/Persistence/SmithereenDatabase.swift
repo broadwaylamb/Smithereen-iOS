@@ -93,7 +93,7 @@ extension SmithereenDatabase {
     func cacheUsers(_ users: [User]) throws {
         try writer.write { db in
             for user in users {
-                try user.prepareForDatabase().upsert(db)
+                try user.upsert(db)
             }
         }
     }
@@ -108,6 +108,39 @@ extension SmithereenDatabase {
     func getUsers(_ ids: [UserID]) throws -> [User] {
         try reader.read { db in
             try User.fetchAll(db, ids: ids)
+        }
+    }
+
+    func cachePosts(_ posts: [WallPost]) async throws {
+        try await writer.write { db in
+            for post in posts {
+                try post.upsert(db)
+                // Only the first repost in the chan can be Mastodon-style
+                if let repostHistory = post.repostHistory {
+                    var isMastodonStyle = post.isMastodonStyleRepost ?? false
+                    for reposted in repostHistory {
+                        try reposted.upsert(db)
+                        try RepostDatabaseRecord(
+                            repostId: post.id,
+                            repostedId: reposted.id,
+                            isMastodonStyle: isMastodonStyle,
+                        )
+                        .upsert(db)
+                        isMastodonStyle = false
+                    }
+                }
+            }
+        }
+    }
+
+    func getWall(_ userID: UserID, wallMode: Wall.Get.Filter, limit: Int, offset: Int?) async throws -> [WallPost] {
+        try await reader.read { db in
+            var posts = try WallPost
+                .filter(WallPost.Columns.userOwnerID == userID)
+                .limit(limit, offset: offset)
+                .fetchAll(db)
+
+            return posts
         }
     }
 }

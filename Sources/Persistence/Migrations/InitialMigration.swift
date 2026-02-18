@@ -85,5 +85,37 @@ enum InitialMigration: DatabaseMigration {
             t.column("first_name_gen", .text)
             t.column("counters", .jsonText)
         }
+
+        try db.create(table: "wall_post") { t in
+            t.primaryKey("id", .integer)
+            t.column("user_owner_id", .integer)
+            t.column("group_owner_id", .integer)
+            t.column("from_user_id", .integer)
+            t.column("from_group_id", .integer)
+            t.column("ap_id", .text).notNull()
+            t.column("url", .text).notNull()
+            t.column("date", .datetime).notNull()
+            t.column("text", .text)
+            t.column("likes", .jsonText)
+            t.column("attachments", .jsonText)
+            t.column("content_warning", .text)
+            t.column("can_delete", .boolean).notNull()
+            t.column("can_edit", .boolean).notNull()
+            t.column("privacy", .text)
+            t.column("reposts", .jsonText)
+            t.column("post_source", .jsonText)
+            t.column("comments", .jsonText)
+            t.column("is_mastodon_style_repost", .boolean)
+            t.column("can_pin", .boolean)
+            t.column("is_pinned", .boolean)
+        }
+
+        try db.create(table: "repost") { t in
+            t.primaryKey("repost_id", .integer)
+                .references("wall_post", onDelete: .cascade)
+            t.primaryKey("reposted_id", .integer)
+                .references("wall_post", onDelete: .cascade)
+            t.column("is_mastodon_style", .boolean).notNull().defaults(to: false)
+        }
     }
 }
