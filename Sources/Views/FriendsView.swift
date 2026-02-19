@@ -33,7 +33,7 @@ private final class FriendsViewController
                 .filter { $0.isFriend == true } // TODO: Use the friendship table/
                 .limit(10000) // Smithereen limit for the number of friends
                 .order {
-                    [$0.lastName, $0.firstName]
+                    [$0.lastName.ascNullsLast, $0.firstName]
                 }
                 .fetchAll(db)
         }
