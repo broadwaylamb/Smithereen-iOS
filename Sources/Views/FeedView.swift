@@ -13,7 +13,7 @@ struct FeedView: View {
 
     private func refreshFeed() async {
         await errorObserver.runCatching {
-            try await viewModel.update(errorObserver: errorObserver)
+            try await viewModel.update()
         }
     }
 

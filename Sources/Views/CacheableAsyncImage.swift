@@ -200,7 +200,13 @@ extension CacheableAsyncImage {
     ) {
         var sizes = ImageSizes()
         sizes.append(size: .infinity, url: url)
-        self.init(size: size, sizes: sizes, content: content, placeholder: placeholder)
+        self.init(
+            size: size,
+            sizes: sizes,
+            cachePolicy: cachePolicy,
+            content: content,
+            placeholder: placeholder,
+        )
     }
 }
 

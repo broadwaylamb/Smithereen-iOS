@@ -13,7 +13,7 @@ final class FeedViewModel: ObservableObject {
         self.db = db
     }
 
-    func update(errorObserver: ErrorObserver) async throws {
+    func update() async throws {
         let response = try await api.invokeMethod(
             Newsfeed.Get(
                 filters: nil, // TODO: Filter

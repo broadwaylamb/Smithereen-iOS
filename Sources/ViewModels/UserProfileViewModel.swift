@@ -4,19 +4,16 @@ import GRDB
 
 @MainActor
 final class UserProfileViewModel: ObservableObject {
-    private let api: any APIService
-    private let db: SmithereenDatabase
     let userID: UserID?
 
     @Published var user: User?
 
+    // periphery:ignore
     private var observation: AnyDatabaseCancellable?
 
     /// `userID` being `nil` means the current user.
-    init(api: any APIService, userID: UserID?, db: SmithereenDatabase) {
-        self.api = api
+    init(userID: UserID?, db: SmithereenDatabase) {
         self.userID = userID
-        self.db = db
         self.user = try? db.getUser(userID)
 
         let userIDForObservation = userID ?? db.currentUserID
@@ -111,20 +108,5 @@ final class UserProfileViewModel: ObservableObject {
     var showMobileIcon: Bool {
         guard let user else { return false }
         return user.onlineMobile == true || user.lastSeen?.platform == .mobile
-    }
-
-    func createWallViewModel(db: SmithereenDatabase) -> WallViewModel {
-        let wallMode: User.WallMode
-        if let user, let wallDefault = user.wallDefault {
-            wallMode = wallDefault
-        } else {
-            wallMode = canSeeAllPosts ? .all : .owner
-        }
-        return WallViewModel(
-            api: api,
-            db: db,
-            ownerID: userID.map(ActorID.init),
-            wallMode: wallMode,
-        )
     }
 }

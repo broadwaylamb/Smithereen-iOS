@@ -7,8 +7,6 @@ private struct CaptchaPromptViewModifier: ViewModifier {
 
     @State private var answer: String = ""
 
-    @Environment(\.displayScale) private var displayScale
-
     private func submit(_ prompt: CaptchaPrompt) {
         if !answer.isEmpty {
             prompt.submit(answer)

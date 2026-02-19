@@ -104,10 +104,4 @@ extension SmithereenDatabase {
             try User.fetchOne(db, id: id)
         }
     }
-
-    func getUsers(_ ids: [UserID]) throws -> [User] {
-        try reader.read { db in
-            try User.fetchAll(db, ids: ids)
-        }
-    }
 }

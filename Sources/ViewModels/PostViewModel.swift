@@ -16,6 +16,7 @@ final class PostViewModel: ObservableObject, Identifiable {
     @Published var reposted = false
     @Published private var authors: [UserID : User] = [:]
 
+    // periphery:ignore
     private var authorsObservation: AnyDatabaseCancellable?
 
     init(

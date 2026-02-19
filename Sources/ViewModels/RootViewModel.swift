@@ -10,6 +10,7 @@ final class RootViewModel: ObservableObject {
 
     @Published private var currentUser: User?
 
+    // periphery:ignore
     private var currentUserObservation: AnyDatabaseCancellable?
 
     init(api: any APIService, db: SmithereenDatabase) {

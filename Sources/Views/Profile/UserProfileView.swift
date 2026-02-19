@@ -5,11 +5,9 @@ struct UserProfileView: View {
     @StateObject private var viewModel: UserProfileViewModel
     @StateObject private var wallViewModel: WallViewModel
 
-    
-
     init(userID: UserID?, api: any APIService, db: SmithereenDatabase) {
         _viewModel = StateObject(
-            wrappedValue: UserProfileViewModel(api: api, userID: userID, db: db)
+            wrappedValue: UserProfileViewModel(userID: userID, db: db)
         )
         let wallMode = (try? db.getUser(userID)?.wallDefault) ?? .owner
         _wallViewModel = StateObject(
