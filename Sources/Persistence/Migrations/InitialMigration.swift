@@ -7,8 +7,8 @@ enum InitialMigration: DatabaseMigration {
         try db.create(table: "user") { t in
             // Basic fields
             t.primaryKey("id", .integer)
-            t.column("first_name", .text).notNull()
-            t.column("last_name", .text)
+            t.column("first_name", .text).notNull().collate(.localizedCaseInsensitiveCompare)
+            t.column("last_name", .text).collate(.localizedCaseInsensitiveCompare)
             t.column("deactivated", .integer)
             t.column("ap_id", .text)
             // Optional fields

@@ -17,6 +17,12 @@ extension User: @retroactive PersistableRecord {}
 extension User: @retroactive FetchableRecord {}
 
 extension User: APIEntityDatabaseRecord {
+    public enum Columns {
+        static let firstName = Column("first_name")
+        static let lastName = Column("last_name")
+        static let isFriend = Column("is_friend")
+    }
+
     func prepareForDatabase() -> User {
         User(
             id: id,

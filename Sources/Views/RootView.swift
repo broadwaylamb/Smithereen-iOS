@@ -46,7 +46,9 @@ struct RootView: View {
             }
 
             SMSideMenuItem("Friends", icon: .friends, value: .friends) {
-
+                FriendsView(db: db)
+                    .navigationTitle("Friends")
+                    .commonNavigationDestinations(api: api, db: db)
             }
 
             SMSideMenuItem("News", icon: .news, value: .news) {
