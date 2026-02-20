@@ -1445,6 +1445,22 @@
     "Hue: %@" : {
       "shouldTranslate" : false
     },
+    "Important" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Важные"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Важливі"
+          }
+        }
+      }
+    },
     "Incorrect request format. Please report this error to the application developer." : {
       "localizations" : {
         "ru" : {
