@@ -11,11 +11,14 @@ struct FriendsView: View {
     }
 }
 
+extension ReuseIdentifier<UICollectionViewListCell> {
+    fileprivate static let actorCell = Self("actorCell")
+}
+
 private final class FriendsViewController
     : UICollectionViewController,
       UICollectionViewDataSourcePrefetching
 {
-    private static let cellReuseID = "actorCell"
     private var observation: AnyDatabaseCancellable?
     private var users: [User] = []
 
@@ -49,10 +52,7 @@ private final class FriendsViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        collectionView.register(
-            UICollectionViewListCell.self,
-            forCellWithReuseIdentifier: Self.cellReuseID,
-        )
+        collectionView.register(.actorCell)
         collectionView.prefetchDataSource = self
     }
 
@@ -90,8 +90,7 @@ private final class FriendsViewController
         cellForItemAt indexPath: IndexPath,
     ) -> UICollectionViewCell {
         let cell = collectionView
-            .dequeueReusableCell(withReuseIdentifier: Self.cellReuseID, for: indexPath)
-            as! UICollectionViewListCell
+            .dequeueReusableCell(withReuseIdentifier: .actorCell, for: indexPath)
         let user = users[indexPath.row]
 
         var attrContainer = AttributeContainer()
