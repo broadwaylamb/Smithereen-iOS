@@ -88,7 +88,8 @@ private final class FriendsViewController
     private let friendCellRegistration = UICollectionView
         .CellRegistration<UICollectionViewListCell, Identified<User>> { cell, _, user in
             var attrContainer = AttributeContainer()
-            attrContainer.personNameComponent = .familyName
+            attrContainer.personNameComponent =
+                user.value.lastName != nil ? .familyName : .givenName
 
             var newContainer = AttributeContainer()
             newContainer.uiKit.font = .preferredFont(forTextStyle: .body)
@@ -150,10 +151,8 @@ private final class FriendsViewController
             try User
                 .filter { $0.isFriend == true } // TODO: Use the friendship table/
                 .limit(10000) // Smithereen limit for the number of friends
-                .order {
-                    [$0.lastName.ascNullsLast, $0.firstName]
-                }
                 .fetchAll(db)
+                .sorted(using: UserNameComparator(order: .forward))
         }
         .start(
             in: db.reader,
@@ -163,15 +162,24 @@ private final class FriendsViewController
                 var lastIndexTitle: String?
                 for user in users {
                     let indexTitle: String
-                    if let firstChar = user.lastName?.first ?? user.firstName.first,
-                       firstChar.isLetter {
+                    if let firstChar = user.nameForSorting.first, firstChar.isLetter {
                         indexTitle = firstChar.uppercased()
                     } else {
                         indexTitle = "#"
                     }
                     if lastIndexTitle != indexTitle {
                         lastIndexTitle = indexTitle
-                        snapshot.appendSections([.alphabet(indexTitle)])
+                        let identifier = Section.alphabet(indexTitle)
+                        // This check is necessary, because otherwise `appendSections`
+                        // may throw an exception
+                        if snapshot.indexOfSection(identifier) == nil {
+                            snapshot.appendSections([identifier])
+                        } else {
+                            assertionFailure("""
+                                Section with identifier \(indexTitle) already exists \
+                                in the snapshot
+                                """)
+                        }
                     }
                     snapshot.appendItems([Identified(value: user)])
                 }
