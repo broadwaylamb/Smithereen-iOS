@@ -186,6 +186,7 @@ private struct GenericPostHeaderView<RepostIcon: View, DetailsButton: View>: Vie
                         Text(author.displayedName)
                             .bold()
                             .foregroundStyle(palette.accent)
+                            .multilineTextAlignment(.leading)
                     }
                 }
                 Button(kind.grayText(date)) {

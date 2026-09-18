@@ -30,7 +30,37 @@
                     "can_delete": true,
                     "can_edit": true
 				}
-			}
+			},
+            {
+                "id": 2,
+                "user_id": 2,
+                "type": "post",
+                "post": {
+                    "id": 2,
+                    "owner_id": 2,
+                    "from_id": 2,
+                    "ap_id": "https://smithereen.local/posts/2",
+                    "url": "https://smithereen.local/posts/2",
+                    "date": 59467,
+                    "text": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>",
+                    "likes": {
+                        "count": 0,
+                        "can_like": false,
+                        "user_likes": false
+                    },
+                    "reposts": {
+                        "count": 0,
+                        "can_repost": false,
+                        "user_reposted": false
+                    },
+                    "comments": {
+                        "count": 0,
+                        "can_comment": false
+                    },
+                    "can_delete": false,
+                    "can_edit": false
+                }
+            }
 		],
 		"profiles": [
 			{
@@ -44,7 +74,17 @@
 				"photo_400": "bundled://BoromirProfilePicture",
 				"photo_400_orig": "bundled://BoromirProfilePicture",
 				"has_photo": true
-			}
+			},
+            {
+                "id": 2,
+                "first_name": "Hubert Blaine",
+                "last_name": "Wolfe­schlegel­stein­hausen­berger­dorff Sr.",
+                "ap_id": "https://smithereen.local/users/2",
+                "domain": "smithereen.local",
+                "screen_name": "hubert",
+                "url": "https://smithereen.local/hubert",
+                "sex": "male",
+            }
 		],
 		"groups": [],
 		"next_from": "whatever"
