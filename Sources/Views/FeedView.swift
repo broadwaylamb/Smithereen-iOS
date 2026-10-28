@@ -19,6 +19,7 @@ struct FeedView: View {
 
     var body: some View {
         FeedViewControllerAdaptor(viewModel: viewModel)
+            .ignoresSafeArea()
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -59,9 +60,7 @@ private final class FeedViewController: UICollectionViewController {
     private let topRefreshControl = UIRefreshControl()
 
     private static func createLayout() -> UICollectionViewCompositionalLayout {
-        return UICollectionViewCompositionalLayout {
- _,
- layoutEnv in
+        UICollectionViewCompositionalLayout { _, layoutEnv in
             let itemLayoutSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1),
                 heightDimension: .estimated(100),
@@ -108,7 +107,6 @@ private final class FeedViewController: UICollectionViewController {
         collectionView.backgroundColor = nil
         collectionView.registerReuseIdentifier(.post)
         collectionView.refreshControl = topRefreshControl
-        collectionView.contentInsetAdjustmentBehavior = .never
     }
 
     @objc private func pullToRefresh() {
