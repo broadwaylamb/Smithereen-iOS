@@ -86,7 +86,7 @@ private final class FeedViewController: UICollectionViewController {
                 bottom: 0,
                 trailing: 0,
             )
-            section.interGroupSpacing = isWide ? 13 : 0
+            section.interGroupSpacing = isWide ? 13 : 2
             return section
         }
     }
