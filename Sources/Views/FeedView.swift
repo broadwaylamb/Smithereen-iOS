@@ -139,23 +139,22 @@ private final class FeedViewController: UICollectionViewController {
         )
 
         let postViewModel = viewModel.posts[indexPath.item]
-
-        cell.contentConfiguration =
-            UIHostingConfigurationPolyfill(parentViewController: self) {
-                if traitCollection.horizontalSizeClass == .regular {
-                    RegularPostView(viewModel: postViewModel)
-                        .clipShape(RoundedRectangle(cornerRadius: 4))
-                        .shadow(
-                            color: Color(#colorLiteral(red: 0.8445754647, green: 0.8591627479, blue: 0.8676676154, alpha: 1)),
-                            radius: 0,
-                            x: 0,
-                            y: 1,
-                        )
-                } else {
-                    CompactPostView(viewModel: postViewModel)
-                }
-            }
-            .margins(.all, 0)
+        cell.contentConfiguration = PostCellConfiguration(viewModel: postViewModel)
+//            UIHostingConfigurationPolyfill(parentViewController: self) {
+//                if traitCollection.horizontalSizeClass == .regular {
+//                    RegularPostView(viewModel: postViewModel)
+//                        .clipShape(RoundedRectangle(cornerRadius: 4))
+//                        .shadow(
+//                            color: Color(#colorLiteral(red: 0.8445754647, green: 0.8591627479, blue: 0.8676676154, alpha: 1)),
+//                            radius: 0,
+//                            x: 0,
+//                            y: 1,
+//                        )
+//                } else {
+//                    CompactPostView(viewModel: postViewModel)
+//                }
+//            }
+//            .margins(.all, 0)
 
         return cell
     }
