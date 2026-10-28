@@ -18,12 +18,134 @@ struct FeedView: View {
     }
 
     var body: some View {
-        List(viewModel.posts) { postViewModel in
-            Section {
-                if horizontalSizeClass == .regular {
+        FeedViewControllerAdaptor(viewModel: viewModel)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        composePostShown = true
+                    } label: {
+                        Image(.composePost)
+                    }
+                    .tint(Color.white)
+                }
+                .disableLiquidShit()
+            }
+            .sheet(isPresented: $composePostShown) {
+                ComposePostView(
+                    "New Post",
+                    placeholder: "What's new?",
+                    viewModel: viewModel.createComposePostViewModel(
+                        errorObserver: errorObserver,
+                        isShown: $composePostShown,
+                    ),
+                )
+            }
+            .task {
+                await refreshFeed()
+            }
+            .refreshable {
+                await refreshFeed()
+            }
+            .background(palette.feedBackground)
+            .colorScheme(.light)
+    }
+}
+
+private final class FeedViewController: UICollectionViewController {
+    private let viewModel: FeedViewModel
+
+    var refresh: RefreshAction?
+
+    private let topRefreshControl = UIRefreshControl()
+
+    private static func createLayout() -> UICollectionViewCompositionalLayout {
+        return UICollectionViewCompositionalLayout {
+ _,
+ layoutEnv in
+            let itemLayoutSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .estimated(100),
+            )
+            let item = NSCollectionLayoutItem(layoutSize: itemLayoutSize)
+            item.contentInsets = .zero
+            let isWide = layoutEnv.traitCollection.horizontalSizeClass == .regular
+            item.contentInsets = NSDirectionalEdgeInsets(
+                top: 0,
+                leading: isWide ? 24 : 0,
+                bottom: 0,
+                trailing: isWide ? 24 : 0,
+            )
+            let group = NSCollectionLayoutGroup.vertical(
+                layoutSize: itemLayoutSize,
+                subitems: [item],
+            )
+            let section = NSCollectionLayoutSection(group: group)
+            section.contentInsets = NSDirectionalEdgeInsets(
+                top: isWide ? 16 : 0,
+                leading: 0,
+                bottom: 0,
+                trailing: 0,
+            )
+            section.interGroupSpacing = isWide ? 13 : 0
+            return section
+        }
+    }
+
+    init(viewModel: FeedViewModel) {
+        self.viewModel = viewModel
+        super.init(collectionViewLayout: Self.createLayout())
+        topRefreshControl
+            .addTarget(self, action: #selector(pullToRefresh), for: .valueChanged)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        collectionView.prefetchDataSource = self
+        collectionView.backgroundColor = nil
+        collectionView.registerReuseIdentifier(.post)
+        collectionView.refreshControl = topRefreshControl
+        collectionView.contentInsetAdjustmentBehavior = .never
+    }
+
+    @objc private func pullToRefresh() {
+        Task {
+            await refresh?.callAsFunction()
+            topRefreshControl.endRefreshing()
+        }
+    }
+
+    // MARK: UICollectionViewDataSource
+
+    override func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+
+    override func collectionView(
+        _ collectionView: UICollectionView,
+        numberOfItemsInSection section: Int,
+    ) -> Int {
+        return viewModel.posts.count
+    }
+
+    override func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath,
+    ) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: .post,
+            for: indexPath
+        )
+
+        let postViewModel = viewModel.posts[indexPath.item]
+
+        cell.contentConfiguration =
+            UIHostingConfigurationPolyfill(parentViewController: self) {
+                if traitCollection.horizontalSizeClass == .regular {
                     RegularPostView(viewModel: postViewModel)
-                        .listSectionSeparator(.hidden)
-                        .listRowBackground(Color.clear)
                         .clipShape(RoundedRectangle(cornerRadius: 4))
                         .shadow(
                             color: Color(#colorLiteral(red: 0.8445754647, green: 0.8591627479, blue: 0.8676676154, alpha: 1)),
@@ -31,57 +153,53 @@ struct FeedView: View {
                             x: 0,
                             y: 1,
                         )
-                        .listRowInsets(
-                            EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24)
-                        )
                 } else {
                     CompactPostView(viewModel: postViewModel)
-                        .listRowInsets(EdgeInsets())
-                        .listSectionSeparatorTint(Color(#colorLiteral(red: 0.7843137383, green: 0.7843137383, blue: 0.7843137383, alpha: 1)))
                 }
-            } header: {
-                // Removing the top blank space
-                // https://stackoverflow.com/a/78618856
-                Spacer(minLength: 0)
-                    .listRowInsets(EdgeInsets())
             }
-        }
-        .listStyle(.grouped)
-        .contentMarginsPolyfill(.top, horizontalSizeClass == .regular ? 16 : 0)
-        .listSectionSpacingPolyfill(horizontalSizeClass == .regular ? 13 : 0)
-        .environment(\.defaultMinListHeaderHeight, 0)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    composePostShown = true
-                } label: {
-                    Image(.composePost)
-                }
-                .tint(Color.white)
-            }
-            .disableLiquidShit()
-        }
-        .sheet(isPresented: $composePostShown) {
-            ComposePostView(
-                "New Post",
-                placeholder: "What's new?",
-                viewModel: viewModel.createComposePostViewModel(
-                    errorObserver: errorObserver,
-                    isShown: $composePostShown,
-                ),
-            )
-        }
-        .task {
-            await refreshFeed()
-        }
-        .refreshable {
-            await refreshFeed()
-        }
-        .scrollContentBackgroundPolyfill(.hidden)
-        .background(palette.feedBackground)
-        .colorScheme(.light)
+            .margins(.all, 0)
+
+        return cell
     }
 }
+
+extension FeedViewController: UICollectionViewDataSourcePrefetching {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        prefetchItemsAt indexPaths: [IndexPath]
+    ) {
+        // TODO
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cancelPrefetchingForItemsAt indexPaths: [IndexPath]
+    ) {
+        // TODO
+    }
+}
+
+extension CellReuseIdentifier<UICollectionViewCell> {
+    static let post = Self(rawValue: "post")
+}
+
+private struct FeedViewControllerAdaptor: UIViewControllerRepresentable {
+    @ObservedObject var viewModel: FeedViewModel
+
+    func makeUIViewController(context: Context) -> FeedViewController {
+        return FeedViewController(viewModel: viewModel)
+    }
+
+    func updateUIViewController(
+        _ uiViewController: FeedViewController,
+        context: Context
+    ) {
+        uiViewController.refresh = context.environment.refresh
+        // FIXME: reloadData is bad
+        uiViewController.collectionView.reloadData()
+    }
+}
+
 
 #Preview {
     let api = MockApi()
