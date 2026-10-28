@@ -75,9 +75,9 @@ private final class PhaseHolder: ObservableObject {
     private var loadingTask: Task<Void, Never>?
 
     func loadImage(location: ImageLocation?, displayScale: CGFloat) {
-        loadingTask = Task { [unowned self] in
-            await self.loadImage(location: location, displayScale: displayScale)
-            self.loadingTask = nil
+        loadingTask = Task { [weak self] in
+            await self?.loadImage(location: location, displayScale: displayScale)
+            self?.loadingTask = nil
         }
     }
 
