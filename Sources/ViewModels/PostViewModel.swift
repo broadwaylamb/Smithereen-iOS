@@ -19,6 +19,13 @@ final class PostViewModel: ObservableObject, Identifiable {
     // periphery:ignore
     private var authorsObservation: AnyDatabaseCancellable?
 
+    enum DisplayItem {
+        case header(PostKind)
+        case footer
+    }
+
+    private(set) var displayItems: [DisplayItem] = []
+
     init(
         api: any APIService,
         db: SmithereenDatabase,
@@ -59,6 +66,31 @@ final class PostViewModel: ObservableObject, Identifiable {
         let authorIDs = post.authorIDs
         setAuthors(profiles.filter { authorIDs.contains($0.id) })
         observeAuthors(post)
+
+        displayItems.removeAll()
+
+        func appendSinglePost(_ post: WallPost, kind: PostKind) {
+            displayItems.append(.header(kind))
+            // TODO: Append text and attachments
+        }
+
+        appendSinglePost(post, kind: .regular)
+        for (level, repost) in (post.repostHistory ?? []).enumerated() {
+            appendSinglePost(
+                repost,
+                kind: .repost(
+                    RepostInfo(
+                        level: level,
+                        isMastodonStyle: level == 0 && isMastodonStyleRepost,
+                        repostedPostID: repost.id,
+                        entity: .post // TODO: Specify the actual entity
+                    )
+                )
+            )
+        }
+        if displayCommentButton || displayLikeButton || displayRepostButton {
+            displayItems.append(.footer)
+        }
     }
 
     var originalPostURL: URL {
@@ -97,11 +129,25 @@ final class PostViewModel: ObservableObject, Identifiable {
         post.repostHistory?.map(\.id) ?? []
     }
 
-    func hasContent(postID: WallPostID? = nil) -> Bool {
+    func hasText(postID: WallPostID? = nil) -> Bool {
         let post = getPostIncludingReposted(postID)
-        let hasText = !(post.text?.isEmpty ?? true)
-        let hasAttachments = !(post.attachments?.isEmpty ?? true)
-        return hasText || hasAttachments
+        return !(post.text?.isEmpty ?? true)
+    }
+
+    private func hasAttachmentsOfKind(
+        postID: WallPostID?,
+        _ predicate: (Attachment) -> Bool,
+    ) -> Bool {
+        let post = getPostIncludingReposted(postID)
+        return post.attachments?.contains(where: predicate) ?? false
+    }
+
+    func hasImages(postID: WallPostID? = nil) -> Bool {
+        hasAttachmentsOfKind(postID: postID) { $0.isPhoto }
+    }
+
+    func hasContent(postID: WallPostID? = nil) -> Bool {
+        hasText(postID: postID) || hasAttachmentsOfKind(postID: postID) { _ in true }
     }
 
     var isMastodonStyleRepost: Bool {

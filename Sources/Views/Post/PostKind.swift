@@ -1,10 +1,11 @@
 import SwiftUI
+import SmithereenAPI
 
 enum PostKind: Equatable {
     case regular
     case repost(RepostInfo)
 
-    func grayText(_ date: String) -> LocalizedStringKey {
+    func grayText(_ date: String) -> String {
         switch self {
         case .regular:
             "\(date)"
@@ -19,19 +20,22 @@ enum RepostedEntity: Equatable {
     case comment(inReplyTo: String)
     case commentToDeletedPost
 
-    func grayText(_ date: String) -> LocalizedStringKey {
+    func grayText(_ date: String) -> String {
         switch self {
         case .post:
-            "\(date)"
+            String(localized: "\(date)")
         case .comment(let inReplyTo):
-            "\(date) on post \(inReplyTo)"
+            String(localized: "\(date) on post \(inReplyTo)")
         case .commentToDeletedPost:
-            "\(date) on a deleted post"
+            String(localized: "\(date) on a deleted post")
         }
     }
 }
 
 struct RepostInfo: Equatable {
+    /// The nestedness of the repost. The top-level repost has level 0.
+    var level: Int
     var isMastodonStyle: Bool
+    var repostedPostID: WallPostID
     var entity: RepostedEntity
 }

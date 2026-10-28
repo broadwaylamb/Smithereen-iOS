@@ -1,5 +1,5 @@
-import Prefire
 import SwiftUI
+import Combine
 
 struct FeedView: View {
     @ObservedObject var viewModel: FeedViewModel
@@ -7,7 +7,6 @@ struct FeedView: View {
     @EnvironmentObject private var errorObserver: ErrorObserver
 
     @EnvironmentObject private var palette: PaletteHolder
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     @State private var composePostShown = false
 
@@ -54,45 +53,60 @@ struct FeedView: View {
 
 private final class FeedViewController: UICollectionViewController {
     private let viewModel: FeedViewModel
+    private let palette: PaletteHolder
 
     var refresh: RefreshAction?
 
+    var pushToNavigationStack: ((any Hashable) -> ())?
+
     private let topRefreshControl = UIRefreshControl()
 
+    private var cancellables = Set<AnyCancellable>()
+
     private static func createLayout() -> UICollectionViewCompositionalLayout {
-        UICollectionViewCompositionalLayout { _, layoutEnv in
+        let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnv in
             let itemLayoutSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1),
                 heightDimension: .estimated(100),
             )
             let item = NSCollectionLayoutItem(layoutSize: itemLayoutSize)
-            item.contentInsets = .zero
-            let isWide = layoutEnv.traitCollection.horizontalSizeClass == .regular
-            item.contentInsets = NSDirectionalEdgeInsets(
-                top: 0,
-                leading: isWide ? 24 : 0,
-                bottom: 0,
-                trailing: isWide ? 24 : 0,
-            )
             let group = NSCollectionLayoutGroup.vertical(
                 layoutSize: itemLayoutSize,
                 subitems: [item],
             )
             let section = NSCollectionLayoutSection(group: group)
-            section.contentInsets = NSDirectionalEdgeInsets(
-                top: isWide ? 16 : 0,
-                leading: 0,
-                bottom: 0,
-                trailing: 0,
+
+            let sectionBackgroundDecoration = NSCollectionLayoutDecorationItem
+                .background(elementKind: .feedSectionBackgroundView)
+
+            let isWide = layoutEnv.traitCollection.horizontalSizeClass == .regular
+            let bgInsets = NSDirectionalEdgeInsets(
+                top: isWide && sectionIndex == 0 ? 16 : 0,
+                leading: isWide ? 24 : 0,
+                bottom: isWide ? 13 : 2, // Inter-section spacing
+                trailing: isWide ? 24 : 0,
             )
-            section.interGroupSpacing = isWide ? 13 : 2
+            sectionBackgroundDecoration.contentInsets = bgInsets
+            section.decorationItems = [sectionBackgroundDecoration]
+
+            section.contentInsets = NSDirectionalEdgeInsets(
+                top: bgInsets.top,
+                leading: bgInsets.leading,
+                bottom: bgInsets.bottom + (isWide ? 0 : 11),
+                trailing: bgInsets.trailing,
+            )
             return section
         }
+        layout.registerDecorationView(ofKind: .feedSectionBackgroundView)
+        return layout
     }
 
-    init(viewModel: FeedViewModel) {
+    init(viewModel: FeedViewModel, palette: PaletteHolder) {
         self.viewModel = viewModel
-        super.init(collectionViewLayout: Self.createLayout())
+        self.palette = palette
+        let layout = Self.createLayout()
+        super.init(collectionViewLayout: layout)
+        traitCollectionDidChange(nil)
         topRefreshControl
             .addTarget(self, action: #selector(pullToRefresh), for: .valueChanged)
     }
@@ -105,8 +119,13 @@ private final class FeedViewController: UICollectionViewController {
         super.viewDidLoad()
         collectionView.prefetchDataSource = self
         collectionView.backgroundColor = nil
-        collectionView.registerReuseIdentifier(.post)
+        collectionView.registerReuseIdentifier(.postHeader)
+        collectionView.registerReuseIdentifier(.postFooter)
         collectionView.refreshControl = topRefreshControl
+
+        viewModel.$posts.sink { [weak self] _ in
+            self?.collectionView.reloadData() // FIXME: reloadData is bad!
+        }.store(in: &cancellables)
     }
 
     @objc private func pullToRefresh() {
@@ -119,45 +138,46 @@ private final class FeedViewController: UICollectionViewController {
     // MARK: UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        return viewModel.posts.count
     }
 
     override func collectionView(
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int,
     ) -> Int {
-        return viewModel.posts.count
+        viewModel.posts[section].displayItems.count
     }
 
     override func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath,
     ) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: .post,
-            for: indexPath
-        )
-
-        let postViewModel = viewModel.posts[indexPath.item]
-
-        cell.contentConfiguration =
-            UIHostingConfigurationPolyfill(parentViewController: self) {
-                if traitCollection.horizontalSizeClass == .regular {
-                    RegularPostView(viewModel: postViewModel)
-                        .clipShape(RoundedRectangle(cornerRadius: 4))
-                        .shadow(
-                            color: Color(#colorLiteral(red: 0.8445754647, green: 0.8591627479, blue: 0.8676676154, alpha: 1)),
-                            radius: 0,
-                            x: 0,
-                            y: 1,
-                        )
-                } else {
-                    CompactPostView(viewModel: postViewModel)
+        let postViewModel = viewModel.posts[indexPath.section]
+        switch postViewModel.displayItems[indexPath.item] {
+        case .header(let postKind):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: .postHeader,
+                for: indexPath
+            )
+            cell.contentConfiguration = PostHeaderContentConfiguration(
+                viewModel: postViewModel,
+                postKind: postKind,
+                palette: palette,
+                pushToNavigationStack: pushToNavigationStack,
+            )
+            return cell
+        case .footer:
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: .postHeader,
+                for: indexPath
+            )
+            cell.contentConfiguration =
+                UIHostingConfigurationPolyfill(parentViewController: self) {
+                    PostFooterView(viewModel: postViewModel)
                 }
-            }
-            .margins(.all, 0)
-
-        return cell
+                .margins(.all, 0)
+            return cell
+        }
     }
 }
 
@@ -177,15 +197,49 @@ extension FeedViewController: UICollectionViewDataSourcePrefetching {
     }
 }
 
-extension CellReuseIdentifier<UICollectionViewCell> {
-    static let post = Self(rawValue: "post")
+private extension CellReuseIdentifier<UICollectionViewCell> {
+    static let postHeader = Self(rawValue: "postHeader")
+    static let postFooter = Self(rawValue: "postHeader")
+}
+
+private final class FeedSectionBackgroundView: UICollectionReusableView {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = .white
+        layer.shadowColor = #colorLiteral(red: 0.8445754647, green: 0.8591627479, blue: 0.8676676154, alpha: 1)
+        layer.shadowOffset = CGSize(width: 0, height: 1)
+        layer.shadowRadius = 0
+        traitCollectionDidChange(nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func traitCollectionDidChange(
+        _ previousTraitCollection: UITraitCollection?
+    ) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if traitCollection.horizontalSizeClass == .regular {
+            layer.cornerRadius = 4
+            layer.shadowOpacity = 1.0
+        } else {
+            layer.cornerRadius = 0
+            layer.shadowOpacity = 0
+        }
+    }
+}
+
+private extension CollectionViewDecorationKind<FeedSectionBackgroundView> {
+    static let feedSectionBackgroundView = Self(rawValue: "feedSectionBackgroundView")
 }
 
 private struct FeedViewControllerAdaptor: UIViewControllerRepresentable {
     @ObservedObject var viewModel: FeedViewModel
+    @EnvironmentObject var palette: PaletteHolder
 
     func makeUIViewController(context: Context) -> FeedViewController {
-        return FeedViewController(viewModel: viewModel)
+        return FeedViewController(viewModel: viewModel, palette: palette)
     }
 
     func updateUIViewController(
@@ -193,8 +247,7 @@ private struct FeedViewControllerAdaptor: UIViewControllerRepresentable {
         context: Context
     ) {
         uiViewController.refresh = context.environment.refresh
-        // FIXME: reloadData is bad
-        uiViewController.collectionView.reloadData()
+        uiViewController.pushToNavigationStack = context.environment.pushToNavigationStack
     }
 }
 

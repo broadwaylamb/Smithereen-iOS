@@ -22,3 +22,23 @@ extension UICollectionView {
     }
 }
 
+struct CollectionViewDecorationKind<View: UIView>: RawRepresentable {
+    var rawValue: String
+}
+
+extension UICollectionViewLayout {
+    func registerDecorationView<View: UICollectionReusableView>(
+        ofKind kind: CollectionViewDecorationKind<View>
+    ) {
+        register(View.self, forDecorationViewOfKind: kind.rawValue)
+    }
+}
+
+extension NSCollectionLayoutDecorationItem {
+    static func background<View: UICollectionReusableView>(
+        elementKind: CollectionViewDecorationKind<View>
+    ) -> Self {
+        background(elementKind: elementKind.rawValue)
+    }
+}
+

@@ -18,7 +18,9 @@ struct CompactPostView: View {
                 author: viewModel.getAuthor(postID),
                 date: viewModel.getPostDate(postID: postID),
                 repostInfo: RepostInfo(
+                    level: 0,
                     isMastodonStyle: isMastodonStyleRepost,
+                    repostedPostID: postID,
                     entity: .post, // TODO: Use the actual entity
                 ),
             )

@@ -14,6 +14,24 @@ struct RGBAColor: Hashable {
     var projectedValue: RGBAColor {
         self
     }
+
+    var uiColor: UIColor {
+        UIColor(
+            red: CGFloat(red),
+            green: CGFloat(green),
+            blue: CGFloat(blue),
+            alpha: CGFloat(alpha),
+        )
+    }
+
+    var cgColor: CGColor {
+        CGColor(
+            red: CGFloat(red),
+            green: CGFloat(green),
+            blue: CGFloat(blue),
+            alpha: CGFloat(alpha),
+        )
+    }
 }
 
 extension RGBAColor: _ExpressibleByColorLiteral {
