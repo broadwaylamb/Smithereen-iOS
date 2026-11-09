@@ -16,6 +16,7 @@ final class PostViewModel: ObservableObject, Identifiable {
     @Published var reposted = false
     @Published private var authors: [UserID : User] = [:]
 
+
     // periphery:ignore
     private var authorsObservation: AnyDatabaseCancellable?
 
@@ -26,17 +27,73 @@ final class PostViewModel: ObservableObject, Identifiable {
 
     private(set) var displayItems: [DisplayItem] = []
 
-    init(
+    enum StyledTextKind {
+        case paragraph
+        case quote
+        case codeBlock
+    }
+
+    typealias ParsedTextCache =
+        ArrayBasedDictionary<WallPostID, [RichText.FlattenedBlock]>
+
+    /// This cache is only repopulated whenever the post content changes
+    private(set) var parsedTextCache: ParsedTextCache
+
+    private init(
         api: any APIService,
         db: SmithereenDatabase,
         post: WallPost,
         profiles: [User],
+        parsedText: ParsedTextCache,
     ) {
         self.id = post.id
         self.api = api
         self.db = db
         self.post = post
+        self.parsedTextCache = parsedText
         update(from: post, profiles: profiles)
+    }
+
+    private struct PostsWithRenderedTexts: Sendable {
+        var post: WallPost
+        var stc: ParsedTextCache
+    }
+
+    nonisolated static func create<Posts: Sequence<WallPost>>(
+        api: any APIService,
+        db: SmithereenDatabase,
+        posts: Posts,
+        profiles: [User],
+    ) async -> [PostViewModel] {
+        let postsWithRenderedTexts = posts.map {
+            // These expensive operations must run off the main thread!
+            let parsedText = parseText(topLevelPost: $0)
+            return ($0, parsedText)
+        }
+        return await MainActor.run {
+            postsWithRenderedTexts.map { (post, parsedText) in
+                PostViewModel(
+                    api: api,
+                    db: db,
+                    post: post,
+                    profiles: profiles,
+                    parsedText: parsedText,
+                )
+            }
+        }
+    }
+
+    /// This function is computationally expensive and must be run off the main thread.
+    private static nonisolated func parseText(
+        topLevelPost: WallPost,
+    ) -> ParsedTextCache {
+        assertBackgrounThread()
+        return ParsedTextCache(
+            topLevelPost.selfAndReposts.compactMap { post in
+                guard let text = post.text else { return nil }
+                return (post.id, RichText(html: text).flattened())
+            }
+        )
     }
 
     private func observeAuthors(_ post: WallPost) {
@@ -196,16 +253,10 @@ final class PostViewModel: ObservableObject, Identifiable {
         guard let postID = postID else {
             return post
         }
-        if postID == post.id {
-           return post
-        } else {
-            for repost in self.post.repostHistory ?? [] {
-                if postID == repost.id {
-                    return repost
-                }
-            }
+        guard let post = post.selfAndReposts[postID] else {
+            fatalError("Post with ID \(postID) not found among reposts of \(id)")
         }
-        fatalError("Post with ID \(postID) not found among reposts of \(id)")
+        return post
     }
 
     func getPostDate(postID: WallPostID? = nil) -> String {
@@ -292,30 +343,6 @@ final class PostViewModel: ObservableObject, Identifiable {
     }
 }
 
-extension WallPost {
-    var postForInteractions: WallPost {
-        if isMastodonStyleRepost == true {
-            return repostHistory?.first ?? self
-        } else {
-            return self
-        }
-    }
-
-    var authorIDs: [UserID] {
-        var r = [UserID]()
-        r.reserveCapacity(1 + (repostHistory?.count ?? 0))
-        if let userID = fromID.userID {
-            r.append(userID)
-        }
-        for repost in repostHistory ?? [] {
-            if let userID = repost.fromID.userID {
-                r.append(userID)
-            }
-        }
-        return r.distinct()
-    }
-}
-
 extension User {
     func toPostAuthor() -> PostAuthor {
         PostAuthor(
@@ -324,14 +351,16 @@ extension User {
             profilePictureSizes: squareProfilePictureSizes,
         )
     }
+}
 
-    var squareProfilePictureSizes: ImageSizes {
-        var sizes = ImageSizes()
-        sizes.append(size: 50, url: photo50)
-        sizes.append(size: 100, url: photo100)
-        sizes.append(size: 200, url: photo200)
-        sizes.append(size: 400, url: photo400)
-        sizes.append(size: .infinity, url: photoMax)
-        return sizes
+extension WallPost {
+    var selfAndReposts: LinearDictionaryWithClosureBasedKeySelector<
+        WallPostID,
+        some Sequence<WallPost>,
+    > {
+        .init(
+            ConcatenatedSequence(CollectionOfOne(self), repostHistory ?? []),
+            keySelector: \.id
+        )
     }
 }

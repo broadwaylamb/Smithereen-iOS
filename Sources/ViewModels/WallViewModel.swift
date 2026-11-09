@@ -41,14 +41,16 @@ final class WallViewModel: ObservableObject {
             )
         )
         try db.cacheUsers(wall.profiles)
-        withAnimation(.easeIn) {
-            posts = wall.map {
-                PostViewModel(
-                    api: api,
-                    db: db,
-                    post: $0,
-                    profiles: wall.profiles,
-                )
+        let viewModels = await PostViewModel.create(
+            api: api,
+            db: db,
+            posts: wall.items,
+            profiles: wall.profiles,
+        )
+
+        await MainActor.run {
+            withAnimation(.easeIn) {
+                posts = viewModels
             }
         }
     }

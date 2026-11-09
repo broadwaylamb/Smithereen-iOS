@@ -2,42 +2,42 @@ import UIKit
 import SmithereenAPI
 import Combine
 
-@MainActor
-struct PostHeaderContentConfiguration: @MainActor UIContentConfiguration {
-    var viewModel: PostViewModel
-    var postKind: PostKind
-    var palette: PaletteHolder
-    var pushToNavigationStack: ((any Hashable) -> ())?
+final class PostHeaderContentView: UIView, @MainActor ContentView {
 
-    var repostID: WallPostID? {
-        switch postKind {
-        case .regular:
-            nil
-        case .repost(let repostInfo):
-            repostInfo.repostedPostID
+    @MainActor
+    struct Configuration: @MainActor UIContentConfiguration {
+        var viewModel: PostViewModel
+        var postKind: PostKind
+        var palette: PaletteHolder
+        var pushToNavigationStack: ((any Hashable) -> ())?
+
+        var repostID: WallPostID? {
+            switch postKind {
+            case .regular:
+                nil
+            case .repost(let repostInfo):
+                repostInfo.repostedPostID
+            }
+        }
+
+        var hasDetailsButton: Bool {
+            postKind == .regular
+        }
+
+        var author: PostAuthor {
+            viewModel.getAuthor(repostID)
+        }
+
+        func makeContentView() -> any UIView & UIContentView {
+            return PostHeaderContentView(configuration: self)
+        }
+
+        func updated(for state: any UIConfigurationState) -> Configuration {
+            self
         }
     }
 
-    var hasDetailsButton: Bool {
-        postKind == .regular
-    }
-
-    var author: PostAuthor {
-        viewModel.getAuthor(repostID)
-    }
-
-    func makeContentView() -> any UIView & UIContentView {
-        return PostHeaderContentView(configuration: self)
-    }
-
-    func updated(for state: any UIConfigurationState) -> PostHeaderContentConfiguration {
-        self
-    }
-}
-
-
-final class PostHeaderContentView: UIView, @MainActor ContentView {
-    var configuration: PostHeaderContentConfiguration {
+    var configuration: Configuration {
         didSet {
             configurationDidChange()
             setNeedsLayout()
@@ -102,7 +102,7 @@ final class PostHeaderContentView: UIView, @MainActor ContentView {
         return button
     }()
 
-    init(configuration: PostHeaderContentConfiguration) {
+    init(configuration: Configuration) {
         self.configuration = configuration
         super.init(frame: .zero)
         isOpaque = false
@@ -249,6 +249,7 @@ final class PostHeaderContentView: UIView, @MainActor ContentView {
         let horizontalInset = metrics.horizontalInset
         let singleRepostOffset = metrics.singleRepostOffset
         let lineThickness = metrics.repostVerticalLineThickness
+        let topInset = self.topInset
 
         context.setStrokeColor(configuration.palette.$repostVerticalLine.cgColor)
         context.setLineWidth(lineThickness)
@@ -257,9 +258,10 @@ final class PostHeaderContentView: UIView, @MainActor ContentView {
             context.beginPath()
             let offset: CGFloat =
                 horizontalInset + lineThickness / 2 + singleRepostOffset * CGFloat(level)
+            let y = level == repostInfo.level ? topInset : 0
             context.addLines(
                 between: [
-                    CGPoint(x: offset, y: topInset),
+                    CGPoint(x: offset, y: y),
                     CGPoint(x: offset, y: bounds.height)
                 ]
             )

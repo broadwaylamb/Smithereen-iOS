@@ -1,5 +1,6 @@
 import Foundation
 import SmithereenAPI
+import UIKit
 
 // All the text formating supported by Smithereen in posts.
 // https://smithereen.software/docs/api/text-formatting/
@@ -39,6 +40,51 @@ struct RichText: Equatable {
         case `subscript`(children: [InlineNode])
         case superscript(children: [InlineNode])
         case link(URL, mentionedUser: UserID?, children: [InlineNode])
+    }
+
+    struct FlattenedBlock {
+        var quoteLevel: Int
+        var isCodeBlock: Bool
+        var content: [InlineNode]
+    }
+
+    func flattened() -> [FlattenedBlock] {
+        var result = [FlattenedBlock]()
+
+        func recurse(_ block: Block, quoteLevel: Int) {
+            if quoteLevel > 10 {
+                // Prevent too deep a recursion
+                return
+            }
+            switch block {
+            case .paragraph(let content):
+                result.append(
+                    FlattenedBlock(
+                        quoteLevel: quoteLevel,
+                        isCodeBlock: false,
+                        content: content,
+                    )
+                )
+            case .quote(let children):
+                for block in children {
+                    recurse(block, quoteLevel: quoteLevel + 1)
+                }
+            case .codeBlock(let content):
+                result.append(
+                    FlattenedBlock(
+                        quoteLevel: quoteLevel,
+                        isCodeBlock: true,
+                        content: [.text(content)]
+                    )
+                )
+            }
+        }
+
+        for block in blocks {
+            recurse(block, quoteLevel: 0)
+        }
+
+        return result
     }
 }
 
@@ -213,5 +259,98 @@ private final class Parser: HTMLParserDelegate {
 extension Array {
     fileprivate mutating func pop() -> Element? {
         return isEmpty ? nil : removeLast()
+    }
+}
+
+// https://en.wikipedia.org/wiki/Subscript_and_superscript#HTML
+private let subscriptFontSizeMultiplier: CGFloat = 0.75
+
+extension AttributedString {
+    init(
+        _ nodes: [RichText.InlineNode],
+        baseFontSize: CGFloat,
+        subscriptBaselineOffset: CGFloat,
+        superscriptBaselineOffset: CGFloat,
+    ) {
+        self.init()
+        func recurse(
+            _ nodes: [RichText.InlineNode],
+            attributes: AttributeContainer,
+            subscriptDepth: Int,
+        ) {
+            for node in nodes {
+                var newAttributes = attributes
+                switch node {
+                case .text(let s):
+                    self += AttributedString(s, attributes: attributes)
+                case .lineBreak:
+                    self += AttributedString("\n", attributes: attributes)
+                case .code(let children):
+                    newAttributes.inlinePresentationIntent.insert(.code)
+                    recurse(
+                        children,
+                        attributes: newAttributes,
+                        subscriptDepth: subscriptDepth,
+                    )
+                case .strong(let children):
+                    newAttributes.inlinePresentationIntent.insert(.stronglyEmphasized)
+                    recurse(
+                        children,
+                        attributes: newAttributes,
+                        subscriptDepth: subscriptDepth,
+                    )
+                case .emphasis(let children):
+                    newAttributes.inlinePresentationIntent.insert(.emphasized)
+                    recurse(
+                        children,
+                        attributes: newAttributes,
+                        subscriptDepth: subscriptDepth,
+                    )
+                case .underline(let children):
+                    newAttributes.uiKit.underlineStyle = .single
+                    recurse(
+                        children,
+                        attributes: newAttributes,
+                        subscriptDepth: subscriptDepth,
+                    )
+                case .strikethrough(let children):
+                    newAttributes.inlinePresentationIntent.insert(.strikethrough)
+                    recurse(
+                        children,
+                        attributes: newAttributes,
+                        subscriptDepth: subscriptDepth,
+                    )
+                case .subscript(let children), .superscript(let children):
+                    let currentBaselineOffset = attributes.uiKit.baselineOffset ?? 0
+                    let baselineOffset =
+                        if case .subscript = node {
+                            subscriptBaselineOffset
+                        } else {
+                            superscriptBaselineOffset
+                        }
+                    let m = subscriptFontSizeMultiplier
+                    newAttributes.uiKit.baselineOffset =
+                        currentBaselineOffset + baselineOffset
+                        * pow(m, CGFloat(subscriptDepth))
+                    newAttributes.font = UIFont.systemFont(
+                        ofSize: baseFontSize * pow(m, CGFloat(subscriptDepth + 1))
+                    )
+                    recurse(
+                        children,
+                        attributes: newAttributes,
+                        subscriptDepth: subscriptDepth + 1,
+                    )
+                case .link(let url, _, let children):
+                    var newAttributes = attributes
+                    newAttributes.link = url
+                    recurse(
+                        children,
+                        attributes: newAttributes,
+                        subscriptDepth: subscriptDepth,
+                    )
+                }
+            }
+        }
+        recurse(nodes, attributes: AttributeContainer(), subscriptDepth: 0)
     }
 }
