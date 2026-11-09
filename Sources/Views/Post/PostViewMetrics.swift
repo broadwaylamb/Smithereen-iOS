@@ -15,13 +15,22 @@ struct PostViewMetrics {
         horizontalSizeClass == .regular ? 13 : 0
     }
 
+    private func totalRepostOffset(level: Int) -> CGFloat {
+        CGFloat(level) * singleRepostOffset
+    }
+
     func totalRepostOffset(postKind: PostKind) -> CGFloat {
-        switch postKind {
+        let level = switch postKind {
         case .regular:
             0
         case .repost(let repostInfo):
-            CGFloat(repostInfo.level + 1) * singleRepostOffset
+            repostInfo.level + 1
         }
+        return totalRepostOffset(level: level)
+    }
+
+    func textWidth(baseWidth: CGFloat, repostLevel: Int) -> CGFloat {
+        baseWidth - horizontalInset * 2 - totalRepostOffset(level: repostLevel)
     }
 
     var detailButtonSize: CGSize {

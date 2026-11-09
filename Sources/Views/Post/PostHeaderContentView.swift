@@ -249,6 +249,7 @@ final class PostHeaderContentView: UIView, @MainActor ContentView {
         let horizontalInset = metrics.horizontalInset
         let singleRepostOffset = metrics.singleRepostOffset
         let lineThickness = metrics.repostVerticalLineThickness
+        let topInset = self.topInset
 
         context.setStrokeColor(configuration.palette.$repostVerticalLine.cgColor)
         context.setLineWidth(lineThickness)
@@ -257,9 +258,10 @@ final class PostHeaderContentView: UIView, @MainActor ContentView {
             context.beginPath()
             let offset: CGFloat =
                 horizontalInset + lineThickness / 2 + singleRepostOffset * CGFloat(level)
+            let y = level == repostInfo.level ? topInset : 0
             context.addLines(
                 between: [
-                    CGPoint(x: offset, y: topInset),
+                    CGPoint(x: offset, y: y),
                     CGPoint(x: offset, y: bounds.height)
                 ]
             )

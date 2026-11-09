@@ -122,3 +122,39 @@ extension Sequence where Element: Hashable {
         return result
     }
 }
+
+extension WallPost {
+    var postForInteractions: WallPost {
+        if isMastodonStyleRepost == true {
+            return repostHistory?.first ?? self
+        } else {
+            return self
+        }
+    }
+
+    var authorIDs: [UserID] {
+        var r = [UserID]()
+        r.reserveCapacity(1 + (repostHistory?.count ?? 0))
+        if let userID = fromID.userID {
+            r.append(userID)
+        }
+        for repost in repostHistory ?? [] {
+            if let userID = repost.fromID.userID {
+                r.append(userID)
+            }
+        }
+        return r.distinct()
+    }
+}
+
+extension User {
+    var squareProfilePictureSizes: ImageSizes {
+        var sizes = ImageSizes()
+        sizes.append(size: 50, url: photo50)
+        sizes.append(size: 100, url: photo100)
+        sizes.append(size: 200, url: photo200)
+        sizes.append(size: 400, url: photo400)
+        sizes.append(size: .infinity, url: photoMax)
+        return sizes
+    }
+}

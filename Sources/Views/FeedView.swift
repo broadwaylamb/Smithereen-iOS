@@ -8,13 +8,10 @@ struct FeedView: View {
 
     @EnvironmentObject private var palette: PaletteHolder
 
-    @State private var composePostShown = false
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.displayScale) private var displayScale
 
-    private func refreshFeed() async {
-        await errorObserver.runCatching {
-            try await viewModel.update()
-        }
-    }
+    @State private var composePostShown = false
 
     var body: some View {
         FeedViewControllerAdaptor(viewModel: viewModel)
@@ -40,12 +37,6 @@ struct FeedView: View {
                     ),
                 )
             }
-            .task {
-                await refreshFeed()
-            }
-            .refreshable {
-                await refreshFeed()
-            }
             .background(palette.feedBackground)
             .colorScheme(.light)
     }
@@ -54,14 +45,40 @@ struct FeedView: View {
 private final class FeedViewController: UICollectionViewController {
     private let viewModel: FeedViewModel
     private let palette: PaletteHolder
-
-    var refresh: RefreshAction?
+    var errorObserver: ErrorObserver
 
     var pushToNavigationStack: ((any Hashable) -> ())?
 
     private let topRefreshControl = UIRefreshControl()
 
     private var cancellables = Set<AnyCancellable>()
+
+    private nonisolated static func backgroundInsets(
+        traitCollection: UITraitCollection,
+        sectionIndex: Int,
+    ) -> NSDirectionalEdgeInsets {
+        let isWide = traitCollection.horizontalSizeClass == .regular
+        return NSDirectionalEdgeInsets(
+            top: isWide && sectionIndex == 0 ? 16 : 0,
+            leading: isWide ? 24 : 0,
+            bottom: isWide ? 13 : 2, // Inter-section spacing
+            trailing: isWide ? 24 : 0,
+        )
+    }
+
+    private nonisolated static func sectionContentInsets(
+        traitCollection: UITraitCollection,
+        sectionIndex: Int,
+    ) -> NSDirectionalEdgeInsets {
+        var insets = backgroundInsets(
+            traitCollection: traitCollection,
+            sectionIndex: sectionIndex
+        )
+        if traitCollection.horizontalSizeClass != .regular {
+            insets.bottom += 11
+        }
+        return insets
+    }
 
     private static func createLayout() -> UICollectionViewCompositionalLayout {
         let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnv in
@@ -79,21 +96,15 @@ private final class FeedViewController: UICollectionViewController {
             let sectionBackgroundDecoration = NSCollectionLayoutDecorationItem
                 .background(elementKind: .feedSectionBackgroundView)
 
-            let isWide = layoutEnv.traitCollection.horizontalSizeClass == .regular
-            let bgInsets = NSDirectionalEdgeInsets(
-                top: isWide && sectionIndex == 0 ? 16 : 0,
-                leading: isWide ? 24 : 0,
-                bottom: isWide ? 13 : 2, // Inter-section spacing
-                trailing: isWide ? 24 : 0,
+            sectionBackgroundDecoration.contentInsets = backgroundInsets(
+                traitCollection: layoutEnv.traitCollection,
+                sectionIndex: sectionIndex
             )
-            sectionBackgroundDecoration.contentInsets = bgInsets
             section.decorationItems = [sectionBackgroundDecoration]
 
-            section.contentInsets = NSDirectionalEdgeInsets(
-                top: bgInsets.top,
-                leading: bgInsets.leading,
-                bottom: bgInsets.bottom + (isWide ? 0 : 11),
-                trailing: bgInsets.trailing,
+            section.contentInsets = sectionContentInsets(
+                traitCollection: layoutEnv.traitCollection,
+                sectionIndex: sectionIndex,
             )
             return section
         }
@@ -101,9 +112,10 @@ private final class FeedViewController: UICollectionViewController {
         return layout
     }
 
-    init(viewModel: FeedViewModel, palette: PaletteHolder) {
+    init(viewModel: FeedViewModel, palette: PaletteHolder, errorObserver: ErrorObserver) {
         self.viewModel = viewModel
         self.palette = palette
+        self.errorObserver = errorObserver
         let layout = Self.createLayout()
         super.init(collectionViewLayout: layout)
         traitCollectionDidChange(nil)
@@ -128,9 +140,45 @@ private final class FeedViewController: UICollectionViewController {
         }.store(in: &cancellables)
     }
 
+    private nonisolated static func refresh(
+        viewModel: FeedViewModel,
+        errorObserver: ErrorObserver,
+        traitCollection: UITraitCollection,
+        columnWidth: CGFloat
+    ) async {
+        await errorObserver.runCatching {
+            let contentInsets = Self.sectionContentInsets(
+                traitCollection: traitCollection,
+                sectionIndex: 0,
+            )
+            let metrics = PostViewMetrics(
+                horizontalSizeClass: traitCollection.horizontalSizeClass,
+            )
+            try await viewModel.update(
+                textRenderingParameters: TextRenderingParameters(
+                    contentSizeCategory: traitCollection.preferredContentSizeCategory,
+                    displayScale: traitCollection.displayScale,
+                    width: { repostLevel in
+                        metrics.textWidth(
+                            baseWidth: columnWidth
+                                - contentInsets.leading
+                                - contentInsets.trailing,
+                            repostLevel: repostLevel
+                        )
+                    },
+                )
+            )
+        }
+    }
+
     @objc private func pullToRefresh() {
-        Task {
-            await refresh?.callAsFunction()
+        Task(priority: .userInitiated) {
+            await Self.refresh(
+                viewModel: viewModel,
+                errorObserver: errorObserver,
+                traitCollection: traitCollection,
+                columnWidth: collectionView.bounds.width,
+            )
             topRefreshControl.endRefreshing()
         }
     }
@@ -237,17 +285,22 @@ private extension CollectionViewDecorationKind<FeedSectionBackgroundView> {
 private struct FeedViewControllerAdaptor: UIViewControllerRepresentable {
     @ObservedObject var viewModel: FeedViewModel
     @EnvironmentObject var palette: PaletteHolder
+    @EnvironmentObject var errorObserver: ErrorObserver
 
     func makeUIViewController(context: Context) -> FeedViewController {
-        return FeedViewController(viewModel: viewModel, palette: palette)
+        FeedViewController(
+            viewModel: viewModel,
+            palette: palette,
+            errorObserver: errorObserver,
+        )
     }
 
     func updateUIViewController(
         _ uiViewController: FeedViewController,
         context: Context
     ) {
-        uiViewController.refresh = context.environment.refresh
         uiViewController.pushToNavigationStack = context.environment.pushToNavigationStack
+        uiViewController.errorObserver = errorObserver
     }
 }
 

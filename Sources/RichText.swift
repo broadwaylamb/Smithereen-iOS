@@ -1,5 +1,7 @@
 import Foundation
 import SmithereenAPI
+import StyledTextKit
+import UIKit
 
 // All the text formating supported by Smithereen in posts.
 // https://smithereen.software/docs/api/text-formatting/
@@ -39,6 +41,84 @@ struct RichText: Equatable {
         case `subscript`(children: [InlineNode])
         case superscript(children: [InlineNode])
         case link(URL, mentionedUser: UserID?, children: [InlineNode])
+    }
+
+    private func toStyledText(
+        node: InlineNode,
+        builder: StyledTextBuilder,
+        traits: UIFontDescriptor.SymbolicTraits? = nil,
+        attributes: NSAttributedStringAttributesType? = nil,
+    ) {
+        func handleNodes(
+            _ nodes: [InlineNode],
+            traits: UIFontDescriptor.SymbolicTraits? = nil,
+            attributes: NSAttributedStringAttributesType? = nil,
+        ) {
+            builder.save()
+            for node in nodes {
+                toStyledText(
+                    node: node,
+                    builder: builder,
+                    traits: traits,
+                    attributes: attributes
+                )
+            }
+            builder.restore()
+        }
+
+        switch node {
+        case .text(let string):
+            builder.add(text: string, traits: traits, attributes: attributes)
+        case .lineBreak:
+            builder.add(text: "\n", traits: traits, attributes: attributes)
+        case .code(let children):
+            handleNodes(children, traits: .traitMonoSpace)
+        case .strong(let children):
+            handleNodes(children, traits: .traitBold)
+        case .emphasis(let children):
+            handleNodes(children, traits: .traitItalic)
+        case .underline(let children):
+            handleNodes(
+                children,
+                attributes: [.underlineStyle : NSUnderlineStyle.single],
+            )
+        case .strikethrough(let children):
+            handleNodes(
+                children,
+                attributes: [.strikethroughStyle : NSUnderlineStyle.single],
+            )
+        case .subscript(let children):
+            handleNodes(children) // TODO
+        case .superscript(let children):
+            handleNodes(children) // TODO
+        case .link(let url, _, let children):
+            handleNodes(
+                children,
+                attributes: [.link : url],
+            )
+        }
+    }
+
+    func toStyledText() -> StyledTextString {
+        let builder = StyledTextBuilder(text: "")
+        var isFirst = true
+        for block in blocks {
+            if !isFirst {
+                builder.add(text: "\r\n")
+            }
+            switch block {
+            case .paragraph(let content):
+                for node in content {
+                    toStyledText(node: node, builder: builder)
+                }
+            case .quote(_):
+                break // TODO
+            case .codeBlock(_):
+                break // TODO
+            }
+            isFirst = false
+        }
+        return builder.build(renderMode: .preserve)
     }
 }
 

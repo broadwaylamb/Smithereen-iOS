@@ -36,6 +36,7 @@
 		87B0C99B2DC41A4200D5DB87 /* Prefire in Frameworks */ = {isa = PBXBuildFile; productRef = 87B0C99A2DC41A4200D5DB87 /* Prefire */; };
 		87D346562F002A0600CD09FF /* SmithereenAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 87D346552F002A0600CD09FF /* SmithereenAPI */; };
 		87EF4C2A2F1AF1B70083DC75 /* ErrorMessages.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 87EF4C292F1AF1B70083DC75 /* ErrorMessages.xcstrings */; };
+		87F16908309D3B22003749F2 /* StyledTextKit in Frameworks */ = {isa = PBXBuildFile; productRef = 87F16907309D3B22003749F2 /* StyledTextKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,6 +105,7 @@
 				87864EDF2E28520600D8ACE0 /* MediaGridLayout in Frameworks */,
 				018E5C752F4609F200D35D47 /* CustomAlert in Frameworks */,
 				8793F4462E63619400662021 /* SlideableMenu in Frameworks */,
+				87F16908309D3B22003749F2 /* StyledTextKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -188,6 +190,7 @@
 				87D346552F002A0600CD09FF /* SmithereenAPI */,
 				875A5D332F2639EA00EC9B76 /* GRDB */,
 				018E5C742F4609F200D35D47 /* CustomAlert */,
+				87F16907309D3B22003749F2 /* StyledTextKit */,
 			);
 			productName = Smithereen;
 			productReference = 01E20ABA2DB7926D00CC0EBE /* Smithereen.app */;
@@ -263,6 +266,7 @@
 				87D346542F002A0600CD09FF /* XCRemoteSwiftPackageReference "smithereen-api-swift" */,
 				875A5D322F2639EA00EC9B76 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 				018E5C732F4609F200D35D47 /* XCRemoteSwiftPackageReference "CustomAlert" */,
+				87F16906309D3B22003749F2 /* XCRemoteSwiftPackageReference "StyledTextKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 01E20ABB2DB7926D00CC0EBE /* Products */;
@@ -740,6 +744,14 @@
 				kind = branch;
 			};
 		};
+		87F16906309D3B22003749F2 /* XCRemoteSwiftPackageReference "StyledTextKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/broadwaylamb/StyledTextKit.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -801,6 +813,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 87D346542F002A0600CD09FF /* XCRemoteSwiftPackageReference "smithereen-api-swift" */;
 			productName = SmithereenAPI;
+		};
+		87F16907309D3B22003749F2 /* StyledTextKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 87F16906309D3B22003749F2 /* XCRemoteSwiftPackageReference "StyledTextKit" */;
+			productName = StyledTextKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

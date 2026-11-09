@@ -1,6 +1,7 @@
 import GRDB
 import SwiftUI
 import SmithereenAPI
+import StyledTextKit
 
 @MainActor
 final class PostViewModel: ObservableObject, Identifiable {
@@ -15,6 +16,10 @@ final class PostViewModel: ObservableObject, Identifiable {
     @Published private(set) var liked: Bool = false
     @Published var reposted = false
     @Published private var authors: [UserID : User] = [:]
+
+    typealias RenderedTextCache = [WallPostID : StyledTextRenderer]
+
+    private(set) var renderedTexts: RenderedTextCache
 
     // periphery:ignore
     private var authorsObservation: AnyDatabaseCancellable?
@@ -31,12 +36,39 @@ final class PostViewModel: ObservableObject, Identifiable {
         db: SmithereenDatabase,
         post: WallPost,
         profiles: [User],
+        renderedTexts: RenderedTextCache,
     ) {
         self.id = post.id
         self.api = api
         self.db = db
         self.post = post
+        self.renderedTexts = renderedTexts
         update(from: post, profiles: profiles)
+    }
+
+    static nonisolated func prerenderTexts(
+        post: WallPost,
+        parameters: TextRenderingParameters,
+    ) -> RenderedTextCache {
+        var rendered = RenderedTextCache()
+        func go(_ post: WallPost, repostLevel: Int) {
+            guard let text = post.text else { return }
+            let richText = RichText(html: text)
+            let styledText = richText.toStyledText()
+            let renderer = StyledTextRenderer.createAndWarmCaches(
+                styledText,
+                parameters: parameters,
+                repostLevel: repostLevel,
+            )
+            rendered[post.id] = renderer
+        }
+
+        go(post, repostLevel: 0)
+        for (i, repost) in (post.repostHistory ?? []).enumerated() {
+            go(repost, repostLevel: i + 1)
+        }
+
+        return rendered
     }
 
     private func observeAuthors(_ post: WallPost) {
@@ -292,30 +324,6 @@ final class PostViewModel: ObservableObject, Identifiable {
     }
 }
 
-extension WallPost {
-    var postForInteractions: WallPost {
-        if isMastodonStyleRepost == true {
-            return repostHistory?.first ?? self
-        } else {
-            return self
-        }
-    }
-
-    var authorIDs: [UserID] {
-        var r = [UserID]()
-        r.reserveCapacity(1 + (repostHistory?.count ?? 0))
-        if let userID = fromID.userID {
-            r.append(userID)
-        }
-        for repost in repostHistory ?? [] {
-            if let userID = repost.fromID.userID {
-                r.append(userID)
-            }
-        }
-        return r.distinct()
-    }
-}
-
 extension User {
     func toPostAuthor() -> PostAuthor {
         PostAuthor(
@@ -323,15 +331,5 @@ extension User {
             displayedName: nameComponents.formatted(.name(style: .medium)),
             profilePictureSizes: squareProfilePictureSizes,
         )
-    }
-
-    var squareProfilePictureSizes: ImageSizes {
-        var sizes = ImageSizes()
-        sizes.append(size: 50, url: photo50)
-        sizes.append(size: 100, url: photo100)
-        sizes.append(size: 200, url: photo200)
-        sizes.append(size: 400, url: photo400)
-        sizes.append(size: .infinity, url: photoMax)
-        return sizes
     }
 }

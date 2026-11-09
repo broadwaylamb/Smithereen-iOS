@@ -1,5 +1,5 @@
 {
-  "originHash" : "5fbd45c963ca25082096191352e8882a11d84179eda94d10a8a8ff4ae258f6ef",
+  "originHash" : "c52afb4bae74f64b4468d323f70093762d39e31dea2bf23f2c136c6dc9630fd0",
   "pins" : [
     {
       "identity" : "customalert",
@@ -69,6 +69,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "1ea7a1e236bb879d77f000f28db5ed584db0913f"
+      }
+    },
+    {
+      "identity" : "styledtextkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/broadwaylamb/StyledTextKit.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "57033cd4b5c98d87e39ca8f013f448cd86331809"
       }
     },
     {

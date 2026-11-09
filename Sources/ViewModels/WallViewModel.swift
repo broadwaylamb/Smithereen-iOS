@@ -48,6 +48,7 @@ final class WallViewModel: ObservableObject {
                     db: db,
                     post: $0,
                     profiles: wall.profiles,
+                    renderedTexts: [:], // TODO
                 )
             }
         }
