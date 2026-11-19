@@ -32,6 +32,12 @@ struct RGBAColor: Hashable {
             alpha: CGFloat(alpha),
         )
     }
+
+    func withAlpha(_ alpha: Double) -> RGBAColor {
+        var copy = self
+        copy.alpha = alpha
+        return copy
+    }
 }
 
 extension RGBAColor: _ExpressibleByColorLiteral {

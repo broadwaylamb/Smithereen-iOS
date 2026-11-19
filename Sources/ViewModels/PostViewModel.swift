@@ -16,22 +16,16 @@ final class PostViewModel: ObservableObject, Identifiable {
     @Published var reposted = false
     @Published private var authors: [UserID : User] = [:]
 
-
     // periphery:ignore
     private var authorsObservation: AnyDatabaseCancellable?
 
     enum DisplayItem {
         case header(PostKind)
+        case textBlock(PostKind, RichText.FlattenedBlock)
         case footer
     }
 
     private(set) var displayItems: [DisplayItem] = []
-
-    enum StyledTextKind {
-        case paragraph
-        case quote
-        case codeBlock
-    }
 
     typealias ParsedTextCache =
         ArrayBasedDictionary<WallPostID, [RichText.FlattenedBlock]>
@@ -128,7 +122,12 @@ final class PostViewModel: ObservableObject, Identifiable {
 
         func appendSinglePost(_ post: WallPost, kind: PostKind) {
             displayItems.append(.header(kind))
-            // TODO: Append text and attachments
+            if let textBlocks = parsedTextCache[post.id] {
+                for textBlock in textBlocks {
+                    displayItems.append(.textBlock(kind, textBlock))
+                }
+            }
+            // TODO: Attachments
         }
 
         appendSinglePost(post, kind: .regular)

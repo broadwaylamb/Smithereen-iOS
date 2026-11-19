@@ -133,6 +133,7 @@ private final class FeedViewController: UICollectionViewController {
         collectionView.backgroundColor = nil
         collectionView.registerReuseIdentifier(.postHeader)
         collectionView.registerReuseIdentifier(.postFooter)
+        collectionView.registerReuseIdentifier(.postTextBlock)
         collectionView.refreshControl = topRefreshControl
 
         viewModel.$posts.sink { [weak self] _ in
@@ -194,6 +195,20 @@ private final class FeedViewController: UICollectionViewController {
                 pushToNavigationStack: pushToNavigationStack,
             )
             return cell
+        case .textBlock(let postKind, let block):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: .postTextBlock,
+                for: indexPath
+            )
+            let previousItem = postViewModel.displayItems[indexPath.item - 1]
+            cell.contentConfiguration = PostTextBlockView.Configuration(
+                postKind: postKind,
+                block: block,
+                previousItem: previousItem,
+                palette: palette,
+                traitCollection: traitCollection,
+            )
+            return cell
         case .footer:
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: .postHeader,
@@ -227,7 +242,8 @@ extension FeedViewController: UICollectionViewDataSourcePrefetching {
 
 private extension CellReuseIdentifier<UICollectionViewCell> {
     static let postHeader = Self(rawValue: "postHeader")
-    static let postFooter = Self(rawValue: "postHeader")
+    static let postFooter = Self(rawValue: "postFooter")
+    static let postTextBlock = Self(rawValue: "postTextBlock")
 }
 
 private final class FeedSectionBackgroundView: UICollectionReusableView {

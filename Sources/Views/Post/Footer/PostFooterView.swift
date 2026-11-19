@@ -8,7 +8,9 @@ struct PostFooterView: View {
 
     var body: some View {
         let metrics = PostViewMetrics(
-            horizontalSizeClass: UIUserInterfaceSizeClass(horizontalSizeClass)
+            traitCollection: UITraitCollection(
+                horizontalSizeClass: UIUserInterfaceSizeClass(horizontalSizeClass)
+            )
         )
         if horizontalSizeClass == .regular {
             VStack(spacing: 0) {

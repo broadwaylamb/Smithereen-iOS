@@ -206,7 +206,7 @@ final class PostHeaderContentView: UIView, @MainActor ContentView {
     }
 
     private var metrics: PostViewMetrics {
-        PostViewMetrics(horizontalSizeClass: traitCollection.horizontalSizeClass)
+        PostViewMetrics(traitCollection: traitCollection)
     }
 
     private var authorNameX: CGFloat {
@@ -240,33 +240,12 @@ final class PostHeaderContentView: UIView, @MainActor ContentView {
 
     override func draw(_ rect: CGRect) {
         super.draw(rect)
-        guard traitCollection.horizontalSizeClass == .regular,
-              case .repost(let repostInfo) = configuration.postKind,
-              let context = UIGraphicsGetCurrentContext() else {
-            return
-        }
-        let metrics = self.metrics
-        let horizontalInset = metrics.horizontalInset
-        let singleRepostOffset = metrics.singleRepostOffset
-        let lineThickness = metrics.repostVerticalLineThickness
-        let topInset = self.topInset
-
-        context.setStrokeColor(configuration.palette.$repostVerticalLine.cgColor)
-        context.setLineWidth(lineThickness)
-
-        for level in 0...repostInfo.level {
-            context.beginPath()
-            let offset: CGFloat =
-                horizontalInset + lineThickness / 2 + singleRepostOffset * CGFloat(level)
-            let y = level == repostInfo.level ? topInset : 0
-            context.addLines(
-                between: [
-                    CGPoint(x: offset, y: y),
-                    CGPoint(x: offset, y: bounds.height)
-                ]
-            )
-            context.strokePath()
-        }
+        drawRepostVerticalLines(
+            postKind: configuration.postKind,
+            topInset: topInset,
+            palette: configuration.palette.palette,
+            traitCollection: traitCollection
+        )
     }
 
     override func layoutSubviews() {
@@ -338,6 +317,44 @@ final class PostHeaderContentView: UIView, @MainActor ContentView {
         } else {
             configuration
                 .pushToNavigationStack?(UserProfileNavigationItem(userID: nil))
+        }
+    }
+}
+
+extension UIView {
+    func drawRepostVerticalLines(
+        postKind: PostKind,
+        topInset: CGFloat,
+        palette: Palette,
+        traitCollection: UITraitCollection
+    ) {
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+
+        let metrics = PostViewMetrics(traitCollection: traitCollection)
+        let lineThickness = metrics.verticalLineThickness
+
+        if traitCollection.horizontalSizeClass == .regular,
+           case .repost(let repostInfo) = postKind {
+
+            let horizontalInset = metrics.horizontalInset
+            let singleRepostOffset = metrics.singleRepostOffset
+
+            context.setStrokeColor(palette.$repostVerticalLine.cgColor)
+            context.setLineWidth(lineThickness)
+
+            for level in 0...repostInfo.level {
+                context.beginPath()
+                let offset =
+                    horizontalInset + lineThickness / 2 + singleRepostOffset * CGFloat(level)
+                let y = level == repostInfo.level ? topInset : 0
+                context.addLines(
+                    between: [
+                        CGPoint(x: offset, y: y),
+                        CGPoint(x: offset, y: bounds.height)
+                    ]
+                )
+                context.strokePath()
+            }
         }
     }
 }

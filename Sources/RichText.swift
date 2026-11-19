@@ -170,6 +170,10 @@ private final class Parser: HTMLParserDelegate {
         case "pre":
             codeBlockDepth -= 1
             if codeBlockDepth == 0 {
+                if code.last == "\n" {
+                    // Remove the last trailing newline
+                    code = String(code.prefix(upTo: code.index(before: code.endIndex)))
+                }
                 appendBlock(.codeBlock(content: code))
                 code = ""
             }

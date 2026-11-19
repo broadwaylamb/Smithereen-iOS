@@ -1,22 +1,18 @@
 import UIKit
 
 struct PostViewMetrics {
-    var horizontalSizeClass: UIUserInterfaceSizeClass
+    var traitCollection: UITraitCollection
 
     var horizontalInset: CGFloat {
-        horizontalSizeClass == .regular ? 13 : 8
+        traitCollection.horizontalSizeClass == .regular ? 13 : 8
     }
 
     var topInset: CGFloat {
-        horizontalSizeClass == .regular ? 13 : 7
+        traitCollection.horizontalSizeClass == .regular ? 13 : 7
     }
 
     var singleRepostOffset: CGFloat {
-        horizontalSizeClass == .regular ? 13 : 0
-    }
-
-    private func totalRepostOffset(level: Int) -> CGFloat {
-        CGFloat(level) * singleRepostOffset
+        traitCollection.horizontalSizeClass == .regular ? 13 : 0
     }
 
     func totalRepostOffset(postKind: PostKind) -> CGFloat {
@@ -26,16 +22,40 @@ struct PostViewMetrics {
         case .repost(let repostInfo):
             repostInfo.level + 1
         }
-        return totalRepostOffset(level: level)
+        return CGFloat(level) * singleRepostOffset
     }
 
-    func textWidth(baseWidth: CGFloat, repostLevel: Int) -> CGFloat {
-        baseWidth - horizontalInset * 2 - totalRepostOffset(level: repostLevel)
+    func textLeadingOffset(
+        postKind: PostKind,
+        quoteLevel: Int,
+    ) -> CGFloat {
+        horizontalInset
+            + totalRepostOffset(postKind: postKind)
+            + CGFloat(quoteLevel) * (verticalLineThickness + quoteOffsetFromVerticalLine)
+    }
+
+    func availableTextWidth(
+        baseWidth: CGFloat,
+        postKind: PostKind,
+        quoteLevel: Int,
+    ) -> CGFloat {
+        baseWidth
+            - textLeadingOffset(postKind: postKind, quoteLevel: quoteLevel)
+            - horizontalInset
     }
 
     var detailButtonSize: CGSize {
         CGSize(width: 32, height: 32)
     }
 
-    var repostVerticalLineThickness: CGFloat { 2 }
+    var verticalLineThickness: CGFloat { 2 }
+
+    var quoteOffsetFromVerticalLine: CGFloat { 8 }
+
+    var codeBlockPadding: CGFloat { 8 }
+
+    var paragraphSpacing: CGFloat {
+        let fontMetrics = UIFontMetrics(forTextStyle: .body)
+        return fontMetrics.scaledValue(for: 8, compatibleWith: traitCollection)
+    }
 }
