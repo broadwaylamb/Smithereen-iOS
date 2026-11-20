@@ -36,6 +36,8 @@ private final class ActorDiffableDataSource<SectionIdentifierType, ItemIdentifie
     }
 }
 
+private let profilePictureSize = CGSize(width: 42, height: 42)
+
 private final class FriendsViewController
     : UICollectionViewController,
       UICollectionViewDataSourcePrefetching
@@ -44,6 +46,7 @@ private final class FriendsViewController
     private var observation: AnyDatabaseCancellable?
 
     var pushToNavigationStack: ((any Hashable) -> Void)?
+    var roundProfilePictures: Bool = false
 
     init(db: SmithereenDatabase) {
         self.db = db
@@ -74,7 +77,8 @@ private final class FriendsViewController
         }
     }
 
-    private struct Identified<T: Identifiable & Sendable>: Hashable, Sendable {
+    private struct ActorListItem<T: Identifiable & Sendable>: Hashable, Sendable {
+        var imageViewModel: AsyncImageViewModel
         var value: T
         func hash(into hasher: inout Hasher) {
             hasher.combine(value.id)
@@ -85,41 +89,48 @@ private final class FriendsViewController
         }
     }
 
-    private let friendCellRegistration = UICollectionView
-        .CellRegistration<UICollectionViewListCell, Identified<User>> { cell, _, user in
-            var attrContainer = AttributeContainer()
-            attrContainer.personNameComponent =
-                user.value.lastName != nil ? .familyName : .givenName
+    private var sectionHeaderRegistration: UICollectionView.SupplementaryRegistration<UICollectionViewListCell>!
 
-            var newContainer = AttributeContainer()
-            newContainer.uiKit.font = .preferredFont(forTextStyle: .body)
-            newContainer.inlinePresentationIntent.insert(.stronglyEmphasized)
-
-            let attributedName = user
-                .value
-                .nameComponents
-                .formatted(.name(style: .medium).attributed)
-                .replacingAttributes(attrContainer, with: newContainer)
-
-            var contentConfiguration = cell.defaultContentConfiguration()
-            contentConfiguration.attributedText = NSAttributedString(attributedName)
-            contentConfiguration.imageProperties.maximumSize = CGSize(width: 42, height: 42)
-            contentConfiguration.image = UIImage(resource: .boromirProfilePicture)
-            cell.contentConfiguration = contentConfiguration
-        }
-
-    private var sectionHeaderRegistration: UICollectionView .SupplementaryRegistration<UICollectionViewListCell>!
-
-    private var dataSource: ActorDiffableDataSource<Section, Identified<User>>!
+    private var dataSource: ActorDiffableDataSource<Section, ActorListItem<User>>!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.prefetchDataSource = self
-        let dataSource = ActorDiffableDataSource<Section, Identified<User>>(
+
+        let friendCellRegistration = UICollectionView
+            .CellRegistration<UICollectionViewListCell, ActorListItem<User>> { [unowned self] cell, _, user in
+                var attrContainer = AttributeContainer()
+                attrContainer.personNameComponent =
+                    user.value.lastName != nil ? .familyName : .givenName
+
+                var newContainer = AttributeContainer()
+                newContainer.uiKit.font = .preferredFont(forTextStyle: .body)
+                newContainer.inlinePresentationIntent.insert(.stronglyEmphasized)
+
+                let attributedName = user
+                    .value
+                    .nameComponents
+                    .formatted(.name(style: .medium).attributed)
+                    .replacingAttributes(attrContainer, with: newContainer)
+
+                var contentConfiguration = cell.defaultContentConfiguration()
+                contentConfiguration.attributedText = NSAttributedString(attributedName)
+
+                contentConfiguration.imageProperties.cornerRadius = roundProfilePictures
+                    ? profilePictureSize.width / 2
+                    : 2.5
+                contentConfiguration.imageProperties.maximumSize = profilePictureSize
+
+                // TODO: Set a placeholder image if there isn't any avatar
+                contentConfiguration.image = user.imageViewModel.currentImage
+                cell.contentConfiguration = contentConfiguration
+            }
+
+        let dataSource = ActorDiffableDataSource<Section, ActorListItem<User>>(
             collectionView: collectionView,
-        ) { [unowned self] collectionView, indexPath, user in
+        ) { collectionView, indexPath, user in
             collectionView.dequeueConfiguredReusableCell(
-                using: self.friendCellRegistration,
+                using: friendCellRegistration,
                 for: indexPath,
                 item: user,
             )
@@ -158,7 +169,7 @@ private final class FriendsViewController
             in: db.reader,
             onError: { _ in },
             onChange: { users in
-                var snapshot = NSDiffableDataSourceSnapshot<Section, Identified<User>>()
+                var snapshot = NSDiffableDataSourceSnapshot<Section, ActorListItem<User>>()
                 var lastIndexTitle: String?
                 for user in users {
                     let indexTitle: String
@@ -181,7 +192,15 @@ private final class FriendsViewController
                                 """)
                         }
                     }
-                    snapshot.appendItems([Identified(value: user)])
+                    let profilePictureViewModel = AsyncImageViewModel(
+                        sizes: user.squareProfilePictureSizes,
+                        blurHash: nil,
+                    )
+                    let item = ActorListItem(
+                        imageViewModel: profilePictureViewModel,
+                        value: user,
+                    )
+                    snapshot.appendItems([item])
                 }
                 dataSource.apply(snapshot)
             },
@@ -198,17 +217,46 @@ private final class FriendsViewController
         _ collectionView: UICollectionView,
         prefetchItemsAt indexPaths: [IndexPath],
     ) {
-        // TODO
+        for indexPath in indexPaths {
+            guard let item = dataSource.itemIdentifier(for: indexPath) else { continue }
+            item.imageViewModel.loadImage(
+                fitting: profilePictureSize,
+                displayScale: traitCollection.displayScale,
+            )
+        }
     }
 
     func collectionView(
         _ collectionView: UICollectionView,
         cancelPrefetchingForItemsAt indexPaths: [IndexPath],
     ) {
-        // TODO
+        for indexPath in indexPaths {
+            guard let item = dataSource.itemIdentifier(for: indexPath) else { continue }
+            item.imageViewModel.cancelLoading()
+        }
     }
 
     // MARK: - Collection view delegate
+
+    override func collectionView(
+        _ collectionView: UICollectionView,
+        willDisplay cell: UICollectionViewCell,
+        forItemAt indexPath: IndexPath,
+    ) {
+        dataSource.itemIdentifier(for: indexPath)?.imageViewModel.loadImage(
+            fitting: profilePictureSize,
+            displayScale: traitCollection.displayScale,
+        ) { [weak self] phase in
+            if let cell = self?
+                .collectionView?
+                .cellForItem(at: indexPath) as? UICollectionViewListCell,
+               var configuration = cell.contentConfiguration as? UIListContentConfiguration
+            {
+                configuration.image = phase.image
+                cell.contentConfiguration = configuration
+            }
+        }
+    }
 
     override func collectionView(
         _ collectionView: UICollectionView,
@@ -222,6 +270,7 @@ private final class FriendsViewController
 
 private struct FriendsViewAdapter: UIViewControllerRepresentable {
     let db: SmithereenDatabase
+    @AppStorage(.roundProfilePictures) private var roundProfilePictures
 
     func makeUIViewController(context: Context) -> FriendsViewController {
         return FriendsViewController(db: db)
@@ -229,6 +278,7 @@ private struct FriendsViewAdapter: UIViewControllerRepresentable {
 
     func updateUIViewController(_ vc: FriendsViewController, context: Context) {
         vc.pushToNavigationStack = context.environment.pushToNavigationStack
+        vc.roundProfilePictures = roundProfilePictures
     }
 }
 

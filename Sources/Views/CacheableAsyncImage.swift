@@ -6,8 +6,21 @@ final class AsyncImageViewModel: ObservableObject {
     enum Phase {
         case success(UIImage, ImageLocation)
         case failure(any Swift.Error, blurhash: UIImage?)
-        case pending(blurhash: UIImage?)
+        case pending(blurhash: UIImage?, ImageLocation)
         case empty(blurhash: UIImage?)
+
+        var image: UIImage? {
+            switch self {
+            case .success(let image, _):
+                image
+            case .failure(_, let blurhash):
+                blurhash
+            case .pending(let blurhash, _):
+                blurhash
+            case .empty(let blurhash):
+                blurhash
+            }
+        }
     }
 
     enum Error: Swift.Error {
@@ -40,9 +53,11 @@ final class AsyncImageViewModel: ObservableObject {
         let blurHashImage = blurHash.flatMap {
             UIImage(blurHash: $0, aspectRatio: sizes.aspectRatio)
         }
-        self.phase = sizes.isEmpty
-            ? .empty(blurhash: blurHashImage)
-            : .pending(blurhash: blurHashImage)
+        self.phase = .empty(blurhash: blurHashImage)
+    }
+
+    var currentImage: UIImage? {
+        phase.image
     }
 
     private func setPhaseAnimated(_ newPhase: Phase) {
@@ -56,7 +71,7 @@ final class AsyncImageViewModel: ObservableObject {
         case .success:
             return // Do nothing, leave the existing image
         case .failure(_, let blurhash),
-                .pending(let blurhash),
+                .pending(let blurhash, _),
                 .empty(let blurhash):
             setPhaseAnimated(
                 .failure(
@@ -99,16 +114,28 @@ final class AsyncImageViewModel: ObservableObject {
         }
     }
 
-    func loadImage(fitting size: CGSize, displayScale: CGFloat) {
+    func loadImage(
+        fitting size: CGSize,
+        displayScale: CGFloat,
+        completion: (@MainActor (Phase) -> Void)? = nil,
+    ) {
         let location = sizes.sizeThatFits(size, scale: displayScale)
-        if case .success(_, let previousLocation) = phase,
-           location == previousLocation
-        {
-            return
+        switch phase {
+        case .success(_, let previousLocation),
+                .pending(_, let previousLocation):
+            if location == previousLocation {
+                completion?(phase)
+                return
+            }
+        default:
+            break
         }
         loadingTask = Task { [weak self] in
             await self?.loadImage(location: location, displayScale: displayScale)
-            self?.loadingTask = nil
+            if let self {
+                self.loadingTask = nil
+                completion?(self.phase)
+            }
         }
     }
 
@@ -148,7 +175,14 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
         let scale = Environment(\.displayScale).wrappedValue
 
         func initializePhase() -> AsyncImageViewModel.Phase {
-            switch sizes.sizeThatFits(size, scale: scale) {
+            guard let location = sizes.sizeThatFits(size, scale: scale) else {
+                return .empty(
+                    blurhash: blurHash.flatMap {
+                        UIImage(blurHash: $0, aspectRatio: aspectRatio)
+                    }
+                )
+            }
+            switch location {
             case .remote(let url):
                 let urlRequest = URLRequest(url: url)
                 if cachePolicy != .reloadIgnoringLocalCacheData,
@@ -157,22 +191,17 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
                     .cachedResponse(for: urlRequest),
                    let image = UIImage(data: cachedResponse.data, scale: scale)
                 {
-                    return .success(image, .remote(url))
+                    return .success(image, location)
                 } else {
                     return .pending(
                         blurhash: blurHash.flatMap {
                             UIImage(blurHash: $0, aspectRatio: aspectRatio)
-                        }
+                        },
+                        location,
                     )
                 }
             case .bundled(let resource):
-                return .success(UIImage(resource: resource), .bundled(resource))
-            case nil:
-                return .empty(
-                    blurhash: blurHash.flatMap {
-                        UIImage(blurHash: $0, aspectRatio: aspectRatio)
-                    }
-                )
+                return .success(UIImage(resource: resource), location)
             }
         }
 
@@ -210,7 +239,7 @@ struct CacheableAsyncImage<Content: View, Placeholder: View>: View {
                 .onChange(of: location) { _ in
                     phaseHolder.loadImage(fitting: viewportSize, displayScale: displayScale)
                 }
-        case .pending(let blurhash):
+        case .pending(let blurhash, _):
             blurHashOrPlaceholder(blurhash.map(Image.init(uiImage:)))
                 .task(id: location) {
                     await phaseHolder.loadImage(location: location, displayScale: displayScale)
