@@ -4,6 +4,10 @@ import UIKit
 struct ImageSizes {
     fileprivate var sizes: [(CGSize, URL)] = []
 
+    var isEmpty: Bool {
+        sizes.isEmpty
+    }
+
     var aspectRatio: CGFloat {
         sizes.last?.0.aspectRatio ?? 1
     }
